@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
 
-	[SerializeField] private Transform[] lanes;
+	private Transform[] lanes;
 	private CharacterController controller;
 	private Rigidbody rigidbody;
 	private int lane;
@@ -14,6 +14,10 @@ public class PlayerMovement : MonoBehaviour {
 	private float jumpTime;
 	private bool rayToFloorEnabled;
 	private bool isInGround;
+	private CapsuleCollider triggerCollider;
+	private float rollTimer;
+	private float groundPos;
+	private float startJumpHeight;
 
 	public float minSwipeDistanceX;
 	public float minSwipeDistanceY;
@@ -22,63 +26,93 @@ public class PlayerMovement : MonoBehaviour {
 	public AnimationCurve jumpCurve;
 	public float maxJumpDistance;
 	public float jumpSpeed;
-	public float fallingForce;
+	public float rollDuration;
 
 	private void Awake() {
 		controller = GetComponent<CharacterController> ();
 		rigidbody = GetComponent<Rigidbody> ();
+
+		CapsuleCollider[] col = transform.GetChild(0).GetComponents<CapsuleCollider> ();
+		foreach (CapsuleCollider c in col) {
+			if (c.isTrigger) {
+				triggerCollider = c;
+				break;
+			}
+		}
 	}
 
 	private void Start () {
 		swipping = false;
 		lane = 1;
+		isInGround = true;
+		lanes = SceneManager.Instance.lanes;
+		groundPos = 0f;
 		rayToFloorEnabled = true;
 	}
 	
 	private void Update () {
-		CheckTactilInput ();
+//		CheckTactilInput ();
 		CheckMouseInput ();
 
-		Ray ray = new Ray (transform.position + new Vector3(0f, 1f, 0f), Vector3.down);
+		Ray ray = new Ray (new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z), Vector3.down);
 		RaycastHit hit;
-
+		Debug.DrawRay (ray.origin, ray.direction * 100f, Color.red);
+		if (Physics.Raycast (ray, out hit, 10f, layerMaskRayToFloor)) {
+			groundPos = hit.point.y;
+		}
+		Debug.Log (groundPos);
 		if (rayToFloorEnabled) {
-			float groundPos = 0f;
-			if (Physics.Raycast (ray, out hit, layerMaskRayToFloor)) {
-				if (hit.collider.gameObject.name == "Floor") {
-					groundPos = hit.point.y;
-				}
-				currentState = State.running;
+			if (transform.position.y <= (groundPos + 1.1f)) {
+				if(!isInGround)
+					currentState = State.running;
 				isInGround = true;
-			}
-
-			if (transform.position.y <= groundPos) {
-				currentState = State.running;
-				isInGround = true;
-				transform.position = new Vector3 (transform.position.x, groundPos, transform.position.z);
+				transform.position = new Vector3 (transform.position.x, (groundPos + 1f), transform.position.z);
 			}
 			else
 				isInGround = false;
 		}
 
 		if (currentState == State.running) {
-			rigidbody.useGravity = true;
 			float temp = Mathf.Lerp (transform.position.x, lanes [lane].position.x, lateralDashSpeed * Time.deltaTime);
 			transform.position = new Vector3 (temp, transform.position.y, transform.position.z);
 		}
 		else if (currentState == State.jumping) {
+//			if (jumpTime <= 2) {
+//				float t = jumpCurve.Evaluate (jumpTime);
+//				transform.position = new Vector3 (transform.position.x, startJumpHeight + 1f + (t * maxJumpDistance), transform.position.z);
+//
+//				if (jumpTime >= 1) {
+//					rigidbody.useGravity = true;
+//					rayToFloorEnabled = true;
+//				}
+//			}
+//
+//			jumpTime += jumpSpeed;
+
 			if (jumpTime <= 1) {
 				float t = jumpCurve.Evaluate (jumpTime);
-				transform.position = new Vector3 (transform.position.x, t * maxJumpDistance, transform.position.z);
+				transform.position = new Vector3 (transform.position.x, startJumpHeight + 1f + (t * maxJumpDistance), transform.position.z);
 			}
 			else {
-				rayToFloorEnabled = true;
 				rigidbody.useGravity = true;
-				rigidbody.AddForce (Vector3.down * fallingForce);
+				rayToFloorEnabled = true;
 			}
-			jumpTime += jumpSpeed * Time.deltaTime;
+
+			jumpTime += jumpSpeed;
 		}
-		Debug.Log (currentState);
+		else if (currentState == State.rolling) {
+			rollTimer += Time.deltaTime;
+
+			if (rollTimer >= rollDuration) {
+				triggerCollider.center = Vector3.zero;
+				currentState = State.running;
+
+				//PROVISIONAL VISUAL UPDATE;
+				transform.localScale = new Vector3 (1f, 1f, 1f);
+			}
+		}
+
+//		Debug.Log (isInGround);
 	}
 
 	private void CheckTactilInput() {
@@ -164,7 +198,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	private void ChangeLane(bool right) {
-		if (isInGround) {
+		if (isInGround && (currentState != State.rolling)) {
 			lane = (right) ? lane + 1 : lane - 1;
 			if (lane > 2)
 				lane = 2;
@@ -175,21 +209,30 @@ public class PlayerMovement : MonoBehaviour {
 
 	private void Jump() {
 		if (isInGround) {
-			transform.position = new Vector3 (transform.position.x, transform.position.y + 0.5f, transform.position.z);
 			jumpTime = 0f;
+			startJumpHeight = transform.position.y - 1f;
 			currentState = State.jumping;
-			rayToFloorEnabled = false;
 			rigidbody.useGravity = false;
+			rayToFloorEnabled = false;
+			isInGround = false;
 		}
 	}
 
 	private void Roll() {
+		if (isInGround) {
+			triggerCollider.center = new Vector3 (0, -1, 0);
+			rollTimer = 0f;
+			currentState = State.rolling;
 
+			//PROVISIONAL VISUAL UPDATE;
+			transform.localScale = new Vector3 (1f, 0.5f, 1f);
+		}
 	}
 
 	enum State {
 		running,
 		jumping,
-		rolling
+		rolling,
+		dying
 	}
 }
