@@ -2,19 +2,13 @@
 using System.Collections;
 
 public class Displacement : MonoBehaviour {
-
-	private Obstacle obs;
-
-	public void Initialize(Obstacle obs) {
-		this.obs = obs;
-	}
 	
-	void Update () {
+	private void Update () {
 		transform.position = new Vector3 (transform.position.x, transform.position.y, 
-			transform.position.z - (SceneManager.Instance.obstacleSpeed * Time.deltaTime));
+			transform.position.z - (SceneManager.Instance.displacementSpeed * Time.deltaTime));
 
-		if (transform.position.z <= SceneManager.Instance.destroyDistance) {
-			SceneManager.Instance.DestroyObstacle (obs);
-		}
+//		if (transform.position.z <= GenerationManager.Instance.destroyDistance) {
+//			Destroy (this.gameObject);
+//		}
 	}
 }

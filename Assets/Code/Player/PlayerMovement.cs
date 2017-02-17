@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
 
-	private Transform[] lanes;
+	private Vector3[] lanes;
+	private Vector3[] cameraLanes;
 	private CharacterController controller;
 	private Rigidbody rigidbody;
 	private int lane;
@@ -46,6 +47,7 @@ public class PlayerMovement : MonoBehaviour {
 		lane = 1;
 		isInGround = true;
 		lanes = SceneManager.Instance.lanes;
+		cameraLanes = SceneManager.Instance.cameraLanes;
 		groundPos = 0f;
 		rayToFloorEnabled = true;
 	}
@@ -56,11 +58,11 @@ public class PlayerMovement : MonoBehaviour {
 
 		Ray ray = new Ray (new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z), Vector3.down);
 		RaycastHit hit;
-		Debug.DrawRay (ray.origin, ray.direction * 100f, Color.red);
+
 		if (Physics.Raycast (ray, out hit, 10f, layerMaskRayToFloor)) {
 			groundPos = hit.point.y;
 		}
-		Debug.Log (groundPos);
+
 		if (rayToFloorEnabled) {
 			if (transform.position.y <= (groundPos + 1.1f)) {
 				if(!isInGround)
@@ -73,22 +75,12 @@ public class PlayerMovement : MonoBehaviour {
 		}
 
 		if (currentState == State.running) {
-			float temp = Mathf.Lerp (transform.position.x, lanes [lane].position.x, lateralDashSpeed * Time.deltaTime);
+			float temp = Mathf.Lerp (transform.position.x, lanes [lane].x, lateralDashSpeed * Time.deltaTime);
 			transform.position = new Vector3 (temp, transform.position.y, transform.position.z);
+			float ctemp = Mathf.Lerp (Camera.main.transform.position.x, cameraLanes [lane].x, lateralDashSpeed * Time.deltaTime);
+			Camera.main.transform.position = new Vector3 (ctemp, Camera.main.transform.position.y, Camera.main.transform.position.z);
 		}
 		else if (currentState == State.jumping) {
-//			if (jumpTime <= 2) {
-//				float t = jumpCurve.Evaluate (jumpTime);
-//				transform.position = new Vector3 (transform.position.x, startJumpHeight + 1f + (t * maxJumpDistance), transform.position.z);
-//
-//				if (jumpTime >= 1) {
-//					rigidbody.useGravity = true;
-//					rayToFloorEnabled = true;
-//				}
-//			}
-//
-//			jumpTime += jumpSpeed;
-
 			if (jumpTime <= 1) {
 				float t = jumpCurve.Evaluate (jumpTime);
 				transform.position = new Vector3 (transform.position.x, startJumpHeight + 1f + (t * maxJumpDistance), transform.position.z);
@@ -112,7 +104,7 @@ public class PlayerMovement : MonoBehaviour {
 			}
 		}
 
-//		Debug.Log (isInGround);
+		Camera.main.transform.position = new Vector3 (Camera.main.transform.position.x, transform.position.y + 3f, Camera.main.transform.position.z);
 	}
 
 	private void CheckTactilInput() {
@@ -129,46 +121,20 @@ public class PlayerMovement : MonoBehaviour {
 				float swipeDistVertically = (new Vector3 (0, touch.position.y, 0) -
 					new Vector3 (0, touchInitialPosition.y, 0)).magnitude;
 
-				//CHECK SLIDE HORIZONTALLY;
-				if (swipeDistHorizontally > minSwipeDistanceX) {
-					bool swipeRight = touchInitialPosition.x < touch.position.x;
-					ChangeLane (swipeRight);
-				}
-
 				//CHECK SLIDE VERTICALLY;
-				else if (swipeDistVertically > minSwipeDistanceY) {
+				if (swipeDistVertically > minSwipeDistanceY) {
 					if (touchInitialPosition.y < touch.position.y)
 						Jump ();
 					else
 						Roll ();
 				}
-			}
 
-//			else if (touch.phase == TouchPhase.Moved && !swipping) {
-//				swipping = true;
-//				float swipeDistHorizontally = (new Vector3 (touch.position.x, 0, 0) -
-//				                              new Vector3 (touchInitialPosition.x, 0, 0)).magnitude;
-//
-//				float swipeDistVertically = (new Vector3 (0, touch.position.y, 0) -
-//					new Vector3 (0, touchInitialPosition.y, 0)).magnitude;
-//
-//				//CHECK SLIDE HORIZONTALLY;
-//				if (swipeDistHorizontally > minSwipeDistanceX) {
-//					bool swipeRight = touchInitialPosition.x < touch.position.x;
-//					ChangeLane (swipeRight);
-//				}
-//
-//				//CHECK SLIDE VERTICALLY;
-//				else if (swipeDistVertically > minSwipeDistanceY) {
-//					if (touchInitialPosition.y < touch.position.y)
-//						Jump ();
-//					else
-//						Roll ();
-//				}
-//			}
-//			else if (touch.phase == TouchPhase.Ended) {
-//				swipping = false;
-//			}
+				//CHECK SLIDE HORIZONTALLY;
+				else if (swipeDistHorizontally > minSwipeDistanceX) {
+					bool swipeRight = touchInitialPosition.x < touch.position.x;
+					ChangeLane (swipeRight);
+				}
+			}
 		}
 	}
 
