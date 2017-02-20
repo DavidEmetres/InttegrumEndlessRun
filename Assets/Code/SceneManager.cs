@@ -11,17 +11,11 @@ public class SceneManager : MonoBehaviour {
 	private Neighbours neighbour;
 	private bool neighbourChoosed;
 	private List<Province> provincesRunned = new List<Province>();
+	private Direction displacementDirection;
 
 	[Header("Scene Settings")]
 	public Vector3[] lanes;
 	public Vector3[] cameraLanes;
-
-//	[Header("Obstacles Generator Variables")]
-//	public float maxTimeBetweenObstacles;
-//	public float minTimeBetweenObstacles;
-	public float displacementSpeed;
-//	[HideInInspector] public float generationDistance;
-//	[HideInInspector] public float destroyDistance;
 
 	[Header("Player Variables")]
 	public int life;
@@ -290,120 +284,29 @@ public class SceneManager : MonoBehaviour {
 			null);
 
 		currentProvince = castellon;
+		displacementDirection = (Direction)Random.Range (0, 4);
 		provincesRunned.Add (currentProvince);
 		RandomNeighbourSelection ();
 	}
 
 	private void Start () {
-//		timer = 0f;
-//		nextGenerationTime = Random.Range (minTimeBetweenObstacles, maxTimeBetweenObstacles);
-//		generationDistance = 100f;
-//		destroyDistance = -10f;
-//
-//		//INITIAL ENVIRONMENT GENERATION;
-//		string path = "Prefabs/";
-//
-//		switch (currentProvince.climate) {
-//		case Climate.Continental:
-//			path += "Continental/";
-//			break;
-//		case Climate.Mediterranean:
-//			path += "Mediterranean/";
-//			break;
-//		case Climate.Oceanic:
-//			path += "Oceanic/";
-//			break;
-//		}
-//
-//		string terrainPath = path + "Terrain";
-//
-//		for (int i = 0; i <= 10; i++) {
-//			Obstacle t = new Obstacle (terrainPath, i * 10, transform.GetChild(0).transform, 0f, 0f);
-//		}
-//
-//		string enviroPath = path + "Enviro";
-//
-//		for (int i = 0; i <= 10; i++) {
-//			Obstacle t1 = new Obstacle (enviroPath, i * 10, transform.GetChild(2).transform, -5f, 2f);
-//			Obstacle t2 = new Obstacle (enviroPath, i * 10, transform.GetChild(2).transform, 5f, 2f);
-//		}
-//
-//		InvokeRepeating ("GenerateEnvironment", 0f, 0.4f);
 		InvokeRepeating ("KmCounter", 0f, 1f);
 	}
 
 	private void Update () {
 		if (!gameOver) {
-//			timer += Time.deltaTime;
-//
-//			if (timer >= nextGenerationTime) {
-//				GenerateObstacle ();
-//				timer = 0f;
-//				nextGenerationTime = Random.Range (minTimeBetweenObstacles, maxTimeBetweenObstacles);
-//			}
-
 			if (neighbourChoosed) {
 				if (provinceKm >= neighbour.distanceBetweenProvinces) {
 					ProvinceChange ();
 				}
 			}
 		}
-	}
 
-//	private void GenerateBonification() {
-//		int temp = Random.Range (0, 3);
-//		float nextLane = lanes [temp].x;
-//
-//		Bonification b = new Bonification (generationDistance, transform.GetChild (2).transform, nextLane, 1f);
-//	}
-//
-//	private void GenerateObstacle() {
-//		int temp = Random.Range (0, 3);
-//		float nextLane = lanes [temp].x;
-//		temp = Random.Range (0, 2);
-//		float yPos = (temp == 0) ? 1 : 2.5f;
-//
-//		string path = "Prefabs/";
-//
-//		switch (currentProvince.climate) {
-//		case Climate.Continental:
-//			path += "Continental/";
-//			break;
-//		case Climate.Mediterranean:
-//			path += "Mediterranean/";
-//			break;
-//		case Climate.Oceanic:
-//			path += "Oceanic/";
-//			break;
-//		}
-//
-//		path += "Obstacle";
-//
-//		Obstacle obs = new Obstacle (path, generationDistance, transform.GetChild(1).transform, nextLane, yPos);
-//	}
-//
-//	private void GenerateEnvironment() {
-//		string path = "Prefabs/";
-//
-//		switch (currentProvince.climate) {
-//		case Climate.Continental:
-//			path += "Continental/";
-//			break;
-//		case Climate.Mediterranean:
-//			path += "Mediterranean/";
-//			break;
-//		case Climate.Oceanic:
-//			path += "Oceanic/";
-//			break;
-//		}
-//
-//		string terrainPath = path + "Terrain";
-//		Obstacle obs = new Obstacle (terrainPath, generationDistance, transform.GetChild (0).transform, 0f, 0f);
-//
-//		string enviroPath = path + "Enviro";
-//		Obstacle en1 = new Obstacle (enviroPath, generationDistance, transform.GetChild (3).transform, -5f, 2f);
-//		Obstacle en2 = new Obstacle (enviroPath, generationDistance, transform.GetChild (3).transform, 5f, 2f);
-//	}
+		if (Input.GetKeyDown (KeyCode.F1)) {
+			ProvinceChange ();
+			GenerationManager.Instance.ChangeTerrainMat ();
+		}
+	}
 
 	private void ProvinceChange() {
 		currentProvince = neighbour.neighbourProvince;
@@ -466,12 +369,12 @@ public class SceneManager : MonoBehaviour {
 	}
 
 	private void KmCounter() {
-		provinceKm += (displacementSpeed / 10f);
+		provinceKm += (GenerationManager.Instance.displacementSpeed / 10f);
 	}
 
 	public void GameOver() {
 		gameOver = true;
-		displacementSpeed = 0f;
+		GenerationManager.Instance.displacementSpeed = 0f;
 
 		foreach (Province p in provincesRunned) {
 			Debug.Log (p.name);
@@ -483,4 +386,11 @@ public class SceneManager : MonoBehaviour {
 		GUI.Label(new Rect(350, 10, 100, 20), (totalKm + provinceKm) + " Km", style);
 		GUI.Label(new Rect(10, 70, 100, 20), "Vidas: " + life, style);
 	}
+}
+
+public enum Direction {
+	north,
+	south,
+	east,
+	west
 }

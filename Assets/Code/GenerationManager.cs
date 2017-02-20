@@ -10,7 +10,9 @@ public class GenerationManager : MonoBehaviour {
 	private bool lane0Empty;
 	private bool lane1Empty;
 	private bool lane2Empty;
+	private bool changingRoad;
 
+	public float displacementSpeed;
 	[HideInInspector] public float generationDistance;
 	[HideInInspector] public float destroyDistance;
 
@@ -22,56 +24,84 @@ public class GenerationManager : MonoBehaviour {
 
 	private void Start () {
 		lanes = SceneManager.Instance.lanes;
-		generationDistance = 100f;
-		destroyDistance = -10f;
+		generationDistance = 200f;
+		destroyDistance = -30f;
 
 		BuildTerrainMesh ();
-		InvokeRepeating ("UpdateMesh", 0f, 1f);
 	}
 	
 	private void Update () {
-		
+		if(!changingRoad)
+			UpdateMesh ();
+
+		if (Input.GetKeyDown (KeyCode.F2)) {
+			ChangeRoad ();
+		}
 	}
 
 	private void UpdateMesh() {
 		Mesh mesh = terrain.GetComponent<MeshFilter> ().mesh;
+		Mesh newMesh = new Mesh ();
+		newMesh.Clear ();
 
-		List<Vector3> newVertices = new List<Vector3>();
-		newVertices.AddRange (mesh.vertices);
-		newVertices.Add (new Vector3 (-5f, 0f, generationDistance));
-		newVertices.Add (new Vector3 (5f, 0f, generationDistance));
+		Vector3[] vertices = new Vector3[mesh.vertexCount];
+		int[] triangles = new int[mesh.triangles.Length];
+		Vector2[] uv = new Vector2[mesh.uv.Length];
 
-		List<Vector2> newUv = new List<Vector2> ();
-		newUv.AddRange (mesh.uv);
-		newUv.Add (new Vector2 (0, 0));
-		newUv.Add (new Vector2 (1, 0));
+		vertices = mesh.vertices;
+		uv = mesh.uv;
 
-		int lastIndex = newVertices.Count - 1;
+		for (int j = 0; j < mesh.vertexCount; j++) {
+			vertices [j] = new Vector3 (vertices [j].x, vertices [j].y, vertices [j].z - displacementSpeed * Time.deltaTime);
 
-		List<int> newTriangles = new List<int> ();
-		newTriangles.AddRange (mesh.triangles);
-		newTriangles.Add (lastIndex - 2);
-		newTriangles.Add (lastIndex - 3);
-		newTriangles.Add (lastIndex - 1);
+			if (vertices [j].z < destroyDistance) {
+				for (int i = 0; i < mesh.vertexCount; i += 2) {
+					if (i < mesh.vertexCount - 2) {
+						vertices [i].Set(mesh.vertices [i + 2].x, mesh.vertices [i + 2].y, mesh.vertices [i + 2].z - displacementSpeed * Time.deltaTime);
+						vertices [i + 1].Set(mesh.vertices [i + 3].x, mesh.vertices [i + 3].y, mesh.vertices [i + 3].z - displacementSpeed * Time.deltaTime);
+						uv [i] = (uv [i] == Vector2.zero) ? new Vector2 (0, 1) : Vector2.zero;
+						uv [i + 1] = (uv [i + 1] == Vector2.one) ? new Vector2 (1, 0) : Vector2.one;
+					}
+					else {
+						vertices [i] = new Vector3 (-5f, 0f, vertices[i-1].z + 10f);
+						vertices [i + 1] = new Vector3 (5f, 0f, vertices[i-1].z + 10f);
+					}
+				}
 
-		newTriangles.Add (lastIndex - 1);
-		newTriangles.Add (lastIndex);
-		newTriangles.Add (lastIndex - 2);
+				break;
+			}
+		}
 
-		mesh.Clear ();
+		triangles = mesh.triangles;
 
-		Mesh m = new Mesh ();
-		m.SetVertices (newVertices);
-		m.SetUVs (0, newUv);
-		m.SetTriangles (newTriangles, 0);
-		terrain.GetComponent<MeshFilter> ().mesh = m;
+		newMesh.vertices = vertices;
+		newMesh.triangles = triangles;
+		newMesh.uv = uv;
+		newMesh.RecalculateBounds ();
+		newMesh.RecalculateNormals ();
+		terrain.GetComponent<MeshFilter> ().mesh.Clear ();
+		terrain.GetComponent<MeshFilter> ().mesh = newMesh;
+		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
+	}
+
+	public void ChangeTerrainMat() {
+		string matPath = "3D/Materials/" + SceneManager.Instance.currentProvince.climate.ToString () + "/TerrainMat";
+		terrain.GetComponent<MeshRenderer>().material = (Material)Resources.Load(matPath);
+	}
+
+	private void ChangeRoad() {
+		changingRoad = true;
+
+
 	}
 
 	private void BuildTerrainMesh() {
 		terrain = new GameObject ("Terrain");
+		terrain.layer = LayerMask.NameToLayer("Walkable");
 		terrain.transform.SetParent (transform.GetChild (0));
 		terrain.AddComponent<MeshFilter> ();
 		terrain.AddComponent<MeshRenderer> ();
+		terrain.AddComponent<BoxCollider> ().size = new Vector3(10f, 0f, 1f);
 
 		Mesh mesh = new Mesh();
 		mesh.Clear ();
@@ -83,33 +113,33 @@ public class GenerationManager : MonoBehaviour {
 		int triangleCount = 0;
 		bool b = false;
 
-		tempVertices [0] = new Vector3 (-5f, 0f, generationDistance);
-		tempVertices [1] = new Vector3 (5f, 0f, generationDistance);
-		tempUv [0] = new Vector2 (0, 1);
-		tempUv [1] = new Vector2 (1, 1);
+		tempVertices [0] = new Vector3 (-5f, 0f, -10f);
+		tempVertices [1] = new Vector3 (5f, 0f, -10f);
+		tempUv [0] = new Vector2 (0, 0);
+		tempUv [1] = new Vector2 (1, 0);
 
 		for (int i = 1; i <= numTiles; i++) {
-			tempVertices [2 * i] = new Vector3 (-5f, 0f, -20 + (i * 10));
-			tempVertices [(2 * i) + 1] = new Vector3 (5f, 0f, -20 + (i * 10));
+			tempVertices [2 * i] = new Vector3 (-5f, 0f, -10 + (i * 10));
+			tempVertices [(2 * i) + 1] = new Vector3 (5f, 0f, -10 + (i * 10));
 
 			tempTriangles [triangleCount] = (2 * i) - 2;
-			tempTriangles [triangleCount + 1] = (2 * i) - 1;
-			tempTriangles [triangleCount + 2] = (2 * i);
+			tempTriangles [triangleCount + 1] = (2 * i) + 1;
+			tempTriangles [triangleCount + 2] = (2 * i) - 1;
 
-			tempTriangles [triangleCount + 3] = (2 * i) - 1;
-			tempTriangles [triangleCount + 4] = (2 * i) + 1;
-			tempTriangles [triangleCount + 5] = (2 * i);
+			tempTriangles [triangleCount + 3] = (2 * i) - 2;
+			tempTriangles [triangleCount + 4] = (2 * i);
+			tempTriangles [triangleCount + 5] = (2 * i) + 1;
 
 			triangleCount += 6;
 
 			if (!b) {
-				tempUv [2 * i] = new Vector2 (0, 0);
-				tempUv [(2 * i) + 1] = new Vector2 (1, 0);
+				tempUv [2 * i] = new Vector2 (0, 1);
+				tempUv [(2 * i) + 1] = new Vector2 (1, 1);
 				b = true;
 			}
 			else {
-				tempUv [2 * i] = new Vector2 (0, 1);
-				tempUv [(2 * i) + 1] = new Vector2 (1, 1);
+				tempUv [2 * i] = new Vector2 (0, 0);
+				tempUv [(2 * i) + 1] = new Vector2 (1, 0);
 				b = false;
 			}
 		}
@@ -117,7 +147,11 @@ public class GenerationManager : MonoBehaviour {
 		mesh.vertices = tempVertices;
 		mesh.triangles = tempTriangles;
 		mesh.uv = tempUv;
+		mesh.RecalculateBounds ();
+		mesh.RecalculateNormals ();
 		terrain.GetComponent<MeshFilter> ().mesh = mesh;
-		terrain.AddComponent<Displacement> ();
+
+		string matPath = "3D/Materials/" + SceneManager.Instance.currentProvince.climate.ToString () + "/TerrainMat";
+		terrain.GetComponent<MeshRenderer>().material = (Material)Resources.Load(matPath);
 	}
 }
