@@ -26,10 +26,18 @@ public class Province {
 public struct Neighbours {
 	public Province neighbourProvince;
 	public float distanceBetweenProvinces;
+	public bool nullNeighbour;
 
 	public Neighbours(Province p, float dist) {
 		neighbourProvince = p;
 		distanceBetweenProvinces = dist;
+		nullNeighbour = false;
+	}
+
+	public Neighbours(bool b) {
+		nullNeighbour = true;
+		neighbourProvince = null;
+		distanceBetweenProvinces = 0f;
 	}
 };
 

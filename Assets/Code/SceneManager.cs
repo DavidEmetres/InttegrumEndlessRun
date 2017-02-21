@@ -7,11 +7,12 @@ public class SceneManager : MonoBehaviour {
 //	private float timer;
 //	private float nextGenerationTime;
 	private bool gameOver;
-	public Province currentProvince;
 	private Neighbours neighbour;
 	private bool neighbourChoosed;
 	private List<Province> provincesRunned = new List<Province>();
-	private Direction displacementDirection;
+
+	public Province currentProvince;
+	public Direction displacementDirection;
 
 	[Header("Scene Settings")]
 	public Vector3[] lanes;
@@ -284,7 +285,7 @@ public class SceneManager : MonoBehaviour {
 			null);
 
 		currentProvince = castellon;
-		displacementDirection = (Direction)Random.Range (0, 4);
+		displacementDirection = Direction.south;
 		provincesRunned.Add (currentProvince);
 		RandomNeighbourSelection ();
 	}

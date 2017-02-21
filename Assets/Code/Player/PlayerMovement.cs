@@ -29,7 +29,11 @@ public class PlayerMovement : MonoBehaviour {
 	public float jumpSpeed;
 	public float rollDuration;
 
+	public static PlayerMovement Instance;
+
 	private void Awake() {
+		Instance = this;
+
 		controller = GetComponent<CharacterController> ();
 		rigidbody = GetComponent<Rigidbody> ();
 
@@ -163,7 +167,7 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
-	private void ChangeLane(bool right) {
+	public void ChangeLane(bool right) {
 		if (isInGround && (currentState != State.rolling)) {
 			lane = (right) ? lane + 1 : lane - 1;
 			if (lane > 2)
@@ -193,6 +197,10 @@ public class PlayerMovement : MonoBehaviour {
 			//PROVISIONAL VISUAL UPDATE;
 			transform.localScale = new Vector3 (1f, 0.5f, 1f);
 		}
+	}
+
+	public int GetCurrentLane() {
+		return lane;
 	}
 
 	enum State {

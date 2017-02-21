@@ -10,11 +10,13 @@ public class GenerationManager : MonoBehaviour {
 	private bool lane0Empty;
 	private bool lane1Empty;
 	private bool lane2Empty;
-	private bool changingRoad;
+	private float defaultSpeed;
+	private float meshStartDistance;
 
 	public float displacementSpeed;
 	[HideInInspector] public float generationDistance;
 	[HideInInspector] public float destroyDistance;
+	public bool changingRoad;
 
 	public static GenerationManager Instance;
 
@@ -27,15 +29,25 @@ public class GenerationManager : MonoBehaviour {
 		generationDistance = 200f;
 		destroyDistance = -30f;
 
-		BuildTerrainMesh ();
+		BuildTerrainMesh (0f);
 	}
 	
 	private void Update () {
-		if(!changingRoad)
+		if(terrain != null)
 			UpdateMesh ();
 
 		if (Input.GetKeyDown (KeyCode.F2)) {
-			ChangeRoad ();
+			CreateRoadChange();
+		}
+	}
+
+	public void ChangeDisplacementSpeed(float newSpeed, bool returnToDefault) {
+		if (returnToDefault) {
+			displacementSpeed = defaultSpeed;
+		}
+		else {
+			defaultSpeed = displacementSpeed;
+			displacementSpeed = newSpeed;
 		}
 	}
 
@@ -54,21 +66,23 @@ public class GenerationManager : MonoBehaviour {
 		for (int j = 0; j < mesh.vertexCount; j++) {
 			vertices [j] = new Vector3 (vertices [j].x, vertices [j].y, vertices [j].z - displacementSpeed * Time.deltaTime);
 
-			if (vertices [j].z < destroyDistance) {
-				for (int i = 0; i < mesh.vertexCount; i += 2) {
-					if (i < mesh.vertexCount - 2) {
-						vertices [i].Set(mesh.vertices [i + 2].x, mesh.vertices [i + 2].y, mesh.vertices [i + 2].z - displacementSpeed * Time.deltaTime);
-						vertices [i + 1].Set(mesh.vertices [i + 3].x, mesh.vertices [i + 3].y, mesh.vertices [i + 3].z - displacementSpeed * Time.deltaTime);
-						uv [i] = (uv [i] == Vector2.zero) ? new Vector2 (0, 1) : Vector2.zero;
-						uv [i + 1] = (uv [i + 1] == Vector2.one) ? new Vector2 (1, 0) : Vector2.one;
+			if (!changingRoad) {
+				if (vertices [j].z < (destroyDistance - meshStartDistance)) {
+					for (int i = 0; i < mesh.vertexCount; i += 2) {
+						if (i < mesh.vertexCount - 2) {
+							vertices [i].Set (mesh.vertices [i + 2].x, mesh.vertices [i + 2].y, mesh.vertices [i + 2].z - displacementSpeed * Time.deltaTime);
+							vertices [i + 1].Set (mesh.vertices [i + 3].x, mesh.vertices [i + 3].y, mesh.vertices [i + 3].z - displacementSpeed * Time.deltaTime);
+							uv [i] = (uv [i] == Vector2.zero) ? new Vector2 (0, 1) : Vector2.zero;
+							uv [i + 1] = (uv [i + 1] == Vector2.one) ? new Vector2 (1, 0) : Vector2.one;
+						}
+						else {
+							vertices [i] = new Vector3 (-5f, 0f, vertices [i - 1].z + 10f);
+							vertices [i + 1] = new Vector3 (5f, 0f, vertices [i - 1].z + 10f);
+						}
 					}
-					else {
-						vertices [i] = new Vector3 (-5f, 0f, vertices[i-1].z + 10f);
-						vertices [i + 1] = new Vector3 (5f, 0f, vertices[i-1].z + 10f);
-					}
-				}
 
-				break;
+					break;
+				}
 			}
 		}
 
@@ -89,13 +103,38 @@ public class GenerationManager : MonoBehaviour {
 		terrain.GetComponent<MeshRenderer>().material = (Material)Resources.Load(matPath);
 	}
 
-	private void ChangeRoad() {
+	private void CreateRoadChange() {
 		changingRoad = true;
 
+		Mesh mesh = terrain.GetComponent<MeshFilter> ().mesh;
+		List<Vector3> vertices = new List<Vector3> (mesh.vertices);
+		vertices.RemoveAt (vertices.Count - 1);
+		vertices.RemoveAt (vertices.Count - 1);
 
+		float pos = vertices [vertices.Count - 1].z + meshStartDistance;
+
+		List<int> triangles = new List<int> (mesh.triangles);
+		triangles.RemoveAt (triangles.Count - 1);
+		triangles.RemoveAt (triangles.Count - 1);
+		triangles.RemoveAt (triangles.Count - 1);
+		triangles.RemoveAt (triangles.Count - 1);
+		triangles.RemoveAt (triangles.Count - 1);
+		triangles.RemoveAt (triangles.Count - 1);
+
+		mesh.vertices = vertices.ToArray();
+		mesh.triangles = triangles.ToArray ();
+		mesh.RecalculateBounds ();
+		mesh.RecalculateNormals ();
+		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
+
+		RoadChange rc = new RoadChange (SceneManager.Instance.currentProvince, SceneManager.Instance.displacementDirection, pos);
 	}
 
-	private void BuildTerrainMesh() {
+	public void DestroyTerrainMesh() {
+		Destroy (terrain);
+	}
+
+	public void BuildTerrainMesh(float startDistance) {
 		terrain = new GameObject ("Terrain");
 		terrain.layer = LayerMask.NameToLayer("Walkable");
 		terrain.transform.SetParent (transform.GetChild (0));
@@ -119,8 +158,8 @@ public class GenerationManager : MonoBehaviour {
 		tempUv [1] = new Vector2 (1, 0);
 
 		for (int i = 1; i <= numTiles; i++) {
-			tempVertices [2 * i] = new Vector3 (-5f, 0f, -10 + (i * 10));
-			tempVertices [(2 * i) + 1] = new Vector3 (5f, 0f, -10 + (i * 10));
+			tempVertices [2 * i] = new Vector3 (-5f, 0f, -10f + (i * 10));
+			tempVertices [(2 * i) + 1] = new Vector3 (5f, 0f, -10f + (i * 10));
 
 			tempTriangles [triangleCount] = (2 * i) - 2;
 			tempTriangles [triangleCount + 1] = (2 * i) + 1;
@@ -153,5 +192,8 @@ public class GenerationManager : MonoBehaviour {
 
 		string matPath = "3D/Materials/" + SceneManager.Instance.currentProvince.climate.ToString () + "/TerrainMat";
 		terrain.GetComponent<MeshRenderer>().material = (Material)Resources.Load(matPath);
+
+		terrain.transform.position = new Vector3 (terrain.transform.position.x, terrain.transform.position.y, startDistance);
+		meshStartDistance = startDistance;
 	}
 }

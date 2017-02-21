@@ -5,6 +5,7 @@ public class ChangeAnimation : MonoBehaviour {
 
 	private bool changing = false;
 	private Transform currentPivot;
+	private float rotDirection;
 
 	public Transform[] pivots;
 
@@ -14,11 +15,19 @@ public class ChangeAnimation : MonoBehaviour {
 	
 	void Update () {
 		if (changing) {
-			transform.RotateAround (currentPivot.position, transform.up, GenerationManager.Instance.displacementSpeed * Time.deltaTime);
+			transform.RotateAround (currentPivot.position, transform.up, rotDirection * GenerationManager.Instance.displacementSpeed * Time.deltaTime);
 
-			if (transform.eulerAngles.y >= 90f) {
-				changing = false;
-				transform.eulerAngles = new Vector3 (transform.eulerAngles.x, 90f, transform.eulerAngles.z);
+			if (rotDirection == 1) {
+				if (transform.eulerAngles.y >= 90f) {
+					changing = false;
+					transform.eulerAngles = new Vector3 (transform.eulerAngles.x, 90f, transform.eulerAngles.z);
+				}
+			}
+			else {
+				if (transform.eulerAngles.y <= -90f) {
+					changing = false;
+					transform.eulerAngles = new Vector3 (transform.eulerAngles.x, -90f, transform.eulerAngles.z);
+				}
 			}
 		}
 
@@ -32,5 +41,7 @@ public class ChangeAnimation : MonoBehaviour {
 	public void SelectRoad(int lane) {
 		currentPivot = pivots [lane];
 		changing = true;
+
+		rotDirection = (lane > 1) ? -1f : 1f;
 	}
 }
