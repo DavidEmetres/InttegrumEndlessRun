@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour {
 	public float maxJumpDistance;
 	public float jumpSpeed;
 	public float rollDuration;
+	public bool bloquedMov;
 
 	public static PlayerMovement Instance;
 
@@ -54,11 +55,12 @@ public class PlayerMovement : MonoBehaviour {
 		cameraLanes = SceneManager.Instance.cameraLanes;
 		groundPos = 0f;
 		rayToFloorEnabled = true;
+		bloquedMov = false;
 	}
 	
 	private void Update () {
-//		CheckTactilInput ();
-		CheckMouseInput ();
+		if(!bloquedMov)
+			CheckMouseInput ();
 
 		Ray ray = new Ray (new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z), Vector3.down);
 		RaycastHit hit;
@@ -77,7 +79,7 @@ public class PlayerMovement : MonoBehaviour {
 			else
 				isInGround = false;
 		}
-
+			
 		if (currentState == State.running) {
 			float temp = Mathf.Lerp (transform.position.x, lanes [lane].x, lateralDashSpeed * Time.deltaTime);
 			transform.position = new Vector3 (temp, transform.position.y, transform.position.z);
@@ -96,7 +98,7 @@ public class PlayerMovement : MonoBehaviour {
 
 			jumpTime += jumpSpeed;
 		}
-		else if (currentState == State.rolling) {
+		if (currentState == State.rolling) {
 			rollTimer += Time.deltaTime;
 
 			if (rollTimer >= rollDuration) {
@@ -107,8 +109,36 @@ public class PlayerMovement : MonoBehaviour {
 				transform.localScale = new Vector3 (1f, 1f, 1f);
 			}
 		}
+		else if (currentState == State.changingLane) {
+			if (isInGround) {
+				float temp = Mathf.Lerp (transform.position.x, lanes [lane].x, lateralDashSpeed * Time.deltaTime);
+				transform.position = new Vector3 (temp, transform.position.y, transform.position.z);
+				float ctemp = Mathf.Lerp (Camera.main.transform.position.x, cameraLanes [lane].x, lateralDashSpeed * Time.deltaTime);
+				Camera.main.transform.position = new Vector3 (ctemp, Camera.main.transform.position.y, Camera.main.transform.position.z);
 
-		Camera.main.transform.position = new Vector3 (Camera.main.transform.position.x, transform.position.y + 3f, Camera.main.transform.position.z);
+				rollTimer += Time.deltaTime;
+
+				if (rollTimer >= rollDuration) {
+					triggerCollider.center = Vector3.zero;
+					currentState = State.running;
+
+					//PROVISIONAL VISUAL UPDATE;
+					transform.localScale = new Vector3 (1f, 1f, 1f);
+				}
+			}
+			else {
+				if (jumpTime <= 1) {
+					float t = jumpCurve.Evaluate (jumpTime);
+					transform.position = new Vector3 (transform.position.x, startJumpHeight + 1f + (t * maxJumpDistance), transform.position.z);
+				}
+				else {
+					rigidbody.useGravity = true;
+					rayToFloorEnabled = true;
+				}
+
+				jumpTime += jumpSpeed;
+			}
+		}
 	}
 
 	private void CheckTactilInput() {
@@ -167,8 +197,16 @@ public class PlayerMovement : MonoBehaviour {
 		}
 	}
 
+	public void ChangeState(State state) {
+		currentState = state;
+	}
+
+	public State GetCurrentState() {
+		return currentState;
+	}
+
 	public void ChangeLane(bool right) {
-		if (isInGround && (currentState != State.rolling)) {
+		if (isInGround && (currentState != State.rolling) || currentState == State.changingLane) {
 			lane = (right) ? lane + 1 : lane - 1;
 			if (lane > 2)
 				lane = 2;
@@ -202,11 +240,12 @@ public class PlayerMovement : MonoBehaviour {
 	public int GetCurrentLane() {
 		return lane;
 	}
+}
 
-	enum State {
-		running,
-		jumping,
-		rolling,
-		dying
-	}
+public enum State {
+	running,
+	jumping,
+	rolling,
+	changingLane,
+	dying
 }

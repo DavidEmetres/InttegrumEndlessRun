@@ -311,12 +311,16 @@ public class SceneManager : MonoBehaviour {
 
 	private void ProvinceChange() {
 		currentProvince = neighbour.neighbourProvince;
-		Debug.Log ("Province Change To: " + currentProvince.name);
 		provincesRunned.Add (currentProvince);
 		neighbourChoosed = false;
 		totalKm += provinceKm;
 		provinceKm = 0f;
 		RandomNeighbourSelection ();
+	}
+
+	public void ChooseNextNeighbour(Neighbours n) {
+		neighbour = n;
+		neighbourChoosed = true;
 	}
 
 	private void RandomNeighbourSelection() {

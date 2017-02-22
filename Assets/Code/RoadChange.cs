@@ -45,7 +45,6 @@ public class RoadChange {
 
 		case Direction.south:
 			if (currentProvince.eastNeighbours != null) {
-				Debug.Log ("East Neighbours > 0");
 				i = Random.Range (0, currentProvince.eastNeighbours.Length);
 				eastN = currentProvince.eastNeighbours [i];
 				neighbours.Add (eastN);
@@ -54,7 +53,6 @@ public class RoadChange {
 				neighbours.Add (nullN);
 			}
 			if (currentProvince.southNeighbours != null) {
-				Debug.Log ("South Neighbours > 0");
 				i = Random.Range (0, currentProvince.southNeighbours.Length);
 				southN = currentProvince.southNeighbours [i];
 				neighbours.Add (southN);
@@ -63,7 +61,6 @@ public class RoadChange {
 				neighbours.Add (nullN);
 			}
 			if (currentProvince.westNeighbours != null) {
-				Debug.Log ("West Neighbours > 0");
 				i = Random.Range (0, currentProvince.westNeighbours.Length);
 				westN = currentProvince.westNeighbours [i];
 				neighbours.Add (westN);
@@ -131,8 +128,18 @@ public class RoadChange {
 		Quaternion rot = Quaternion.identity;
 		rot.eulerAngles = new Vector3 (180f, 0f, 0f);
 
-		Vector3 pos = new Vector3 (5f, 0f, distance);
-		MonoBehaviour.Instantiate(Resources.Load ("Prefabs/RoadChange"), pos, rot);
+		Vector3 pos = new Vector3 (0f, 0f, distance);
+		GameObject obj = MonoBehaviour.Instantiate(Resources.Load ("Prefabs/RoadChange"), pos, rot) as GameObject;
+		obj.GetComponent<RoadChangeBehaviour> ().Initialize (this);
+
+		string s = "";
+		for(int j = 0; j < neighbours.Count; j++) {
+			if (!neighbours [j].nullNeighbour)
+				s += neighbours [j].neighbourProvince.name + " ";
+			else
+				s += "null ";
+		}
+		Debug.Log (s);
 	}
 
 	public Neighbours GetNeighbour(int lane) {

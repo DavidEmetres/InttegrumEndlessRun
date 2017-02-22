@@ -3,13 +3,13 @@ using System.Collections;
 
 public class RoadChangeBehaviour : MonoBehaviour {
 
+	private RoadChange rc;
 	private BoxCollider activationCollider;
 	private BoxCollider animationCollider;
 	private bool activated;
 	private bool animated;
 	private int laneSelected;
 	private Transform pivotSelected;
-	private float anglesRotated;
 	private Transform leftPivot;
 	private Transform rightPivot;
 	private GameObject endRoad;
@@ -18,12 +18,13 @@ public class RoadChangeBehaviour : MonoBehaviour {
 
 	public float speed;
 
+	public void Initialize(RoadChange rc) {
+		this.rc = rc;
+	}
+
 	private void Start () {
 		leftPivot = transform.GetChild (1);
 		rightPivot = transform.GetChild (2);
-		endRoad = transform.GetChild (3).gameObject;
-		leftEndRoad = transform.GetChild (4);
-		rightEndRoad = transform.GetChild (5);
 
 		activated = false;
 		animated = false;
@@ -34,51 +35,97 @@ public class RoadChangeBehaviour : MonoBehaviour {
 			if (laneSelected == 0) {
 				transform.RotateAround (pivotSelected.position, transform.up, speed * Time.deltaTime);
 
-				if (transform.localEulerAngles.y >= 210f) {
-					endRoad.transform.localPosition = leftEndRoad.localPosition;
-					endRoad.transform.localRotation = leftEndRoad.localRotation;
-				}
-
+				//END ROAD CHANGE;
 				if (transform.localEulerAngles.y >= 270f) {
 					animated = false;
 					transform.eulerAngles = new Vector3 (transform.eulerAngles.x, 270f, transform.eulerAngles.z);
-					transform.position = new Vector3 (transform.position.x + 0.5f, 0f, transform.position.z);
+					transform.position = new Vector3 (-26f, 0f, transform.position.z);
 					GenerationManager.Instance.ChangeDisplacementSpeed (0f, true);
-					GenerationManager.Instance.BuildTerrainMesh (120f);
+					GenerationManager.Instance.BuildTerrainMesh (GetEndRoadPos ());
 					GenerationManager.Instance.changingRoad = false;
+					PlayerMovement.Instance.lateralDashSpeed *= 5f;
+					PlayerMovement.Instance.bloquedMov = false;
+					PlayerMovement.Instance.ChangeState (State.running);
 				}
 			}
+			else if (laneSelected == 2) {
+				transform.RotateAround (pivotSelected.position, transform.up, -speed * Time.deltaTime);
 
-			if (laneSelected == 2) {
-				transform.RotateAround (pivotSelected.position, transform.up, 4.5f * GenerationManager.Instance.displacementSpeed * Time.deltaTime);
-				anglesRotated += 4.5f * GenerationManager.Instance.displacementSpeed * Time.deltaTime;
-
-				if(anglesRotated >= 90f)
+				//END ROAD CHANGE;
+				if (transform.localEulerAngles.y <= 90f) {
 					animated = false;
+					transform.eulerAngles = new Vector3 (transform.eulerAngles.x, 90f, transform.eulerAngles.z);
+					transform.position = new Vector3 (26f, 0f, transform.position.z);
+					GenerationManager.Instance.ChangeDisplacementSpeed (0f, true);
+					GenerationManager.Instance.BuildTerrainMesh (GetEndRoadPos ());
+					GenerationManager.Instance.changingRoad = false;
+					PlayerMovement.Instance.lateralDashSpeed *= 5f;
+					PlayerMovement.Instance.bloquedMov = false;
+					PlayerMovement.Instance.ChangeState (State.running);
+				}
+			}
+			else {
+				if (transform.position.z <= -40f) {
+					animated = false;
+					PlayerMovement.Instance.bloquedMov = false;
+					PlayerMovement.Instance.ChangeState (State.running);
+				}
 			}
 		}
 
-//		transform.RotateAround (pivotSelected.position, transform.up, speed * Time.deltaTime);
+		if (transform.position.z <= -230f)
+			Destroy (this.gameObject);
+	}
+
+	private float GetEndRoadPos() {
+		float distance = 0f;
+
+		switch (laneSelected) {
+			case 0:
+				distance = transform.GetChild (3).position.z + 10f;
+				break;
+			case 1:
+				distance = transform.GetChild (5).position.z + 10f;
+				break;
+			case 2:
+				distance = transform.GetChild (4).position.z + 10f;
+				break;
+		}
+
+		return distance;
 	}
 
 	private void OnTriggerEnter(Collider other) {
 		if (other.tag == "Player") {
-			if (!activated) {
-				activated = true;
-
-				//BLOCK PLAYER MOVEMENT;
+			if (!animated) {
+				PlayerMovement.Instance.ChangeState (State.changingLane);
+				PlayerMovement.Instance.bloquedMov = true;
 				laneSelected = PlayerMovement.Instance.GetCurrentLane ();
-				if (laneSelected == 0) {
-					pivotSelected = leftPivot;
-				}
-				else if (laneSelected == 2) {
-					pivotSelected = rightPivot;
-				}
+				SceneManager.Instance.ChooseNextNeighbour (rc.GetNeighbour (laneSelected));
 
-				animated = true;
-				anglesRotated = 0f;
-				GenerationManager.Instance.ChangeDisplacementSpeed (5f, false);
-				GenerationManager.Instance.DestroyTerrainMesh ();
+				switch (laneSelected) {
+				case 0:
+					pivotSelected = leftPivot;
+					animated = true;
+					GenerationManager.Instance.ChangeDisplacementSpeed (5f, false);
+					GenerationManager.Instance.DestroyTerrainMesh ();
+					PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;
+					PlayerMovement.Instance.ChangeLane (true);
+					break;
+				case 1:
+					animated = true;
+					GenerationManager.Instance.DestroyTerrainMesh ();
+					GenerationManager.Instance.BuildTerrainMesh (GetEndRoadPos ());
+					break;
+				case 2:
+					pivotSelected = rightPivot;
+					animated = true;
+					GenerationManager.Instance.ChangeDisplacementSpeed (5f, false);
+					GenerationManager.Instance.DestroyTerrainMesh ();
+					PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;
+					PlayerMovement.Instance.ChangeLane (false);
+					break;
+				}
 			}
 		}
 	}

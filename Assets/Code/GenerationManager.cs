@@ -10,10 +10,10 @@ public class GenerationManager : MonoBehaviour {
 	private bool lane0Empty;
 	private bool lane1Empty;
 	private bool lane2Empty;
-	private float defaultSpeed;
 	private float meshStartDistance;
 
-	public float displacementSpeed;
+	public float defaultSpeed;
+	[HideInInspector] public float displacementSpeed;
 	[HideInInspector] public float generationDistance;
 	[HideInInspector] public float destroyDistance;
 	public bool changingRoad;
@@ -28,6 +28,7 @@ public class GenerationManager : MonoBehaviour {
 		lanes = SceneManager.Instance.lanes;
 		generationDistance = 200f;
 		destroyDistance = -30f;
+		displacementSpeed = defaultSpeed;
 
 		BuildTerrainMesh (0f);
 	}
@@ -46,7 +47,6 @@ public class GenerationManager : MonoBehaviour {
 			displacementSpeed = defaultSpeed;
 		}
 		else {
-			defaultSpeed = displacementSpeed;
 			displacementSpeed = newSpeed;
 		}
 	}
@@ -113,6 +113,10 @@ public class GenerationManager : MonoBehaviour {
 
 		float pos = vertices [vertices.Count - 1].z + meshStartDistance;
 
+		List<Vector2> uv = new List<Vector2> (mesh.uv);
+		uv.RemoveAt (uv.Count - 1);
+		uv.RemoveAt(uv.Count - 1);
+
 		List<int> triangles = new List<int> (mesh.triangles);
 		triangles.RemoveAt (triangles.Count - 1);
 		triangles.RemoveAt (triangles.Count - 1);
@@ -121,8 +125,10 @@ public class GenerationManager : MonoBehaviour {
 		triangles.RemoveAt (triangles.Count - 1);
 		triangles.RemoveAt (triangles.Count - 1);
 
+		mesh.Clear ();
 		mesh.vertices = vertices.ToArray();
 		mesh.triangles = triangles.ToArray ();
+		mesh.uv = uv.ToArray();
 		mesh.RecalculateBounds ();
 		mesh.RecalculateNormals ();
 		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
@@ -141,6 +147,7 @@ public class GenerationManager : MonoBehaviour {
 		terrain.AddComponent<MeshFilter> ();
 		terrain.AddComponent<MeshRenderer> ();
 		terrain.AddComponent<BoxCollider> ().size = new Vector3(10f, 0f, 1f);
+		terrain.GetComponent<BoxCollider> ().center = new Vector3(0f, 0f, 0f - startDistance);
 
 		Mesh mesh = new Mesh();
 		mesh.Clear ();
