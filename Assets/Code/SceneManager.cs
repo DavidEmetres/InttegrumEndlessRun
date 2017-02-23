@@ -9,6 +9,7 @@ public class SceneManager : MonoBehaviour {
 	private bool gameOver;
 	private Neighbours neighbour;
 	private bool neighbourChoosed;
+	private Direction nextDirection;
 	private List<Province> provincesRunned = new List<Province>();
 
 	public Province currentProvince;
@@ -291,11 +292,13 @@ public class SceneManager : MonoBehaviour {
 	}
 
 	private void Start () {
-		InvokeRepeating ("KmCounter", 0f, 1f);
+		
 	}
 
 	private void Update () {
 		if (!gameOver) {
+			provinceKm += (GenerationManager.Instance.displacementSpeed / 10f) * Time.deltaTime;
+
 			if (neighbourChoosed) {
 				if (provinceKm >= neighbour.distanceBetweenProvinces) {
 					ProvinceChange ();
@@ -309,17 +312,18 @@ public class SceneManager : MonoBehaviour {
 		}
 	}
 
-	private void ProvinceChange() {
+	public void ProvinceChange() {
 		currentProvince = neighbour.neighbourProvince;
+		displacementDirection = nextDirection;
 		provincesRunned.Add (currentProvince);
 		neighbourChoosed = false;
 		totalKm += provinceKm;
 		provinceKm = 0f;
-		RandomNeighbourSelection ();
 	}
 
-	public void ChooseNextNeighbour(Neighbours n) {
+	public void ChooseNextNeighbour(Neighbours n, Direction newDir) {
 		neighbour = n;
+		nextDirection = newDir;
 		neighbourChoosed = true;
 	}
 
@@ -373,10 +377,6 @@ public class SceneManager : MonoBehaviour {
 		neighbourChoosed = true;
 	}
 
-	private void KmCounter() {
-		provinceKm += (GenerationManager.Instance.displacementSpeed / 10f);
-	}
-
 	public void GameOver() {
 		gameOver = true;
 		GenerationManager.Instance.displacementSpeed = 0f;
@@ -388,8 +388,9 @@ public class SceneManager : MonoBehaviour {
 
 	private void OnGUI() {
 		GUI.Label(new Rect(10, 10, 100, 20), currentProvince.name, style);
-		GUI.Label(new Rect(350, 10, 100, 20), (totalKm + provinceKm) + " Km", style);
+		GUI.Label(new Rect(350, 10, 100, 20), (totalKm + provinceKm).ToString("F") + " Km", style);
 		GUI.Label(new Rect(10, 70, 100, 20), "Vidas: " + life, style);
+		GUI.Label(new Rect(300, 70, 100, 20), "Monedas: " + coins, style);
 	}
 }
 

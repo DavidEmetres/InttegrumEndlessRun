@@ -32,8 +32,12 @@ public class PlayerCollider : MonoBehaviour {
 
 	public void OnTriggerEnter(Collider other) {
 		if (other.tag == "Obstacle") {
-			if(!invincible)
+			if (!invincible)
 				GetHurt ();
+		}
+		else if (other.tag == "Coin") {
+			GetCoin ();
+			Destroy (other.gameObject);
 		}
 	}
 
@@ -53,5 +57,9 @@ public class PlayerCollider : MonoBehaviour {
 		invincible = true;
 		invincibleTimer = 0f;
 		InvokeRepeating ("ChangeAlpha", 0f, timeBetweenFlashes);
+	}
+
+	private void GetCoin() {
+		SceneManager.Instance.coins++;
 	}
 }

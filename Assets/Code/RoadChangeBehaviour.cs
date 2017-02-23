@@ -101,7 +101,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 				PlayerMovement.Instance.ChangeState (State.changingLane);
 				PlayerMovement.Instance.bloquedMov = true;
 				laneSelected = PlayerMovement.Instance.GetCurrentLane ();
-				SceneManager.Instance.ChooseNextNeighbour (rc.GetNeighbour (laneSelected));
+				SceneManager.Instance.ChooseNextNeighbour (rc.GetNeighbour (laneSelected), rc.GetNewDirection(laneSelected));
 
 				switch (laneSelected) {
 				case 0:

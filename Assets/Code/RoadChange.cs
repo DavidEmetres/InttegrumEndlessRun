@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class RoadChange {
 
 	private List<Neighbours> neighbours = new List<Neighbours>();
+	private List<Direction> directions = new List<Direction>();
 
 	public RoadChange(Province currentProvince, Direction displacementDirection, float distance) {
 		int i;
@@ -21,25 +22,31 @@ public class RoadChange {
 				i = Random.Range (0, currentProvince.westNeighbours.Length);
 				westN = currentProvince.westNeighbours [i];
 				neighbours.Add (westN);
+				directions.Add (Direction.west);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.west);
 			}
 			if (currentProvince.northNeighbours.Length > 0) {
 				i = Random.Range (0, currentProvince.northNeighbours.Length);
 				northN = currentProvince.northNeighbours [i];
 				neighbours.Add (northN);
+				directions.Add (Direction.north);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.north);
 			}
 			if (currentProvince.eastNeighbours.Length > 0) {
 				i = Random.Range (0, currentProvince.eastNeighbours.Length);
 				eastN = currentProvince.eastNeighbours [i];
 				neighbours.Add (eastN);
+				directions.Add (Direction.east);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.east);
 			}
 				break;
 
@@ -48,25 +55,31 @@ public class RoadChange {
 				i = Random.Range (0, currentProvince.eastNeighbours.Length);
 				eastN = currentProvince.eastNeighbours [i];
 				neighbours.Add (eastN);
+				directions.Add (Direction.east);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.east);
 			}
 			if (currentProvince.southNeighbours != null) {
 				i = Random.Range (0, currentProvince.southNeighbours.Length);
 				southN = currentProvince.southNeighbours [i];
 				neighbours.Add (southN);
+				directions.Add (Direction.south);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.south);
 			}
 			if (currentProvince.westNeighbours != null) {
 				i = Random.Range (0, currentProvince.westNeighbours.Length);
 				westN = currentProvince.westNeighbours [i];
 				neighbours.Add (westN);
+				directions.Add (Direction.west);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.west);
 			}
 				break;
 
@@ -75,25 +88,31 @@ public class RoadChange {
 				i = Random.Range (0, currentProvince.northNeighbours.Length);
 				northN = currentProvince.northNeighbours [i];
 				neighbours.Add (northN);
+				directions.Add (Direction.north);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.north);
 			}
 			if (currentProvince.eastNeighbours.Length > 0) {
 				i = Random.Range (0, currentProvince.eastNeighbours.Length);
 				eastN = currentProvince.eastNeighbours [i];
 				neighbours.Add (eastN);
+				directions.Add (Direction.east);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.east);
 			}
 			if (currentProvince.southNeighbours.Length > 0) {
 				i = Random.Range (0, currentProvince.southNeighbours.Length);
 				southN = currentProvince.southNeighbours [i];
 				neighbours.Add (southN);
+				directions.Add (Direction.south);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.south);
 			}
 				break;
 
@@ -102,25 +121,31 @@ public class RoadChange {
 				i = Random.Range (0, currentProvince.southNeighbours.Length);
 				southN = currentProvince.southNeighbours [i];
 				neighbours.Add (southN);
+				directions.Add (Direction.south);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.south);
 			}
 			if (currentProvince.westNeighbours.Length > 0) {
 				i = Random.Range (0, currentProvince.westNeighbours.Length);
 				westN = currentProvince.westNeighbours [i];
 				neighbours.Add (westN);
+				directions.Add (Direction.west);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.west);
 			}
 			if (currentProvince.northNeighbours.Length > 0) {
 				i = Random.Range (0, currentProvince.northNeighbours.Length);
 				northN = currentProvince.northNeighbours [i];
 				neighbours.Add (northN);
+				directions.Add (Direction.north);
 			}
 			else {
 				neighbours.Add (nullN);
+				directions.Add (Direction.north);
 			}
 				break;
 		}
@@ -129,6 +154,7 @@ public class RoadChange {
 		rot.eulerAngles = new Vector3 (180f, 0f, 0f);
 
 		Vector3 pos = new Vector3 (0f, 0f, distance);
+
 		GameObject obj = MonoBehaviour.Instantiate(Resources.Load ("Prefabs/RoadChange"), pos, rot) as GameObject;
 		obj.GetComponent<RoadChangeBehaviour> ().Initialize (this);
 
@@ -144,5 +170,9 @@ public class RoadChange {
 
 	public Neighbours GetNeighbour(int lane) {
 		return neighbours [lane];
+	}
+
+	public Direction GetNewDirection(int lane) {
+		return directions [lane];
 	}
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class GenerationManager : MonoBehaviour {
 
+	private TileArrayManager tileManager;
 	private GameObject terrain;
 	private Vector3[] lanes;
 	private float timer;
@@ -11,6 +12,7 @@ public class GenerationManager : MonoBehaviour {
 	private bool lane1Empty;
 	private bool lane2Empty;
 	private float meshStartDistance;
+	private int tileCount;
 
 	public float defaultSpeed;
 	[HideInInspector] public float displacementSpeed;
@@ -22,6 +24,8 @@ public class GenerationManager : MonoBehaviour {
 
 	private void Awake() {
 		Instance = this;
+
+		tileManager = new TileArrayManager ();
 	}
 
 	private void Start () {
@@ -29,6 +33,7 @@ public class GenerationManager : MonoBehaviour {
 		generationDistance = 200f;
 		destroyDistance = -30f;
 		displacementSpeed = defaultSpeed;
+		tileCount = 0;
 
 		BuildTerrainMesh (0f);
 	}
@@ -37,9 +42,27 @@ public class GenerationManager : MonoBehaviour {
 		if(terrain != null)
 			UpdateMesh ();
 
+		if (tileCount >= 10) {
+			GenerateTile ();
+		}
+
 		if (Input.GetKeyDown (KeyCode.F2)) {
 			CreateRoadChange();
 		}
+
+		if (Input.GetKeyDown (KeyCode.F3)) {
+			CreateProvinceChange ();
+		}
+
+		Debug.Log (tileCount);
+	}
+
+	private void GenerateTile() {
+		tileCount = 0;
+		Mesh mesh = terrain.GetComponent<MeshFilter> ().mesh;
+
+		float pos = mesh.vertices [mesh.vertices.Length - 1].z + meshStartDistance;
+		tileManager.GetRandomTileArray ().GenerateTiles (pos);
 	}
 
 	public void ChangeDisplacementSpeed(float newSpeed, bool returnToDefault) {
@@ -78,6 +101,7 @@ public class GenerationManager : MonoBehaviour {
 						else {
 							vertices [i] = new Vector3 (-5f, 0f, vertices [i - 1].z + 10f);
 							vertices [i + 1] = new Vector3 (5f, 0f, vertices [i - 1].z + 10f);
+							tileCount++;
 						}
 					}
 
@@ -134,6 +158,39 @@ public class GenerationManager : MonoBehaviour {
 		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
 
 		RoadChange rc = new RoadChange (SceneManager.Instance.currentProvince, SceneManager.Instance.displacementDirection, pos);
+	}
+
+	private void CreateProvinceChange() {
+		changingRoad = true;
+
+		Mesh mesh = terrain.GetComponent<MeshFilter> ().mesh;
+		List<Vector3> vertices = new List<Vector3> (mesh.vertices);
+		vertices.RemoveAt (vertices.Count - 1);
+		vertices.RemoveAt (vertices.Count - 1);
+
+		float pos = vertices [vertices.Count - 1].z + meshStartDistance;
+
+		List<Vector2> uv = new List<Vector2> (mesh.uv);
+		uv.RemoveAt (uv.Count - 1);
+		uv.RemoveAt(uv.Count - 1);
+
+		List<int> triangles = new List<int> (mesh.triangles);
+		triangles.RemoveAt (triangles.Count - 1);
+		triangles.RemoveAt (triangles.Count - 1);
+		triangles.RemoveAt (triangles.Count - 1);
+		triangles.RemoveAt (triangles.Count - 1);
+		triangles.RemoveAt (triangles.Count - 1);
+		triangles.RemoveAt (triangles.Count - 1);
+
+		mesh.Clear ();
+		mesh.vertices = vertices.ToArray();
+		mesh.triangles = triangles.ToArray ();
+		mesh.uv = uv.ToArray();
+		mesh.RecalculateBounds ();
+		mesh.RecalculateNormals ();
+		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
+
+		ProvinceChange pc = new ProvinceChange (pos);
 	}
 
 	public void DestroyTerrainMesh() {

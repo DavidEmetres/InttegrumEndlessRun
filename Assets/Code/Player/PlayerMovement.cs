@@ -139,6 +139,9 @@ public class PlayerMovement : MonoBehaviour {
 				jumpTime += jumpSpeed;
 			}
 		}
+
+		float tempCam = Mathf.Lerp(Camera.main.transform.position.y, (groundPos + 5.4f), 2f * Time.deltaTime);
+		Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, tempCam, Camera.main.transform.position.z);
 	}
 
 	private void CheckTactilInput() {
