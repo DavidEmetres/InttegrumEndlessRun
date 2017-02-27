@@ -12,13 +12,15 @@ public class GenerationManager : MonoBehaviour {
 	private bool lane1Empty;
 	private bool lane2Empty;
 	private float meshStartDistance;
-	private int tileCount;
+	private float tileCount;
 
 	public float defaultSpeed;
 	[HideInInspector] public float displacementSpeed;
 	[HideInInspector] public float generationDistance;
 	[HideInInspector] public float destroyDistance;
 	public bool changingRoad;
+	public Transform bonificationParent;
+	[HideInInspector] public float tileSize;
 
 	public static GenerationManager Instance;
 
@@ -34,6 +36,7 @@ public class GenerationManager : MonoBehaviour {
 		destroyDistance = -30f;
 		displacementSpeed = defaultSpeed;
 		tileCount = 0;
+		tileSize = 5f;
 
 		BuildTerrainMesh (0f);
 	}
@@ -42,7 +45,7 @@ public class GenerationManager : MonoBehaviour {
 		if(terrain != null)
 			UpdateMesh ();
 
-		if (tileCount >= 10) {
+		if (tileCount >= tileSize) {
 			GenerateTile ();
 		}
 

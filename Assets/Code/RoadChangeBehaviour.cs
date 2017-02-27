@@ -72,9 +72,6 @@ public class RoadChangeBehaviour : MonoBehaviour {
 				}
 			}
 		}
-
-		if (transform.position.z <= -230f)
-			Destroy (this.gameObject);
 	}
 
 	private float GetEndRoadPos() {

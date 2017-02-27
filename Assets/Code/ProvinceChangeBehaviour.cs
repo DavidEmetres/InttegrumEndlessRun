@@ -11,8 +11,7 @@ public class ProvinceChangeBehaviour : MonoBehaviour {
 	}
 
 	private void Update() {
-		if (transform.position.z <= -210f)
-			Destroy (this.gameObject);
+
 	}
 
 	private void OnTriggerEnter(Collider other) {
