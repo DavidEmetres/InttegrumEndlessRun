@@ -20,7 +20,9 @@ public class GenerationManager : MonoBehaviour {
 	[HideInInspector] public float destroyDistance;
 	public bool changingRoad;
 	public Transform bonificationParent;
+	public Transform obstacleParent;
 	[HideInInspector] public float tileSize;
+	public bool selectedRoad;
 
 	public static GenerationManager Instance;
 
@@ -37,6 +39,7 @@ public class GenerationManager : MonoBehaviour {
 		displacementSpeed = defaultSpeed;
 		tileCount = 0;
 		tileSize = 5f;
+		selectedRoad = false;
 
 		BuildTerrainMesh (0f);
 	}
@@ -49,6 +52,11 @@ public class GenerationManager : MonoBehaviour {
 			GenerateTile ();
 		}
 
+		if (SceneManager.Instance.provinceKm >= 20f && !selectedRoad) {
+			selectedRoad = true;
+			CreateRoadChange();
+		}
+
 		if (Input.GetKeyDown (KeyCode.F2)) {
 			CreateRoadChange();
 		}
@@ -56,8 +64,6 @@ public class GenerationManager : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.F3)) {
 			CreateProvinceChange ();
 		}
-
-		Debug.Log (tileCount);
 	}
 
 	private void GenerateTile() {
@@ -163,7 +169,7 @@ public class GenerationManager : MonoBehaviour {
 		RoadChange rc = new RoadChange (SceneManager.Instance.currentProvince, SceneManager.Instance.displacementDirection, pos);
 	}
 
-	private void CreateProvinceChange() {
+	public void CreateProvinceChange() {
 		changingRoad = true;
 
 		Mesh mesh = terrain.GetComponent<MeshFilter> ().mesh;

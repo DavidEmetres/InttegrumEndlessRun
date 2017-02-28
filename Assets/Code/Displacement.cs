@@ -11,5 +11,7 @@ public class Displacement : MonoBehaviour {
 
 		if (transform.position.z <= destroyDistance)
 			Destroy (this.gameObject);
+
+
 	}
 }

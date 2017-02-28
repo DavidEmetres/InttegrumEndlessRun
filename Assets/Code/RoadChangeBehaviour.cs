@@ -32,6 +32,8 @@ public class RoadChangeBehaviour : MonoBehaviour {
 	
 	private void Update () {
 		if (animated) {
+			GameObject env = GameObject.Find ("Environment");
+			env.transform.SetParent (transform);
 			if (laneSelected == 0) {
 				transform.RotateAround (pivotSelected.position, transform.up, speed * Time.deltaTime);
 
@@ -46,6 +48,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
 					PlayerMovement.Instance.bloquedMov = false;
 					PlayerMovement.Instance.ChangeState (State.running);
+					env.transform.SetParent (null);
 				}
 			}
 			else if (laneSelected == 2) {
@@ -62,6 +65,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
 					PlayerMovement.Instance.bloquedMov = false;
 					PlayerMovement.Instance.ChangeState (State.running);
+					env.transform.SetParent (null);
 				}
 			}
 			else {

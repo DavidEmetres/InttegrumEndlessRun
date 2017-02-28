@@ -11,6 +11,7 @@ public class SceneManager : MonoBehaviour {
 	private bool neighbourChoosed;
 	private Direction nextDirection;
 	private List<Province> provincesRunned = new List<Province>();
+	private bool changingProvince;
 
 	public Province currentProvince;
 	public Direction displacementDirection;
@@ -297,18 +298,14 @@ public class SceneManager : MonoBehaviour {
 
 	private void Update () {
 		if (!gameOver) {
-			provinceKm += (GenerationManager.Instance.displacementSpeed / 10f) * Time.deltaTime;
+			provinceKm += (GenerationManager.Instance.displacementSpeed / 100f) * Time.deltaTime;
 
 			if (neighbourChoosed) {
-				if (provinceKm >= neighbour.distanceBetweenProvinces) {
-					ProvinceChange ();
+				if (provinceKm >= (neighbour.distanceBetweenProvinces - 17f) && !changingProvince) {
+					changingProvince = true;
+					GenerationManager.Instance.CreateProvinceChange ();
 				}
 			}
-		}
-
-		if (Input.GetKeyDown (KeyCode.F1)) {
-			ProvinceChange ();
-			GenerationManager.Instance.ChangeTerrainMat ();
 		}
 	}
 
@@ -319,6 +316,8 @@ public class SceneManager : MonoBehaviour {
 		neighbourChoosed = false;
 		totalKm += provinceKm;
 		provinceKm = 0f;
+		changingProvince = false;
+		GenerationManager.Instance.selectedRoad = false;
 	}
 
 	public void ChooseNextNeighbour(Neighbours n, Direction newDir) {
