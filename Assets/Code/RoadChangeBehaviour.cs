@@ -17,6 +17,9 @@ public class RoadChangeBehaviour : MonoBehaviour {
 	private Transform rightEndRoad;
 
 	public float speed;
+	public Transform centerPivot;
+	public GameObject leftRoadObs;
+	public GameObject rightRoadObs;
 
 	public void Initialize(RoadChange rc) {
 		this.rc = rc;
@@ -33,8 +36,9 @@ public class RoadChangeBehaviour : MonoBehaviour {
 	private void Update () {
 		if (animated) {
 			GameObject env = GameObject.Find ("Environment");
-			env.transform.SetParent (transform);
+
 			if (laneSelected == 0) {
+				env.transform.SetParent (transform);
 				transform.RotateAround (pivotSelected.position, transform.up, speed * Time.deltaTime);
 
 				//END ROAD CHANGE;
@@ -45,6 +49,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					GenerationManager.Instance.ChangeDisplacementSpeed (0f, true);
 					GenerationManager.Instance.BuildTerrainMesh (GetEndRoadPos ());
 					GenerationManager.Instance.changingRoad = false;
+					GenerationManager.Instance.ChangeObsBonParent (transform, transform, true);
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
 					PlayerMovement.Instance.bloquedMov = false;
 					PlayerMovement.Instance.ChangeState (State.running);
@@ -52,6 +57,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 				}
 			}
 			else if (laneSelected == 2) {
+				env.transform.SetParent (transform);
 				transform.RotateAround (pivotSelected.position, transform.up, -speed * Time.deltaTime);
 
 				//END ROAD CHANGE;
@@ -62,6 +68,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					GenerationManager.Instance.ChangeDisplacementSpeed (0f, true);
 					GenerationManager.Instance.BuildTerrainMesh (GetEndRoadPos ());
 					GenerationManager.Instance.changingRoad = false;
+					GenerationManager.Instance.ChangeObsBonParent (transform, transform, true);
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
 					PlayerMovement.Instance.bloquedMov = false;
 					PlayerMovement.Instance.ChangeState (State.running);
@@ -117,6 +124,8 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					animated = true;
 					GenerationManager.Instance.DestroyTerrainMesh ();
 					GenerationManager.Instance.BuildTerrainMesh (GetEndRoadPos ());
+					GenerationManager.Instance.tileCount = 1;
+					GenerationManager.Instance.changingRoad = false;
 					break;
 				case 2:
 					pivotSelected = rightPivot;

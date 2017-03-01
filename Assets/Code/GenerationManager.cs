@@ -12,17 +12,19 @@ public class GenerationManager : MonoBehaviour {
 	private bool lane1Empty;
 	private bool lane2Empty;
 	private float meshStartDistance;
-	private float tileCount;
 
+	[HideInInspector] public float tileCount;
 	public float defaultSpeed;
 	[HideInInspector] public float displacementSpeed;
 	[HideInInspector] public float generationDistance;
 	[HideInInspector] public float destroyDistance;
-	public bool changingRoad;
-	public Transform bonificationParent;
-	public Transform obstacleParent;
+	[HideInInspector] public bool changingRoad;
+	public Transform defaultBonificationParent;
+	public Transform defaultObstacleParent;
+	[HideInInspector] public Transform bonificationParent;
+	[HideInInspector] public Transform obstacleParent;
 	[HideInInspector] public float tileSize;
-	public bool selectedRoad;
+	[HideInInspector] public bool selectedRoad;
 
 	public static GenerationManager Instance;
 
@@ -40,6 +42,8 @@ public class GenerationManager : MonoBehaviour {
 		tileCount = 0;
 		tileSize = 5f;
 		selectedRoad = false;
+		bonificationParent = defaultBonificationParent;
+		obstacleParent = defaultObstacleParent;
 
 		BuildTerrainMesh (0f);
 	}
@@ -52,7 +56,7 @@ public class GenerationManager : MonoBehaviour {
 			GenerateTile ();
 		}
 
-		if (SceneManager.Instance.provinceKm >= 20f && !selectedRoad) {
+		if (SceneManager.Instance.provinceKm >= 5f && !selectedRoad) {
 			selectedRoad = true;
 			CreateRoadChange();
 		}
@@ -71,7 +75,18 @@ public class GenerationManager : MonoBehaviour {
 		Mesh mesh = terrain.GetComponent<MeshFilter> ().mesh;
 
 		float pos = mesh.vertices [mesh.vertices.Length - 1].z + meshStartDistance;
-		tileManager.GetRandomTileArray ().GenerateTiles (pos);
+
+		float porc = Random.Range (0f, 101f);
+		if (porc >= 0f && porc <= 30f) {
+			GameObject obsParent = new GameObject ("ObstaclesTiles");
+			GameObject bonParent = new GameObject ("BonificationTiles");
+			tileManager.CreateRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
+		}
+		else {
+			GameObject obsParent = new GameObject ("ObstaclesTiles");
+			GameObject bonParent = new GameObject ("BonificationTiles");
+			tileManager.GetRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
+		}
 	}
 
 	public void ChangeDisplacementSpeed(float newSpeed, bool returnToDefault) {
@@ -137,6 +152,7 @@ public class GenerationManager : MonoBehaviour {
 	}
 
 	private void CreateRoadChange() {
+		tileCount = 0;
 		changingRoad = true;
 
 		Mesh mesh = terrain.GetComponent<MeshFilter> ().mesh;
@@ -167,6 +183,63 @@ public class GenerationManager : MonoBehaviour {
 		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
 
 		RoadChange rc = new RoadChange (SceneManager.Instance.currentProvince, SceneManager.Instance.displacementDirection, pos);
+
+		//FRONT ROAD OBSTACLES;
+		GameObject frontObsParent = new GameObject("FrontRoadObstacleTiles");
+		GameObject frontBonParent = new GameObject ("FrontRoadBonificationTiles");
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 50f, frontObsParent.transform, frontBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 100f, frontObsParent.transform, frontBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 150f, frontObsParent.transform, frontBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 200f, frontObsParent.transform, frontBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 250f, frontObsParent.transform, frontBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 300f, frontObsParent.transform, frontBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 350f, frontObsParent.transform, frontBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 400f, frontObsParent.transform, frontBonParent.transform);
+
+		GameObject roadchange = GameObject.Find ("RoadChange(Clone)");
+		GameObject rightObsParent = new GameObject("RightRoadObstacleTiles");
+		GameObject rightBonParent = new GameObject ("RightRoadBonificationTiles");
+		rightObsParent.transform.SetParent (roadchange.transform);
+		rightBonParent.transform.SetParent (roadchange.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 50f, rightObsParent.transform, rightBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 100f, rightObsParent.transform, rightBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 150f, rightObsParent.transform, rightBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 200f, rightObsParent.transform, rightBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 250f, rightObsParent.transform, rightBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 300f, rightObsParent.transform, rightBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 350f, rightObsParent.transform, rightBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 400f, rightObsParent.transform, rightBonParent.transform);
+		rightObsParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, 90f);
+		rightBonParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, 90f);
+		rightObsParent.transform.SetParent (obstacleParent);
+		rightBonParent.transform.SetParent (bonificationParent);
+
+//		GameObject parent2 = new GameObject ("LeftRoadObstacles");
+//		parent2.transform.SetParent (roadchange.transform);
+//		parent2.transform.position = new Vector3 (parent2.transform.position.x + 3.5f, parent2.transform.position.y, parent2.transform.position.z);
+//		ChangeObsBonParent (parent2.transform, parent2.transform, false);
+//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 50f);
+//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 100f);
+//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 150f);
+//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 200f);
+//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 250f);
+//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 300f);
+//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 350f);
+//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 400f);
+//		parent2.transform.RotateAround (rc.GetCenter ().position, Vector3.up, -90f);
+//		ChangeObsBonParent (transform, transform, true);
+//		parent2.transform.SetParent (obstacleParent);
+	}
+
+	public void ChangeObsBonParent(Transform obsParent, Transform bonParent, bool returnToDefault) {
+		if (!returnToDefault) {
+			obstacleParent = obsParent;
+			bonificationParent = bonParent;
+		}
+		else {
+			obstacleParent = defaultObstacleParent;
+			bonificationParent = defaultBonificationParent;
+		}
 	}
 
 	public void CreateProvinceChange() {

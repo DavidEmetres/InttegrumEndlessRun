@@ -6,6 +6,7 @@ public class RoadChange {
 
 	private List<Neighbours> neighbours = new List<Neighbours>();
 	private List<Direction> directions = new List<Direction>();
+	private RoadChangeBehaviour rcb;
 
 	public RoadChange(Province currentProvince, Direction displacementDirection, float distance) {
 		int i;
@@ -156,7 +157,8 @@ public class RoadChange {
 		Vector3 pos = new Vector3 (0f, 0f, distance);
 
 		GameObject obj = MonoBehaviour.Instantiate(Resources.Load ("Prefabs/RoadChange"), pos, rot) as GameObject;
-		obj.GetComponent<RoadChangeBehaviour> ().Initialize (this);
+		rcb = obj.GetComponent<RoadChangeBehaviour> ();
+		rcb.Initialize (this);
 
 		string s = "";
 		for(int j = 0; j < neighbours.Count; j++) {
@@ -174,5 +176,14 @@ public class RoadChange {
 
 	public Direction GetNewDirection(int lane) {
 		return directions [lane];
+	}
+
+	public Transform GetCenter() {
+		return rcb.centerPivot;
+	}
+
+	public void SetLeftRightObstacles(GameObject leftObs, GameObject rightObs) {
+		rcb.leftRoadObs = leftObs;
+		rcb.rightRoadObs = rightObs;
 	}
 }
