@@ -2,6 +2,8 @@
 using System.Collections;
 using UnityEngine.UI;
 using System;
+using System.IO;
+using System.Collections.Generic;
 
 public class ObstacleEditor : MonoBehaviour {
 
@@ -15,6 +17,8 @@ public class ObstacleEditor : MonoBehaviour {
 	private GameObject objSelected;
 	private bool rotatingCam;
 	private float camRotDirection;
+	private List<ScrollStruct> allFiles = new List<ScrollStruct>();
+	private string fileLoaded = "";
 
 	public LayerMask editorRayCast;
 	public Color tileOcuppiedColor;
@@ -23,6 +27,10 @@ public class ObstacleEditor : MonoBehaviour {
 	public GameObject deleteCoinButton;
 	public GameObject deleteObstacleButton;
 	public Transform cameraRotPivot;
+	public GameObject scrollview;
+	public Sprite buttonSprite;
+	public Font buttonFont;
+	public GameObject loadButton;
 
 	public static ObstacleEditor Instance;
 
@@ -42,6 +50,7 @@ public class ObstacleEditor : MonoBehaviour {
 			float y = (float)System.Math.Round (coinScrollbar.GetComponent<Scrollbar> ().value, 2);
 			y = ScrollbarToTransform (y);
 			coinSelected.transform.position = new Vector3 (coinSelected.transform.position.x, y, coinSelected.transform.position.z);
+			tileArray [(int)tileSelected.x, (int)tileSelected.y].w = y;
 		}
 		else {
 			coinScrollbar.SetActive (false);
@@ -54,6 +63,7 @@ public class ObstacleEditor : MonoBehaviour {
 			float y = (float)System.Math.Round (obstacleScrollbar.GetComponent<Scrollbar> ().value, 2);
 			y = ScrollbarToTransform (y);
 			objSelected.transform.position = new Vector3 (objSelected.transform.position.x, y, objSelected.transform.position.z);
+			tileArray [(int)tileSelected.x, (int)tileSelected.y].y = y;
 		}
 		else {
 			obstacleScrollbar.SetActive (false);
@@ -61,8 +71,15 @@ public class ObstacleEditor : MonoBehaviour {
 		}
 
 		//ROTATE CAMERA;
-		if(rotatingCam)
+		if (rotatingCam)
 			Camera.main.transform.RotateAround (cameraRotPivot.position, Vector3.up, 2f * camRotDirection);
+		
+		//LOAD SCREEN;
+		if (scrollview.activeInHierarchy) {
+			loadButton.SetActive (false);
+		}
+		else
+			loadButton.SetActive (true);
 	}
 
 	public void SaveStructure() {
@@ -78,6 +95,198 @@ public class ObstacleEditor : MonoBehaviour {
 		path += "TileArray" + Guid.NewGuid ().ToString ("N");
 		Debug.Log (path);
 		System.IO.File.WriteAllLines (path + ".txt", lines);
+	}
+
+	public void ClearTiles() {
+		BroadcastMessage ("ClearTile");
+
+		for (int i = 0; i < tileArray.GetLength(0); i++) {
+			for (int j = 0; j < tileArray.GetLength (1); j++) {
+				tileArray [i, j] = Vector4.zero;
+			}
+		}
+	}
+
+	public void LoadStructure(string fileName) {
+		fileLoaded = fileName;
+		ClearTiles ();
+
+		List<Vector4> vectorList = new List<Vector4> ();
+		string line;
+		string path = "TileArrays/" + fileName;
+
+		TextAsset txt = (TextAsset)Resources.Load (path);
+
+		if (txt != null) {
+			StreamReader reader = new StreamReader (new MemoryStream (txt.bytes));
+
+			using (reader) {
+				do {
+					line = reader.ReadLine ();
+
+					if (line != null) {
+						string[] vectors = line.Split ('|');
+
+						if (vectors.Length > 0) {
+							foreach (string v in vectors) {
+								string[] tile = v.Split (',');
+
+								float n1, n2, n3, n4;
+								bool b = float.TryParse (tile [0], out n1);
+								b = float.TryParse (tile [1], out n2);
+								b = float.TryParse (tile [2], out n3);
+								b = float.TryParse (tile [3], out n4);
+								Vector4 vector = new Vector4 (n1, n2, n3, n4);
+								vectorList.Add (vector);
+							}
+						}
+					}
+				} while(line != null);
+
+				reader.Close ();
+			}
+
+			int count = 0;
+			for (int i = 0; i < tileArray.GetLength (0); i++) {
+				for (int j = 0; j < tileArray.GetLength (1); j++) {
+					tileArray [i, j] = vectorList [count];
+					count++;
+
+					Vector3 pos;
+
+					if (tileArray [i, j].x != 0) {
+						pos = transform.GetChild (i).GetChild (j).position;
+						pos = new Vector3 (pos.x, tileArray [i, j].y, pos.z);
+
+						GameObject prefab = null;
+
+						switch ((int)tileArray [i, j].x) {
+						case 2:
+							path = "Prefabs/Mediterranean/Obstacle";
+							prefab = (GameObject)Resources.Load (path);
+							break;
+						}
+
+						GameObject obj = Instantiate (prefab, pos, prefab.transform.rotation) as GameObject;
+
+						if (obj.GetComponent<Displacement> () != null)
+							obj.GetComponent<Displacement> ().enabled = false;
+
+						obj.transform.SetParent (transform.GetChild (i).GetChild (j));
+
+						transform.GetChild (i).GetChild (j).gameObject.GetComponent<SpriteRenderer> ().color = tileOcuppiedColor;
+					}
+
+					if (tileArray [i, j].z != 0) {
+						pos = transform.GetChild (i).GetChild (j).position;
+						pos = new Vector3 (pos.x, tileArray [i, j].w, pos.z);
+
+						GameObject prefab = null;
+
+						switch ((int)tileArray [i, j].z) {
+						case 1:
+							path = "Prefabs/Bonification";
+							prefab = (GameObject)Resources.Load (path);
+							break;
+						}
+
+						GameObject obj = Instantiate (prefab, pos, prefab.transform.rotation) as GameObject;
+
+						if (obj.GetComponent<Displacement> () != null)
+							obj.GetComponent<Displacement> ().enabled = false;
+
+						obj.transform.SetParent (transform.GetChild (i).GetChild (j));
+
+						transform.GetChild (i).GetChild (j).gameObject.GetComponent<SpriteRenderer> ().color = tileOcuppiedColor;
+					}
+				}
+			}
+
+			vectorList.Clear ();
+		}
+	}
+
+	public void OpenLoadScrollview() {
+		if (tileSelected != new Vector2 (-1, -1)) {
+			if (coinSelected != null || objSelected != null) {
+				coinSelected = null;
+				objSelected = null;
+
+				Color c = transform.GetChild ((int)tileSelected.x).GetChild ((int)tileSelected.y).gameObject.GetComponent<SpriteRenderer> ().color;
+				transform.GetChild ((int)tileSelected.x).GetChild ((int)tileSelected.y).gameObject.GetComponent<SpriteRenderer> ().color = new Color(c.r*2, c.g*2, c.b*2, 1f);
+			}
+			else
+				transform.GetChild ((int)tileSelected.x).GetChild ((int)tileSelected.y).gameObject.GetComponent<SpriteRenderer> ().color = Color.white;
+
+			tileSelected = new Vector2 (-1, -1);
+		}
+
+		if (prefabSelected != null) {
+			buttonSelected.GetComponent<Image>().color = Color.white;
+			prefabSelected = null;
+			buttonSelected = null;
+		}
+		
+		scrollview.SetActive (true);
+		string path = Application.dataPath + "/Resources/TileArrays/";
+
+		string[] files = Directory.GetFiles (path, "*.txt", SearchOption.TopDirectoryOnly);
+
+		for(int j = 0; j < files.Length; j++) {
+			string[] temp = files[j].Split ('/');
+			string fileName = temp [temp.Length - 1].Substring(0, temp[temp.Length - 1].Length - 4);
+			DateTime creationTime = Directory.GetCreationTimeUtc (path + fileName + ".txt");
+
+			ScrollStruct sc = new ScrollStruct (j, fileName, creationTime);
+			allFiles.Add (sc);
+		}
+
+		ScrollComprarer comparer = new ScrollComprarer ();
+		allFiles.Sort (comparer);
+
+		for (int i = 0; i < allFiles.Count; i++) {
+			GameObject go = new GameObject (allFiles[i].fileName);
+			go.layer = LayerMask.NameToLayer ("UI");
+			RectTransform rt = go.AddComponent<RectTransform> ();
+			Button b = go.AddComponent<Button> ();
+			Image img = go.AddComponent<Image> ();
+			b.transform.parent = scrollview.transform.GetChild (0).GetChild (0).transform;
+			b.targetGraphic = img;
+			img.sprite = buttonSprite;
+			img.type = Image.Type.Sliced;
+
+			rt.anchorMax = new Vector2 (1, 1);
+			rt.anchorMin = new Vector2 (0, 1);
+			rt.pivot = new Vector2 (0.5f, 1f);
+			rt.localScale = new Vector2 (1, 1);
+			rt.offsetMax = new Vector2 (0, 0 - (i * 60));
+			rt.offsetMin = new Vector2 (0, -60 - (i * 60));
+
+			GameObject tgo = new GameObject ("Text");
+			RectTransform t = tgo.AddComponent<RectTransform> ();
+			tgo.transform.parent = go.transform;
+			Text txt = tgo.AddComponent<Text> ();
+			txt.text = "TileArray " + allFiles[i].creationTime;
+			txt.color = Color.black;
+			txt.font = buttonFont;
+			txt.fontSize = 40;
+
+			t.anchorMax = new Vector2 (1, 1);
+			t.anchorMin = new Vector2 (0, 0);
+			t.pivot = new Vector2 (0.5f, 0.5f);
+			t.localScale = new Vector2 (1, 1);
+			t.offsetMax = new Vector2 (0, 0);
+			t.offsetMin = new Vector2 (0, 0);
+
+			b.onClick.AddListener (delegate {
+				LoadStructure (b.name);
+			});
+		}
+	}
+
+	public void CloseLoadScrollview() {
+		scrollview.SetActive (false);
+		allFiles.Clear ();
 	}
 
 	public void RotateCamera(bool right) {
@@ -128,7 +337,7 @@ public class ObstacleEditor : MonoBehaviour {
 				transform.GetChild ((int)tile.x).GetChild ((int)tile.y).gameObject.GetComponent<SpriteRenderer> ().color = tileOcuppiedColor;
 
 				if (objNumber == 1) {
-					if (tileArray [(int)tile.x, (int)tile.y].x != 0 && tileArray [(int)tile.x, (int)tile.y].y == 1f) {
+					if (tileArray [(int)tile.x, (int)tile.y].x != 0 && tileArray [(int)tile.x, (int)tile.y].y < 2.5f) {
 						pos = new Vector3 (pos.x, 2.5f, pos.z);
 						obj.transform.position = pos;
 					}
@@ -137,7 +346,8 @@ public class ObstacleEditor : MonoBehaviour {
 					tileArray [(int)tile.x, (int)tile.y].w = pos.y;
 				}
 				else {
-					if (tileArray [(int)tile.x, (int)tile.y].z != 0 && tileArray [(int)tile.x, (int)tile.y].w == 1f) {
+					if (tileArray [(int)tile.x, (int)tile.y].z != 0 && tileArray [(int)tile.x, (int)tile.y].w < 2.5f) {
+						Debug.Log (tileArray [(int)tile.x, (int)tile.y].w);
 						tileArray [(int)tile.x, (int)tile.y].w = 2.5f;
 
 						int childCount = transform.GetChild ((int)tile.x).GetChild ((int)tile.y).childCount;
@@ -325,5 +535,24 @@ public class ObstacleEditor : MonoBehaviour {
 		GUI.Label(new Rect(10, 70, 500, 20), "Prefabs Selected: " + prefabSelected);
 		GUI.Label(new Rect(10, 140, 500, 20), "Coin Selected: " + coinSelected);
 		GUI.Label(new Rect(10, 210, 500, 20), "Object Selected: " + objSelected);
+	}
+}
+
+public class ScrollStruct {
+	public int id;
+	public string fileName;
+	public DateTime creationTime;
+
+	public ScrollStruct(int id, string fileName, DateTime creationTime) {
+		this.id = id;
+		this.fileName = fileName;
+		this.creationTime = creationTime;
+	}
+}
+
+public class ScrollComprarer : IComparer<ScrollStruct> {
+
+	public int Compare(ScrollStruct x, ScrollStruct y) {
+		return DateTime.Compare (x.creationTime, y.creationTime);
 	}
 }

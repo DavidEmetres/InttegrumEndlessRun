@@ -56,7 +56,7 @@ public class GenerationManager : MonoBehaviour {
 			GenerateTile ();
 		}
 
-		if (SceneManager.Instance.provinceKm >= 5f && !selectedRoad) {
+		if (SceneManager.Instance.provinceKm >= 3f && !selectedRoad) {
 			selectedRoad = true;
 			CreateRoadChange();
 		}
@@ -68,6 +68,8 @@ public class GenerationManager : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.F3)) {
 			CreateProvinceChange ();
 		}
+
+		Debug.Log (tileCount);
 	}
 
 	private void GenerateTile() {
@@ -79,12 +81,20 @@ public class GenerationManager : MonoBehaviour {
 		float porc = Random.Range (0f, 101f);
 		if (porc >= 0f && porc <= 30f) {
 			GameObject obsParent = new GameObject ("ObstaclesTiles");
+			obsParent.AddComponent<ParentDestroy> ();
 			GameObject bonParent = new GameObject ("BonificationTiles");
+			bonParent.AddComponent<ParentDestroy> ();
+			obsParent.transform.parent = obstacleParent;
+			bonParent.transform.parent = bonificationParent;
 			tileManager.CreateRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
 		}
 		else {
 			GameObject obsParent = new GameObject ("ObstaclesTiles");
+			obsParent.AddComponent<ParentDestroy> ();
 			GameObject bonParent = new GameObject ("BonificationTiles");
+			bonParent.AddComponent<ParentDestroy> ();
+			obsParent.transform.parent = obstacleParent;
+			bonParent.transform.parent = bonificationParent;
 			tileManager.GetRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
 		}
 	}
@@ -186,7 +196,11 @@ public class GenerationManager : MonoBehaviour {
 
 		//FRONT ROAD OBSTACLES;
 		GameObject frontObsParent = new GameObject("FrontRoadObstacleTiles");
+		frontObsParent.AddComponent<ParentDestroy> ();
 		GameObject frontBonParent = new GameObject ("FrontRoadBonificationTiles");
+		frontBonParent.AddComponent<ParentDestroy> ();
+		frontObsParent.transform.parent = obstacleParent;
+		frontBonParent.transform.parent = bonificationParent;
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 50f, frontObsParent.transform, frontBonParent.transform);
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 100f, frontObsParent.transform, frontBonParent.transform);
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 150f, frontObsParent.transform, frontBonParent.transform);
@@ -198,9 +212,11 @@ public class GenerationManager : MonoBehaviour {
 
 		GameObject roadchange = GameObject.Find ("RoadChange(Clone)");
 		GameObject rightObsParent = new GameObject("RightRoadObstacleTiles");
+		rightObsParent.AddComponent<ParentDestroy> ();
 		GameObject rightBonParent = new GameObject ("RightRoadBonificationTiles");
-		rightObsParent.transform.SetParent (roadchange.transform);
-		rightBonParent.transform.SetParent (roadchange.transform);
+		rightBonParent.AddComponent<ParentDestroy> ();
+		rightObsParent.transform.parent = roadchange.transform;
+		rightBonParent.transform.parent = roadchange.transform;
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 50f, rightObsParent.transform, rightBonParent.transform);
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 100f, rightObsParent.transform, rightBonParent.transform);
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 150f, rightObsParent.transform, rightBonParent.transform);
@@ -211,24 +227,27 @@ public class GenerationManager : MonoBehaviour {
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 400f, rightObsParent.transform, rightBonParent.transform);
 		rightObsParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, 90f);
 		rightBonParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, 90f);
-		rightObsParent.transform.SetParent (obstacleParent);
-		rightBonParent.transform.SetParent (bonificationParent);
+		rightObsParent.transform.parent = obstacleParent;
+		rightBonParent.transform.parent = bonificationParent;
 
-//		GameObject parent2 = new GameObject ("LeftRoadObstacles");
-//		parent2.transform.SetParent (roadchange.transform);
-//		parent2.transform.position = new Vector3 (parent2.transform.position.x + 3.5f, parent2.transform.position.y, parent2.transform.position.z);
-//		ChangeObsBonParent (parent2.transform, parent2.transform, false);
-//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 50f);
-//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 100f);
-//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 150f);
-//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 200f);
-//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 250f);
-//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 300f);
-//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 350f);
-//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 400f);
-//		parent2.transform.RotateAround (rc.GetCenter ().position, Vector3.up, -90f);
-//		ChangeObsBonParent (transform, transform, true);
-//		parent2.transform.SetParent (obstacleParent);
+		GameObject leftObsParent = new GameObject("LeftRoadObstacleTiles");
+		leftObsParent.AddComponent<ParentDestroy> ();
+		GameObject leftBonParent = new GameObject ("LeftRoadBonificationTiles");
+		leftBonParent.AddComponent<ParentDestroy> ();
+		leftObsParent.transform.parent = roadchange.transform;
+		leftBonParent.transform.parent = roadchange.transform;
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 50f, leftObsParent.transform, leftBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 100f, leftObsParent.transform, leftBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 150f, leftObsParent.transform, leftBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 200f, leftObsParent.transform, leftBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 250f, leftObsParent.transform, leftBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 300f, leftObsParent.transform, leftBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 350f, leftObsParent.transform, leftBonParent.transform);
+		tileManager.GetRandomTileArray ().GenerateTiles (pos + 400f, leftObsParent.transform, leftBonParent.transform);
+		leftObsParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, -90f);
+		leftBonParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, -90f);
+		leftObsParent.transform.parent = obstacleParent;
+		leftBonParent.transform.parent = bonificationParent;
 	}
 
 	public void ChangeObsBonParent(Transform obsParent, Transform bonParent, bool returnToDefault) {

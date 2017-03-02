@@ -38,6 +38,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 			GameObject env = GameObject.Find ("Environment");
 
 			if (laneSelected == 0) {
+				BroadcastMessage ("DesactivateDisplacement");
 				env.transform.SetParent (transform);
 				transform.RotateAround (pivotSelected.position, transform.up, speed * Time.deltaTime);
 
@@ -53,10 +54,12 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
 					PlayerMovement.Instance.bloquedMov = false;
 					PlayerMovement.Instance.ChangeState (State.running);
+					BroadcastMessage ("ActivateDisplacement");
 					env.transform.SetParent (null);
 				}
 			}
 			else if (laneSelected == 2) {
+				BroadcastMessage ("DesactivateDisplacement");
 				env.transform.SetParent (transform);
 				transform.RotateAround (pivotSelected.position, transform.up, -speed * Time.deltaTime);
 
@@ -72,6 +75,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
 					PlayerMovement.Instance.bloquedMov = false;
 					PlayerMovement.Instance.ChangeState (State.running);
+					BroadcastMessage ("ActivateDisplacement");
 					env.transform.SetParent (null);
 				}
 			}
@@ -119,6 +123,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					GenerationManager.Instance.DestroyTerrainMesh ();
 					PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;
 					PlayerMovement.Instance.ChangeLane (true);
+					GenerationManager.Instance.tileCount = 4;
 					break;
 				case 1:
 					animated = true;
@@ -134,6 +139,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					GenerationManager.Instance.DestroyTerrainMesh ();
 					PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;
 					PlayerMovement.Instance.ChangeLane (false);
+					GenerationManager.Instance.tileCount = 4;
 					break;
 				}
 			}
