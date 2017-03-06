@@ -31,6 +31,11 @@ public class ObstacleEditor : MonoBehaviour {
 	public Sprite buttonSprite;
 	public Font buttonFont;
 	public GameObject loadButton;
+	public GameObject newButton;
+	public GameObject editButton;
+	public GameObject deleteButton;
+	public GameObject textSaved;
+	public GameObject currentFileText;
 
 	public static ObstacleEditor Instance;
 
@@ -80,6 +85,29 @@ public class ObstacleEditor : MonoBehaviour {
 		}
 		else
 			loadButton.SetActive (true);
+
+		//EDIT/DELETE STRUCTURE;
+		if (fileLoaded != "") {
+			editButton.SetActive (true);
+			deleteButton.SetActive (true);
+			currentFileText.GetComponent<Text> ().text = fileLoaded;
+
+		}
+		else {
+			editButton.SetActive (false);
+			deleteButton.SetActive (false);
+			currentFileText.GetComponent<Text> ().text = "No file loaded";
+		}
+	}
+
+	private IEnumerator ChangeTextAlpha(Text txt) {
+		while (txt.color.a > 0.1f) {
+			txt.color = new Color (txt.color.r, txt.color.g, txt.color.b, txt.color.a - 0.02f);
+			yield return null;
+		}
+
+		txt.gameObject.SetActive (false);
+		txt.color = new Color (txt.color.r, txt.color.g, txt.color.b, 1f);
 	}
 
 	public void SaveStructure() {
@@ -92,12 +120,67 @@ public class ObstacleEditor : MonoBehaviour {
 			tileArray [i, 2].x + "," + tileArray [i, 2].y + "," + tileArray [i, 2].z + "," + tileArray [i, 2].w;
 		}
 
-		path += "TileArray" + Guid.NewGuid ().ToString ("N");
-		Debug.Log (path);
+		string g = Guid.NewGuid().ToString("N");
+		fileLoaded = "TileArray" + g;
+		path += fileLoaded;
 		System.IO.File.WriteAllLines (path + ".txt", lines);
+		textSaved.GetComponent<Text> ().text = "SAVED";
+		textSaved.SetActive (true);
+		StartCoroutine ("ChangeTextAlpha", textSaved.GetComponent<Text> ());
+		UnityEditor.AssetDatabase.Refresh ();
+	}
+
+	public void EditStructure() {
+		string path = Application.dataPath + "/Resources/TileArrays/";
+		string[] lines = new string[10];
+
+		for (int i = 0; i < tileArray.GetLength (0); i++) {
+			lines [i] = tileArray [i, 0].x + "," + tileArray [i, 0].y + "," + tileArray [i, 0].z + "," + tileArray [i, 0].w + "|" +
+				tileArray [i, 1].x + "," + tileArray [i, 1].y + "," + tileArray [i, 1].z + "," + tileArray [i, 1].w + "|" +
+				tileArray [i, 2].x + "," + tileArray [i, 2].y + "," + tileArray [i, 2].z + "," + tileArray [i, 2].w;
+		}
+			
+		path += fileLoaded + ".txt";
+		string metaPath = path + ".meta";
+		System.IO.File.Delete (path);
+		System.IO.File.Delete (metaPath);
+		System.IO.File.WriteAllLines (path + ".txt", lines);
+		textSaved.GetComponent<Text> ().text = "EDITED";
+		textSaved.SetActive (true);
+		StartCoroutine ("ChangeTextAlpha", textSaved.GetComponent<Text> ());
+		UnityEditor.AssetDatabase.Refresh ();
+	}
+
+	public void DeleteStructure() {
+		string path = Application.dataPath + "/Resources/TileArrays/";
+		path += fileLoaded + ".txt";
+		string metaPath = path + ".meta";
+		System.IO.File.Delete (path);
+		System.IO.File.Delete (metaPath);
+		ClearTiles ();
+		textSaved.GetComponent<Text> ().text = "DELETED";
+		textSaved.SetActive (true);
+		StartCoroutine ("ChangeTextAlpha", textSaved.GetComponent<Text> ());
+
+		for (int i = 0; i < scrollview.transform.GetChild(0).GetChild(0).childCount; i++) {
+			Destroy (scrollview.transform.GetChild(0).GetChild(0).GetChild(i).gameObject);
+		}
+
+		UnityEditor.AssetDatabase.Refresh ();
 	}
 
 	public void ClearTiles() {
+		tileSelected = new Vector2 (-1, -1);
+		prefabSelected = null;
+		coinSelected = null;
+		objSelected = null;
+		fileLoaded = "";
+
+		if (buttonSelected != null) {
+			buttonSelected.GetComponent<Image> ().color = Color.white;
+			buttonSelected = null;
+		}
+
 		BroadcastMessage ("ClearTile");
 
 		for (int i = 0; i < tileArray.GetLength(0); i++) {
@@ -108,8 +191,8 @@ public class ObstacleEditor : MonoBehaviour {
 	}
 
 	public void LoadStructure(string fileName) {
-		fileLoaded = fileName;
 		ClearTiles ();
+		fileLoaded = fileName;
 
 		List<Vector4> vectorList = new List<Vector4> ();
 		string line;
@@ -233,8 +316,8 @@ public class ObstacleEditor : MonoBehaviour {
 		string[] files = Directory.GetFiles (path, "*.txt", SearchOption.TopDirectoryOnly);
 
 		for(int j = 0; j < files.Length; j++) {
-			string[] temp = files[j].Split ('/');
-			string fileName = temp [temp.Length - 1].Substring(0, temp[temp.Length - 1].Length - 4);
+			string[] temp = files [j].Split ('/');
+			string fileName = temp [temp.Length - 1].Substring (0, temp [temp.Length - 1].Length - 4);
 			DateTime creationTime = Directory.GetCreationTimeUtc (path + fileName + ".txt");
 
 			ScrollStruct sc = new ScrollStruct (j, fileName, creationTime);
@@ -526,16 +609,12 @@ public class ObstacleEditor : MonoBehaviour {
 		return value;
 	}
 
-	private void UpdateVisuals() {
-
-	}
-
-	private void OnGUI() {
-		GUI.Label(new Rect(10, 10, 500, 20), "Tile Selected: " + tileSelected);
-		GUI.Label(new Rect(10, 70, 500, 20), "Prefabs Selected: " + prefabSelected);
-		GUI.Label(new Rect(10, 140, 500, 20), "Coin Selected: " + coinSelected);
-		GUI.Label(new Rect(10, 210, 500, 20), "Object Selected: " + objSelected);
-	}
+//	private void OnGUI() {
+//		GUI.Label(new Rect(10, 10, 500, 20), "Tile Selected: " + tileSelected);
+//		GUI.Label(new Rect(10, 70, 500, 20), "Prefabs Selected: " + prefabSelected);
+//		GUI.Label(new Rect(10, 140, 500, 20), "Coin Selected: " + coinSelected);
+//		GUI.Label(new Rect(10, 210, 500, 20), "Object Selected: " + objSelected);
+//	}
 }
 
 public class ScrollStruct {

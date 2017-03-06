@@ -56,20 +56,10 @@ public class GenerationManager : MonoBehaviour {
 			GenerateTile ();
 		}
 
-		if (SceneManager.Instance.provinceKm >= 3f && !selectedRoad) {
+		if (SceneManager.Instance.provinceKm >= 5f && !selectedRoad) {
 			selectedRoad = true;
 			CreateRoadChange();
 		}
-
-		if (Input.GetKeyDown (KeyCode.F2)) {
-			CreateRoadChange();
-		}
-
-		if (Input.GetKeyDown (KeyCode.F3)) {
-			CreateProvinceChange ();
-		}
-
-		Debug.Log (tileCount);
 	}
 
 	private void GenerateTile() {

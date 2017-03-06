@@ -106,8 +106,6 @@ public class TileArrayManager {
 
 	public TileArray CreateRandomTileArray() {
 		List<Vector4> vectorList = new List<Vector4> ();
-		int obsCount = 0;
-		int previousObs = 0;
 
 		int j;
 		int obs;
@@ -123,12 +121,25 @@ public class TileArrayManager {
 			obsH = 1f;
 
 			if (obs != 0 && i != 0) {
-				if (vectorList [i - 3].x != 0) {
-					obs = 0;
-					obsH = 0f;
+				if (i - 3 >= 0) {
+					if (vectorList [i - 3].x != 0) {
+						obs = 0;
+						obsH = 0f;
+					}
 				}
-				else {
-					obsCount++;
+
+				if (i - 6 >= 0) {
+					if (vectorList [i - 6].x != 0) {
+						obs = 0;
+						obsH = 0f;
+					}
+				}
+
+				if (i - 9 >= 0) {
+					if (vectorList [i - 9].x != 0) {
+						obs = 0;
+						obsH = 0f;
+					}
 				}
 			}
 
@@ -144,12 +155,25 @@ public class TileArrayManager {
 			obsH = 1f;
 
 			if (obs != 0 && i != 0) {
-				if (vectorList [i - 3].x != 0) {
-					obs = 0;
-					obsH = 0f;
+				if (i - 3 >= 0) {
+					if (vectorList [i - 3].x != 0) {
+						obs = 0;
+						obsH = 0f;
+					}
 				}
-				else {
-					obsCount++;
+
+				if (i - 6 >= 0) {
+					if (vectorList [i - 6].x != 0) {
+						obs = 0;
+						obsH = 0f;
+					}
+				}
+
+				if (i - 9 >= 0) {
+					if (vectorList [i - 9].x != 0) {
+						obs = 0;
+						obsH = 0f;
+					}
 				}
 			}
 
@@ -165,12 +189,25 @@ public class TileArrayManager {
 			obsH = 1f;
 
 			if (obs != 0 && i != 0) {
-				if (vectorList [i - 3].x != 0) {
-					obs = 0;
-					obsH = 0f;
+				if (i - 3 >= 0) {
+					if (vectorList [i - 3].x != 0) {
+						obs = 0;
+						obsH = 0f;
+					}
 				}
-				else {
-					obsCount++;
+
+				if (i - 6 >= 0) {
+					if (vectorList [i - 6].x != 0) {
+						obs = 0;
+						obsH = 0f;
+					}
+				}
+
+				if (i - 9 >= 0) {
+					if (vectorList [i - 9].x != 0) {
+						obs = 0;
+						obsH = 0f;
+					}
 				}
 			}
 
@@ -184,12 +221,9 @@ public class TileArrayManager {
 			vectorList.Add (v2);
 			vectorList.Add (v3);
 
-			if (obsCount > 2) {
-				j = UnityEngine.Random.Range (0, 3);
-				vectorList [i + j] = new Vector4 (0f, 0f, vectorList [i + j].z, vectorList [i + j].w);
-			}
-
-			obsCount = 0;
+			//RANDOM GENERATION PARAMETERS: 
+			//1. NOT GENERATE IF THERE IS ANY OBSTACLE IN THREE ROWS AHEAD;
+			//2. GENERATE ALL COINS AT HEIGHT 1f;
 		}
 
 		TileArray t = new TileArray (new Vector4[,] {
