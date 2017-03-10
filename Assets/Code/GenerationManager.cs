@@ -12,6 +12,8 @@ public class GenerationManager : MonoBehaviour {
 	private bool lane1Empty;
 	private bool lane2Empty;
 	private float meshStartDistance;
+	private bool forceNextTile;
+	private int nextTile;
 
 	[HideInInspector] public float tileCount;
 	public float defaultSpeed;
@@ -54,12 +56,18 @@ public class GenerationManager : MonoBehaviour {
 
 		if (tileCount >= tileSize) {
 			GenerateTile ();
+			EnvironmentGenerator.Instance.GenerateEnvironment ();
 		}
 
 		if (SceneManager.Instance.provinceKm >= 5f && !selectedRoad) {
 			selectedRoad = true;
 			CreateRoadChange();
 		}
+	}
+
+	public void ForceNextTile(int nextTile) {
+		this.nextTile = nextTile;
+		forceNextTile = true;
 	}
 
 	private void GenerateTile() {
@@ -76,7 +84,13 @@ public class GenerationManager : MonoBehaviour {
 			bonParent.AddComponent<ParentDestroy> ();
 			obsParent.transform.parent = obstacleParent;
 			bonParent.transform.parent = bonificationParent;
-			tileManager.CreateRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
+
+			if (forceNextTile)
+				tileManager.GetSpecificTileArray (nextTile).GenerateTiles (pos, obsParent.transform, bonParent.transform);
+			else
+				tileManager.CreateRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
+
+			forceNextTile = false;
 		}
 		else {
 			GameObject obsParent = new GameObject ("ObstaclesTiles");
@@ -85,7 +99,13 @@ public class GenerationManager : MonoBehaviour {
 			bonParent.AddComponent<ParentDestroy> ();
 			obsParent.transform.parent = obstacleParent;
 			bonParent.transform.parent = bonificationParent;
-			tileManager.GetRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
+
+			if (forceNextTile)
+				tileManager.GetSpecificTileArray (nextTile).GenerateTiles (pos, obsParent.transform, bonParent.transform);
+			else
+				tileManager.GetRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
+
+			forceNextTile = false;
 		}
 	}
 

@@ -7,11 +7,26 @@ ModelImporter:
   fileIDToRecycleName:
     100000: Mesh1
     100002: //RootNode
+    100004: pCylinder1
+    100006: pCylinder2
+    100008: pCylinder3
+    100010: transform1
+    100012: transform2
     400000: Mesh1
     400002: //RootNode
+    400004: pCylinder1
+    400006: pCylinder2
+    400008: pCylinder3
+    400010: transform1
+    400012: transform2
     2300000: Mesh1
+    2300002: pCylinder3
+    2300004: //RootNode
     3300000: Mesh1
+    3300002: pCylinder3
+    3300004: //RootNode
     4300000: Mesh1
+    4300002: pCylinder3
   materials:
     importMaterials: 1
     materialName: 0

@@ -11,7 +11,7 @@ public class ObstacleEditor : MonoBehaviour {
 	private Vector2 tileSelected = new Vector2 (-1, -1);
 	private bool anyTileSelected = false;
 	private GameObject prefabSelected;
-	private int objNumber;
+	private float objNumber;
 	private GameObject buttonSelected;
 	private GameObject coinSelected;
 	private GameObject objSelected;
@@ -19,6 +19,7 @@ public class ObstacleEditor : MonoBehaviour {
 	private float camRotDirection;
 	private List<ScrollStruct> allFiles = new List<ScrollStruct>();
 	private string fileLoaded = "";
+	private Climate currentClimate;
 
 	public LayerMask editorRayCast;
 	public Color tileOcuppiedColor;
@@ -36,11 +37,15 @@ public class ObstacleEditor : MonoBehaviour {
 	public GameObject deleteButton;
 	public GameObject textSaved;
 	public GameObject currentFileText;
+	public GameObject climateButton;
+	public GameObject obstacleScrollview;
 
 	public static ObstacleEditor Instance;
 
 	private void Awake() {
 		Instance = this;
+		currentClimate = Climate.Ganadero;
+		climateButton.transform.GetChild(0).GetComponent<Text> ().text = currentClimate.ToString();
 	}
 
 	private void Update() {
@@ -54,6 +59,8 @@ public class ObstacleEditor : MonoBehaviour {
 			deleteCoinButton.SetActive (true);
 			float y = (float)System.Math.Round (coinScrollbar.GetComponent<Scrollbar> ().value, 2);
 			y = ScrollbarToTransform (y);
+			if (y == 0f)
+				y = 1f;
 			coinSelected.transform.position = new Vector3 (coinSelected.transform.position.x, y, coinSelected.transform.position.z);
 			tileArray [(int)tileSelected.x, (int)tileSelected.y].w = y;
 		}
@@ -121,7 +128,7 @@ public class ObstacleEditor : MonoBehaviour {
 		}
 
 		string g = Guid.NewGuid().ToString("N");
-		fileLoaded = "TileArray" + g;
+		fileLoaded = currentClimate.ToString() + "_TileArray" + g;
 		path += fileLoaded;
 		System.IO.File.WriteAllLines (path + ".txt", lines);
 		textSaved.GetComponent<Text> ().text = "SAVED";
@@ -193,6 +200,9 @@ public class ObstacleEditor : MonoBehaviour {
 	public void LoadStructure(string fileName) {
 		ClearTiles ();
 		fileLoaded = fileName;
+		string[] clim = fileName.Split ('_');
+		currentClimate = (Climate)Enum.Parse (typeof(Climate), clim [0], true); 
+		climateButton.transform.GetChild (0).GetComponent<Text> ().text = currentClimate.ToString ();
 
 		List<Vector4> vectorList = new List<Vector4> ();
 		string line;
@@ -241,15 +251,32 @@ public class ObstacleEditor : MonoBehaviour {
 						pos = transform.GetChild (i).GetChild (j).position;
 						pos = new Vector3 (pos.x, tileArray [i, j].y, pos.z);
 
-						GameObject prefab = null;
+//						GameObject prefab = null;
 
-						switch ((int)tileArray [i, j].x) {
-						case 2:
-							path = "Prefabs/Mediterranean/Obstacle";
-							prefab = (GameObject)Resources.Load (path);
-							break;
-						}
+//						switch ((int)tileArray [i, j].x) {
+//							case 1:
+//								path = "Prefabs/" + currentClimate.ToString() + "/Obstacle_1_1";
+//								prefab = (GameObject)Resources.Load (path);
+//								break;
+//							case 2:
+//								path = "Prefabs/" + currentClimate.ToString() + "/Obstacle_2_1";
+//								prefab = (GameObject)Resources.Load (path);
+//								break;
+//							case 3:
+//								path = "Prefabs/" + currentClimate.ToString() + "/Obstacle_3_1";
+//								prefab = (GameObject)Resources.Load (path);
+//								break;
+//							case 4:
+//								path = "Prefabs/" + currentClimate.ToString() + "/Obstacle_4_1";
+//								prefab = (GameObject)Resources.Load (path);
+//								break;
+//						}
 
+						string t = tileArray [i, j].x.ToString ();
+						string[] temp = t.Split ('.');
+						path = "Prefabs/" + currentClimate.ToString () + "/Obstacle_" + temp[0] + "_" + temp[1];
+
+						GameObject prefab = (GameObject)Resources.Load(path);
 						GameObject obj = Instantiate (prefab, pos, prefab.transform.rotation) as GameObject;
 
 						if (obj.GetComponent<Displacement> () != null)
@@ -267,10 +294,10 @@ public class ObstacleEditor : MonoBehaviour {
 						GameObject prefab = null;
 
 						switch ((int)tileArray [i, j].z) {
-						case 1:
-							path = "Prefabs/Bonification";
-							prefab = (GameObject)Resources.Load (path);
-							break;
+							case -1:
+								path = "Prefabs/" + currentClimate.ToString() + "/Coin";
+								prefab = (GameObject)Resources.Load (path);
+								break;
 						}
 
 						GameObject obj = Instantiate (prefab, pos, prefab.transform.rotation) as GameObject;
@@ -349,7 +376,8 @@ public class ObstacleEditor : MonoBehaviour {
 			RectTransform t = tgo.AddComponent<RectTransform> ();
 			tgo.transform.parent = go.transform;
 			Text txt = tgo.AddComponent<Text> ();
-			txt.text = "TileArray " + allFiles[i].creationTime;
+			string[] clim = allFiles [i].fileName.Split ('_');
+			txt.text = clim[0] + " " + allFiles[i].creationTime;
 			txt.color = Color.black;
 			txt.font = buttonFont;
 			txt.fontSize = 40;
@@ -409,7 +437,7 @@ public class ObstacleEditor : MonoBehaviour {
 		if (prefabSelected != null) {
 			if ((objNumber == 1 && tileArray [(int)tile.x, (int)tile.y].z == 0) || (objNumber != 1 && tileArray [(int)tile.x, (int)tile.y].x == 0)) {
 				Vector3 pos = transform.GetChild ((int)tile.x).GetChild ((int)tile.y).position;
-				pos = new Vector3 (pos.x, 1f, pos.z);
+				pos = new Vector3 (pos.x + prefabSelected.transform.position.x, prefabSelected.transform.position.y, pos.z + prefabSelected.transform.position.z);
 				GameObject obj = Instantiate (prefabSelected, pos, prefabSelected.transform.rotation) as GameObject;
 
 				if (obj.GetComponent<Displacement> () != null)
@@ -419,7 +447,7 @@ public class ObstacleEditor : MonoBehaviour {
 
 				transform.GetChild ((int)tile.x).GetChild ((int)tile.y).gameObject.GetComponent<SpriteRenderer> ().color = tileOcuppiedColor;
 
-				if (objNumber == 1) {
+				if (objNumber == -1) {
 					if (tileArray [(int)tile.x, (int)tile.y].x != 0 && tileArray [(int)tile.x, (int)tile.y].y < 2.5f) {
 						pos = new Vector3 (pos.x, 2.5f, pos.z);
 						obj.transform.position = pos;
@@ -430,7 +458,6 @@ public class ObstacleEditor : MonoBehaviour {
 				}
 				else {
 					if (tileArray [(int)tile.x, (int)tile.y].z != 0 && tileArray [(int)tile.x, (int)tile.y].w < 2.5f) {
-						Debug.Log (tileArray [(int)tile.x, (int)tile.y].w);
 						tileArray [(int)tile.x, (int)tile.y].w = 2.5f;
 
 						int childCount = transform.GetChild ((int)tile.x).GetChild ((int)tile.y).childCount;
@@ -512,27 +539,54 @@ public class ObstacleEditor : MonoBehaviour {
 		}
 	}
 
-	public void SelectPrefab(GameObject obj) {
+	public void SelectPrefab(string obj) {
+		if (obj.Contains ("Obstacle")) {
+			string[] temp = obj.Split ('_');
+			int i;
+			Int32.TryParse (temp [1], out i);
+			int j;
+			Int32.TryParse (temp [2], out j);
+			objNumber = i + (j / 10f);
+		}
+		else
+			objNumber = -1;
+
+		string path = "Prefabs/" + currentClimate.ToString() + "/" + obj;
+		GameObject newPrefab = (GameObject)Resources.Load (path);
+
 		if (prefabSelected != null) {
-			if (prefabSelected == obj) {
+			if (prefabSelected == newPrefab) {
 				prefabSelected = null;
 			}
 			else {
-				prefabSelected = obj;
+				prefabSelected = newPrefab;
 			}
 		}
 		else {
-			prefabSelected = obj;
+			prefabSelected = newPrefab;
+		}
+	}
+
+	public void ChangeClimate() {
+		currentClimate++;
+		if (currentClimate.ToString() == "5")
+			currentClimate = 0;
+		
+		climateButton.transform.GetChild(0).GetComponent<Text> ().text = currentClimate.ToString();
+
+		ClearTiles ();
+
+		string clim = currentClimate.ToString ();
+		int childs = obstacleScrollview.transform.GetChild (0).GetChild (0).childCount;
+		for (int i = 0; i < childs; i++) {
+			if (obstacleScrollview.transform.GetChild (0).GetChild (0).GetChild (i).name.Contains (clim)) {
+				obstacleScrollview.transform.GetChild (0).GetChild (0).GetChild (i).gameObject.SetActive (true);
+			}
+			else
+				obstacleScrollview.transform.GetChild (0).GetChild (0).GetChild (i).gameObject.SetActive (false);
 		}
 
-		switch (obj.tag) {
-			case "Coin":
-				objNumber = 1;
-				break;
-			case "Obstacle":
-				objNumber = 2;
-				break;
-		}
+		obstacleScrollview.transform.GetChild (0).GetChild (0).GetChild (0).gameObject.SetActive (true);
 	}
 
 	public void ButtonSelected(GameObject button) {
@@ -590,7 +644,7 @@ public class ObstacleEditor : MonoBehaviour {
 
 		switch (i) {
 			case 0:
-				value = 1f;
+				value = 0f;
 				break;
 			case 25:
 				value = 2.5f;

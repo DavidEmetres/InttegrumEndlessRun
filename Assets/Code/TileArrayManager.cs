@@ -7,6 +7,11 @@ using System;
 public class TileArrayManager {
 
 	private List<TileArray> tileArrays = new List<TileArray>();
+	private List<TileArray> ganaderoTileArrays = new List<TileArray>();
+	private List<TileArray> forestalTileArrays = new List<TileArray>();
+	private List<TileArray> regadioTileArrays = new List<TileArray>();
+	private List<TileArray> secanoTileArrays = new List<TileArray>();
+	private List<TileArray> playaTileArrays = new List<TileArray>();
 	private List<Vector4> vectorList = new List<Vector4> ();
 	private int count = 0;
 	private int[] allObstacles = new int[] { 0, 2 };
@@ -41,7 +46,7 @@ public class TileArrayManager {
 						if(line != null) {
 							string[] vectors = line.Split('|');
 
-							if(vectors.Length > 0) {
+							if(vectors.Length > 1) {
 								foreach(string v in vectors) {
 									string[] tile = v.Split(',');
 
@@ -53,6 +58,11 @@ public class TileArrayManager {
 									Vector4 vector = new Vector4(n1, n2, n3, n4);
 									vectorList.Add(vector);
 								}
+							}
+							else {
+								bool force = (vectors[0] == "TRUE")? true : false;
+								int nextTileArray = (Convert.ToInt32(vectors[1]));
+								GenerationManager.Instance.ForceNextTile(nextTileArray);
 							}
 						}
 					}
@@ -85,23 +95,12 @@ public class TileArrayManager {
 	}
 
 	public TileArray GetRandomTileArray() {
-//		string temp = Guid.NewGuid ().ToString ("N");
-//		string seed = "";
-//
-//		foreach (char c in temp) {
-//			seed += Convert.ToInt32(c);
-//		}
-//
-//		seed = seed.Substring (0, seed.Length / 10);
-//		Debug.Log (seed);
-//		int l = Convert.ToInt32 (seed);
-//		UnityEngine.Random.InitState (l);
-//		Debug.Log (l);
-//		int i = UnityEngine.Random.Range (0, tileArrays.Count);
-//		Debug.Log (i + "/" + tileArrays.Count);
-
 		int i = UnityEngine.Random.Range (0, tileArrays.Count);
 		return tileArrays [i];
+	}
+
+	public TileArray GetSpecificTileArray(int index) {
+		return tileArrays [index];
 	}
 
 	public TileArray CreateRandomTileArray() {
@@ -141,6 +140,11 @@ public class TileArrayManager {
 						obsH = 0f;
 					}
 				}
+
+				if (i >= 24) {
+					obs = 0;
+					obsH = 0f;
+				}
 			}
 
 			j = UnityEngine.Random.Range (0, allBonifications.Length);
@@ -174,6 +178,11 @@ public class TileArrayManager {
 						obs = 0;
 						obsH = 0f;
 					}
+				}
+
+				if (i >= 24) {
+					obs = 0;
+					obsH = 0f;
 				}
 			}
 
@@ -209,6 +218,11 @@ public class TileArrayManager {
 						obsH = 0f;
 					}
 				}
+
+				if (i >= 24) {
+					obs = 0;
+					obsH = 0f;
+				}
 			}
 
 			j = UnityEngine.Random.Range (0, allBonifications.Length);
@@ -224,6 +238,7 @@ public class TileArrayManager {
 			//RANDOM GENERATION PARAMETERS: 
 			//1. NOT GENERATE IF THERE IS ANY OBSTACLE IN THREE ROWS AHEAD;
 			//2. GENERATE ALL COINS AT HEIGHT 1f;
+			//3. NOT GENERATE IN THE LAST MATRIX POSITIONS;
 		}
 
 		TileArray t = new TileArray (new Vector4[,] {

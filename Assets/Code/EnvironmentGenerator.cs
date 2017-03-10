@@ -4,6 +4,8 @@ using System.Collections;
 public class EnvironmentGenerator : MonoBehaviour {
 
 	private float meshStartDistance;
+	private float tileSize;
+	private float tileCount;
 
 	public GameObject leftTerrain;
 	public GameObject rightTerrain;
@@ -18,6 +20,7 @@ public class EnvironmentGenerator : MonoBehaviour {
 	private void Start () {
 		leftTerrain = BuildTerrainMesh (0f, false);
 		rightTerrain = BuildTerrainMesh (0f, true);
+		tileSize = GenerationManager.Instance.tileSize;
 	}
 	
 	private void Update () {
@@ -26,12 +29,13 @@ public class EnvironmentGenerator : MonoBehaviour {
 		if (rightTerrain != null)
 			UpdateMesh (rightTerrain, true);
 
-		if (GenerationManager.Instance.tileCount >= GenerationManager.Instance.tileSize) {
-			GenerateEnvironment ();
-		}
+//		if (tileCount >= tileSize) {
+//			GenerateEnvironment ();
+//		}
 	}
 
-	private void GenerateEnvironment() {
+	public void GenerateEnvironment() {
+		tileCount = 0;
 		GameObject leftParent = new GameObject ("LeftEnvironment");
 		leftParent.AddComponent<ParentDestroy> ();
 		leftParent.transform.parent = environmentParent;
@@ -40,12 +44,13 @@ public class EnvironmentGenerator : MonoBehaviour {
 		rightParent.transform.parent = environmentParent;
 
 		float pos = leftTerrain.GetComponent<MeshFilter>().mesh.vertices [leftTerrain.GetComponent<MeshFilter>().mesh.vertices.Length - 1].z + meshStartDistance;
-		GameObject leftLevel1 = Instantiate (Resources.Load ("Prefabs/WoodFence"), Vector3.zero, Quaternion.identity) as GameObject;
-		leftLevel1.transform.position = new Vector3 (-5f - leftLevel1.GetComponent<BoxCollider> ().size.x / 2f, 0f, pos);
-		leftLevel1.transform.parent = leftParent.transform;
-		GameObject rightLevel1 = Instantiate (Resources.Load ("Prefabs/WoodFence"), Vector3.zero, Quaternion.identity) as GameObject;
-		rightLevel1.transform.position = new Vector3 (5f + leftLevel1.GetComponent<BoxCollider> ().size.x / 2f, 0f, pos);
-		rightLevel1.transform.parent = rightParent.transform;
+		GameObject leftEnviro = Instantiate (Resources.Load ("Prefabs/Ganadero/Enviro1"), Vector3.zero, Quaternion.identity) as GameObject;
+		leftEnviro.transform.position = new Vector3 (0f, 0f, pos);
+		leftEnviro.transform.parent = leftParent.transform;
+		GameObject rightEnviro = Instantiate (Resources.Load ("Prefabs/Ganadero/Enviro1"), Vector3.zero, Quaternion.identity) as GameObject;
+		rightEnviro.transform.position = new Vector3 (0f, 0f, pos);
+		rightEnviro.transform.localScale = new Vector3 (-1f, 1f, 1f);
+		rightEnviro.transform.parent = rightParent.transform;
 	}
 
 	private void UpdateMesh(GameObject obj, bool right) {
@@ -78,6 +83,7 @@ public class EnvironmentGenerator : MonoBehaviour {
 						else {
 							vertices [i] = new Vector3 (maxLeft, 0f, vertices [i - 1].z + 10f);
 							vertices [i + 1] = new Vector3 (maxRight, 0f, vertices [i - 1].z + 10f);
+							tileCount++;
 						}
 					}
 
@@ -164,7 +170,7 @@ public class EnvironmentGenerator : MonoBehaviour {
 		mesh.RecalculateNormals ();
 		terrain.GetComponent<MeshFilter> ().mesh = mesh;
 
-		string matPath = "3D/Materials/" + SceneManager.Instance.currentProvince.climate.ToString () + "/TerrainMat";
+		string matPath = "3D/Materials/" + SceneManager.Instance.currentProvince.climate.ToString () + "/EnviroMat";
 		terrain.GetComponent<MeshRenderer>().material = (Material)Resources.Load(matPath);
 
 		terrain.transform.position = new Vector3 (terrain.transform.position.x, terrain.transform.position.y, startDistance);
