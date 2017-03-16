@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEditor;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -44,7 +47,7 @@ public class ObstacleEditor : MonoBehaviour {
 
 	private void Awake() {
 		Instance = this;
-		currentClimate = Climate.Ganadero;
+		currentClimate = Climate.Oceanic;
 		climateButton.transform.GetChild(0).GetComponent<Text> ().text = currentClimate.ToString();
 	}
 
@@ -134,7 +137,7 @@ public class ObstacleEditor : MonoBehaviour {
 		textSaved.GetComponent<Text> ().text = "SAVED";
 		textSaved.SetActive (true);
 		StartCoroutine ("ChangeTextAlpha", textSaved.GetComponent<Text> ());
-		UnityEditor.AssetDatabase.Refresh ();
+		AssetDatabase.Refresh ();
 	}
 
 	public void EditStructure() {
@@ -155,7 +158,7 @@ public class ObstacleEditor : MonoBehaviour {
 		textSaved.GetComponent<Text> ().text = "EDITED";
 		textSaved.SetActive (true);
 		StartCoroutine ("ChangeTextAlpha", textSaved.GetComponent<Text> ());
-		UnityEditor.AssetDatabase.Refresh ();
+		AssetDatabase.Refresh ();
 	}
 
 	public void DeleteStructure() {
@@ -173,7 +176,7 @@ public class ObstacleEditor : MonoBehaviour {
 			Destroy (scrollview.transform.GetChild(0).GetChild(0).GetChild(i).gameObject);
 		}
 
-		UnityEditor.AssetDatabase.Refresh ();
+		AssetDatabase.Refresh ();
 	}
 
 	public void ClearTiles() {
@@ -435,7 +438,7 @@ public class ObstacleEditor : MonoBehaviour {
 	public void SelectTile(Vector2 tile) {
 		//PLACE GAMEOBJECT;
 		if (prefabSelected != null) {
-			if ((objNumber == 1 && tileArray [(int)tile.x, (int)tile.y].z == 0) || (objNumber != 1 && tileArray [(int)tile.x, (int)tile.y].x == 0)) {
+			if ((objNumber == -1 && tileArray [(int)tile.x, (int)tile.y].z == 0) || (objNumber != -1 && tileArray [(int)tile.x, (int)tile.y].x == 0)) {
 				Vector3 pos = transform.GetChild ((int)tile.x).GetChild ((int)tile.y).position;
 				pos = new Vector3 (pos.x + prefabSelected.transform.position.x, prefabSelected.transform.position.y, pos.z + prefabSelected.transform.position.z);
 				GameObject obj = Instantiate (prefabSelected, pos, prefabSelected.transform.rotation) as GameObject;
@@ -454,6 +457,10 @@ public class ObstacleEditor : MonoBehaviour {
 					}
 
 					tileArray [(int)tile.x, (int)tile.y].z = objNumber;
+					if (pos.y <= 0) {
+						pos = new Vector3 (pos.x, 1f, pos.z);
+						obj.transform.position = pos;
+					}
 					tileArray [(int)tile.x, (int)tile.y].w = pos.y;
 				}
 				else {
@@ -569,7 +576,7 @@ public class ObstacleEditor : MonoBehaviour {
 
 	public void ChangeClimate() {
 		currentClimate++;
-		if (currentClimate.ToString() == "5")
+		if (currentClimate.ToString() == "3")
 			currentClimate = 0;
 		
 		climateButton.transform.GetChild(0).GetComponent<Text> ().text = currentClimate.ToString();
@@ -662,13 +669,6 @@ public class ObstacleEditor : MonoBehaviour {
 
 		return value;
 	}
-
-//	private void OnGUI() {
-//		GUI.Label(new Rect(10, 10, 500, 20), "Tile Selected: " + tileSelected);
-//		GUI.Label(new Rect(10, 70, 500, 20), "Prefabs Selected: " + prefabSelected);
-//		GUI.Label(new Rect(10, 140, 500, 20), "Coin Selected: " + coinSelected);
-//		GUI.Label(new Rect(10, 210, 500, 20), "Object Selected: " + objSelected);
-//	}
 }
 
 public class ScrollStruct {
@@ -689,3 +689,5 @@ public class ScrollComprarer : IComparer<ScrollStruct> {
 		return DateTime.Compare (x.creationTime, y.creationTime);
 	}
 }
+
+#endif

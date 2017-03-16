@@ -27,6 +27,7 @@ public class GenerationManager : MonoBehaviour {
 	[HideInInspector] public Transform obstacleParent;
 	[HideInInspector] public float tileSize;
 	[HideInInspector] public bool selectedRoad;
+	public float percentageRandomGeneration;
 
 	public static GenerationManager Instance;
 
@@ -77,7 +78,7 @@ public class GenerationManager : MonoBehaviour {
 		float pos = mesh.vertices [mesh.vertices.Length - 1].z + meshStartDistance;
 
 		float porc = Random.Range (0f, 101f);
-		if (porc >= 0f && porc <= 30f) {
+		if (porc >= 0f && porc <= percentageRandomGeneration) {
 			GameObject obsParent = new GameObject ("ObstaclesTiles");
 			obsParent.AddComponent<ParentDestroy> ();
 			GameObject bonParent = new GameObject ("BonificationTiles");

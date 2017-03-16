@@ -1,0 +1,365 @@
+fileFormatVersion: 2
+guid: 4616c952a2bd40649806b43d1697d51f
+timeCreated: 1489655403
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: asa
+    100002: asa_base
+    100004: cabeza
+    100006: cuerpo
+    100008: l_angular
+    100010: l_angular_base
+    100012: l_clavicula
+    100014: l_codo
+    100016: l_hombro
+    100018: l_indice
+    100020: l_indice_base
+    100022: l_medio
+    100024: l_medio_base
+    100026: "l_mu\xF1eca"
+    100028: l_pierna
+    100030: l_pulgar
+    100032: l_pulgar_base
+    100034: l_rodilla
+    100036: l_talon
+    100038: //RootNode
+    100040: pCube1
+    100042: pCube2
+    100044: pCube3
+    100046: pCube4
+    100048: pCube5
+    100050: pCylinder1
+    100052: pCylinder2
+    100054: pCylinder3
+    100056: pCylinder4
+    100058: pCylinder5
+    100060: pCylinder6
+    100062: pCylinder7
+    100064: pCylinder8
+    100066: pCylinder9
+    100068: pelvis
+    100070: pPlane1
+    100072: pPlane2
+    100074: pPlane3
+    100076: pPlane4
+    100078: pPlane5
+    100080: pPlane6
+    100082: pPlane7
+    100084: pSphere1
+    100086: pSphere3
+    100088: pSphere4
+    100090: r_angular
+    100092: r_angular_base
+    100094: r_clavicula
+    100096: r_codo
+    100098: r_hombro
+    100100: r_indice
+    100102: r_indice_base
+    100104: r_medio
+    100106: r_medio_base
+    100108: "r_mu\xF1eca"
+    100110: r_pierna
+    100112: r_pulgar
+    100114: r_pulgar_base
+    100116: r_rodilla
+    100118: r_talon
+    100120: transform1
+    100122: transform10
+    100124: transform11
+    100126: transform12
+    100128: transform13
+    100130: transform14
+    100132: transform15
+    100134: transform16
+    100136: transform17
+    100138: transform18
+    100140: transform19
+    100142: transform2
+    100144: transform20
+    100146: transform21
+    100148: transform3
+    100150: transform4
+    100152: transform5
+    100154: transform6
+    100156: transform7
+    100158: transform8
+    100160: transform9
+    100162: model
+    100164: skeleton
+    400000: asa
+    400002: asa_base
+    400004: cabeza
+    400006: cuerpo
+    400008: l_angular
+    400010: l_angular_base
+    400012: l_clavicula
+    400014: l_codo
+    400016: l_hombro
+    400018: l_indice
+    400020: l_indice_base
+    400022: l_medio
+    400024: l_medio_base
+    400026: "l_mu\xF1eca"
+    400028: l_pierna
+    400030: l_pulgar
+    400032: l_pulgar_base
+    400034: l_rodilla
+    400036: l_talon
+    400038: //RootNode
+    400040: pCube1
+    400042: pCube2
+    400044: pCube3
+    400046: pCube4
+    400048: pCube5
+    400050: pCylinder1
+    400052: pCylinder2
+    400054: pCylinder3
+    400056: pCylinder4
+    400058: pCylinder5
+    400060: pCylinder6
+    400062: pCylinder7
+    400064: pCylinder8
+    400066: pCylinder9
+    400068: pelvis
+    400070: pPlane1
+    400072: pPlane2
+    400074: pPlane3
+    400076: pPlane4
+    400078: pPlane5
+    400080: pPlane6
+    400082: pPlane7
+    400084: pSphere1
+    400086: pSphere3
+    400088: pSphere4
+    400090: r_angular
+    400092: r_angular_base
+    400094: r_clavicula
+    400096: r_codo
+    400098: r_hombro
+    400100: r_indice
+    400102: r_indice_base
+    400104: r_medio
+    400106: r_medio_base
+    400108: "r_mu\xF1eca"
+    400110: r_pierna
+    400112: r_pulgar
+    400114: r_pulgar_base
+    400116: r_rodilla
+    400118: r_talon
+    400120: transform1
+    400122: transform10
+    400124: transform11
+    400126: transform12
+    400128: transform13
+    400130: transform14
+    400132: transform15
+    400134: transform16
+    400136: transform17
+    400138: transform18
+    400140: transform19
+    400142: transform2
+    400144: transform20
+    400146: transform21
+    400148: transform3
+    400150: transform4
+    400152: transform5
+    400154: transform6
+    400156: transform7
+    400158: transform8
+    400160: transform9
+    400162: model
+    400164: skeleton
+    2300000: pCylinder7
+    3300000: pCylinder7
+    4300000: pCylinder7
+    4300002: pSphere3
+    4300004: pSphere1
+    7400000: Take 001
+    9500000: //RootNode
+    13700000: pCylinder7
+    13700002: pSphere1
+    13700004: pSphere3
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Take 001
+      takeName: Take 001
+      firstFrame: 1
+      lastFrame: 26
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: model
+        weight: 1
+      - path: model/pCylinder7
+        weight: 1
+      - path: model/pCylinder8
+        weight: 1
+      - path: model/pCylinder8/transform16
+        weight: 1
+      - path: model/pSphere1
+        weight: 1
+      - path: model/pSphere3
+        weight: 1
+      - path: model/pSphere4
+        weight: 1
+      - path: model/pSphere4/transform17
+        weight: 1
+      - path: skeleton
+        weight: 1
+      - path: skeleton/cabeza
+        weight: 1
+      - path: skeleton/cabeza/asa_base
+        weight: 1
+      - path: skeleton/cabeza/asa_base/asa
+        weight: 1
+      - path: skeleton/cabeza/cuerpo
+        weight: 1
+      - path: skeleton/cabeza/cuerpo/pelvis
+        weight: 1
+      - path: skeleton/cabeza/cuerpo/pelvis/l_pierna
+        weight: 1
+      - path: skeleton/cabeza/cuerpo/pelvis/l_pierna/l_rodilla
+        weight: 1
+      - path: skeleton/cabeza/cuerpo/pelvis/l_pierna/l_rodilla/l_talon
+        weight: 1
+      - path: skeleton/cabeza/cuerpo/pelvis/r_pierna
+        weight: 1
+      - path: skeleton/cabeza/cuerpo/pelvis/r_pierna/r_rodilla
+        weight: 1
+      - path: skeleton/cabeza/cuerpo/pelvis/r_pierna/r_rodilla/r_talon
+        weight: 1
+      - path: skeleton/cabeza/l_clavicula
+        weight: 1
+      - path: skeleton/cabeza/l_clavicula/l_hombro
+        weight: 1
+      - path: skeleton/cabeza/l_clavicula/l_hombro/l_codo
+        weight: 1
+      - path: "skeleton/cabeza/l_clavicula/l_hombro/l_codo/l_mu\xF1eca"
+        weight: 1
+      - path: "skeleton/cabeza/l_clavicula/l_hombro/l_codo/l_mu\xF1eca/l_angular_base"
+        weight: 1
+      - path: "skeleton/cabeza/l_clavicula/l_hombro/l_codo/l_mu\xF1eca/l_angular_base/l_angular"
+        weight: 1
+      - path: "skeleton/cabeza/l_clavicula/l_hombro/l_codo/l_mu\xF1eca/l_indice_base"
+        weight: 1
+      - path: "skeleton/cabeza/l_clavicula/l_hombro/l_codo/l_mu\xF1eca/l_indice_base/l_indice"
+        weight: 1
+      - path: "skeleton/cabeza/l_clavicula/l_hombro/l_codo/l_mu\xF1eca/l_medio_base"
+        weight: 1
+      - path: "skeleton/cabeza/l_clavicula/l_hombro/l_codo/l_mu\xF1eca/l_medio_base/l_medio"
+        weight: 1
+      - path: "skeleton/cabeza/l_clavicula/l_hombro/l_codo/l_mu\xF1eca/l_pulgar_base"
+        weight: 1
+      - path: "skeleton/cabeza/l_clavicula/l_hombro/l_codo/l_mu\xF1eca/l_pulgar_base/l_pulgar"
+        weight: 1
+      - path: skeleton/cabeza/r_clavicula
+        weight: 1
+      - path: skeleton/cabeza/r_clavicula/r_hombro
+        weight: 1
+      - path: skeleton/cabeza/r_clavicula/r_hombro/r_codo
+        weight: 1
+      - path: "skeleton/cabeza/r_clavicula/r_hombro/r_codo/r_mu\xF1eca"
+        weight: 1
+      - path: "skeleton/cabeza/r_clavicula/r_hombro/r_codo/r_mu\xF1eca/r_angular_base"
+        weight: 1
+      - path: "skeleton/cabeza/r_clavicula/r_hombro/r_codo/r_mu\xF1eca/r_angular_base/r_angular"
+        weight: 1
+      - path: "skeleton/cabeza/r_clavicula/r_hombro/r_codo/r_mu\xF1eca/r_indice_base"
+        weight: 1
+      - path: "skeleton/cabeza/r_clavicula/r_hombro/r_codo/r_mu\xF1eca/r_indice_base/r_indice"
+        weight: 1
+      - path: "skeleton/cabeza/r_clavicula/r_hombro/r_codo/r_mu\xF1eca/r_medio_base"
+        weight: 1
+      - path: "skeleton/cabeza/r_clavicula/r_hombro/r_codo/r_mu\xF1eca/r_medio_base/r_medio"
+        weight: 1
+      - path: "skeleton/cabeza/r_clavicula/r_hombro/r_codo/r_mu\xF1eca/r_pulgar_base"
+        weight: 1
+      - path: "skeleton/cabeza/r_clavicula/r_hombro/r_codo/r_mu\xF1eca/r_pulgar_base/r_pulgar"
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

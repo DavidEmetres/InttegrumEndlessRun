@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+
+using UnityEngine;
 using System.Collections;
 
 public class TileInput : MonoBehaviour {
@@ -27,3 +29,5 @@ public class TileInput : MonoBehaviour {
 		GetComponent<SpriteRenderer> ().color = Color.white;
 	}
 }
+
+#endif

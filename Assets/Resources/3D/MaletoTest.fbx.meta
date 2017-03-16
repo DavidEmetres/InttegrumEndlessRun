@@ -1,0 +1,169 @@
+fileFormatVersion: 2
+guid: 568d4d0b26cb73641b6177d01e6d48bd
+timeCreated: 1489658704
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: asa
+    100002: asa_base
+    100004: cabeza
+    100006: cuerpo
+    100008: l_angular
+    100010: l_angular_base
+    100012: l_clavicula
+    100014: l_codo
+    100016: l_hombro
+    100018: l_indice
+    100020: l_indice_base
+    100022: l_medio
+    100024: l_medio_base
+    100026: "l_mu\xF1eca"
+    100028: l_pierna
+    100030: l_pulgar
+    100032: l_pulgar_base
+    100034: l_rodilla
+    100036: l_talon
+    100038: //RootNode
+    100040: model
+    100042: pCylinder7
+    100044: pCylinder8
+    100046: pelvis
+    100048: pSphere1
+    100050: pSphere3
+    100052: pSphere4
+    100054: r_angular
+    100056: r_angular_base
+    100058: r_clavicula
+    100060: r_codo
+    100062: r_hombro
+    100064: r_indice
+    100066: r_indice_base
+    100068: r_medio
+    100070: r_medio_base
+    100072: "r_mu\xF1eca"
+    100074: r_pierna
+    100076: r_pulgar
+    100078: r_pulgar_base
+    100080: r_rodilla
+    100082: r_talon
+    100084: skeleton
+    100086: transform16
+    100088: transform17
+    400000: asa
+    400002: asa_base
+    400004: cabeza
+    400006: cuerpo
+    400008: l_angular
+    400010: l_angular_base
+    400012: l_clavicula
+    400014: l_codo
+    400016: l_hombro
+    400018: l_indice
+    400020: l_indice_base
+    400022: l_medio
+    400024: l_medio_base
+    400026: "l_mu\xF1eca"
+    400028: l_pierna
+    400030: l_pulgar
+    400032: l_pulgar_base
+    400034: l_rodilla
+    400036: l_talon
+    400038: //RootNode
+    400040: model
+    400042: pCylinder7
+    400044: pCylinder8
+    400046: pelvis
+    400048: pSphere1
+    400050: pSphere3
+    400052: pSphere4
+    400054: r_angular
+    400056: r_angular_base
+    400058: r_clavicula
+    400060: r_codo
+    400062: r_hombro
+    400064: r_indice
+    400066: r_indice_base
+    400068: r_medio
+    400070: r_medio_base
+    400072: "r_mu\xF1eca"
+    400074: r_pierna
+    400076: r_pulgar
+    400078: r_pulgar_base
+    400080: r_rodilla
+    400082: r_talon
+    400084: skeleton
+    400086: transform16
+    400088: transform17
+    4300000: pCylinder7
+    4300002: pSphere3
+    4300004: pSphere1
+    7400000: Take 001
+    9500000: //RootNode
+    13700000: pCylinder7
+    13700002: pSphere1
+    13700004: pSphere3
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

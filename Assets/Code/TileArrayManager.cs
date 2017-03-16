@@ -6,12 +6,13 @@ using System;
 
 public class TileArrayManager {
 
-	private List<TileArray> tileArrays = new List<TileArray>();
-	private List<TileArray> ganaderoTileArrays = new List<TileArray>();
-	private List<TileArray> forestalTileArrays = new List<TileArray>();
-	private List<TileArray> regadioTileArrays = new List<TileArray>();
-	private List<TileArray> secanoTileArrays = new List<TileArray>();
-	private List<TileArray> playaTileArrays = new List<TileArray>();
+	private List<TileArray> oceanicTileArrays = new List<TileArray>();
+	private int[] oceanicTypes = new int[] { 2, 1, 1, 1 };
+	private List<TileArray> continentalTileArrays = new List<TileArray>();
+	private int[] continentalTypes = new int[] { 2, 1, 1, 1 };
+	private List<TileArray> mediterraneanTileArrays = new List<TileArray>();
+	private int[] mediterraneanTypes = new int[] { 2, 1, 1, 1 };
+
 	private List<Vector4> vectorList = new List<Vector4> ();
 	private int count = 0;
 	private int[] allObstacles = new int[] { 0, 2 };
@@ -19,7 +20,6 @@ public class TileArrayManager {
 	private float[] allHeights = new float[] { 1f, 2.5f, 3.5f, 4.5f, 5f };
 
 	public TileArrayManager() {
-		string[] namesArray = new string[] { "t1", "t2", "t3" };
 		IDictionary<string, TileArray> d = new Dictionary<string, TileArray> ();
 
 		string path = "TileArrays/";
@@ -27,6 +27,7 @@ public class TileArrayManager {
 		string[] temp;
 		string fileName;
 		string line;
+		string type;
 
 		for(int i = 0; i < allTileArrays.Length; i++) {
 
@@ -72,7 +73,7 @@ public class TileArrayManager {
 					reader.Close();
 				}
 				 
-				d.Add(namesArray[i], new TileArray(new Vector4[,] {
+				d.Add(fileName, new TileArray(new Vector4[,] {
 					{vectorList[0], vectorList[1], vectorList[2]},
 					{vectorList[3], vectorList[4], vectorList[5]},
 					{vectorList[6], vectorList[7], vectorList[8]},
@@ -89,18 +90,58 @@ public class TileArrayManager {
 			}
 		}
 
-		foreach (TileArray ta in d.Values) {
-			tileArrays.Add (ta);
+		foreach (KeyValuePair<string, TileArray> value in d) {
+			string[] t = value.Key.Split ('_');
+
+			switch (t[0]) {
+				case "Oceanic":
+					oceanicTileArrays.Add (value.Value);
+					break;
+				case "Continental":
+					continentalTileArrays.Add (value.Value);
+					break;
+				case "Mediterranean":
+					mediterraneanTileArrays.Add (value.Value);
+					break;
+			}
 		}
 	}
 
 	public TileArray GetRandomTileArray() {
-		int i = UnityEngine.Random.Range (0, tileArrays.Count);
-		return tileArrays [i];
+		int i;
+
+		switch (SceneManager.Instance.currentProvince.climate) {
+			case Climate.Oceanic:
+				i = UnityEngine.Random.Range (0, oceanicTileArrays.Count);
+				return oceanicTileArrays [i];
+				break;
+			case Climate.Continental:
+				i = UnityEngine.Random.Range (0, continentalTileArrays.Count);
+				return continentalTileArrays [i];
+				break;
+			case Climate.Mediterranean:
+				i = UnityEngine.Random.Range (0, mediterraneanTileArrays.Count);
+				return mediterraneanTileArrays [i];
+				break;
+		}
+
+		return oceanicTileArrays [0];
 	}
 
 	public TileArray GetSpecificTileArray(int index) {
-		return tileArrays [index];
+		switch (SceneManager.Instance.currentProvince.climate) {
+			case Climate.Oceanic:
+				return oceanicTileArrays [index];
+				break;
+			case Climate.Continental:
+				return continentalTileArrays [index];
+				break;
+			case Climate.Mediterranean:
+				return mediterraneanTileArrays [index];
+				break;
+		}
+
+		return oceanicTileArrays [index];
 	}
 
 	public TileArray CreateRandomTileArray() {

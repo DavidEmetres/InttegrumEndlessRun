@@ -19,6 +19,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float rollTimer;
 	private float groundPos;
 	private float startJumpHeight;
+	private PlayerAnimationManager animManager;
 
 	public float minSwipeDistanceX;
 	public float minSwipeDistanceY;
@@ -37,6 +38,7 @@ public class PlayerMovement : MonoBehaviour {
 
 		controller = GetComponent<CharacterController> ();
 		rigidbody = GetComponent<Rigidbody> ();
+		animManager = transform.GetChild (0).GetComponent<PlayerAnimationManager> ();
 
 		CapsuleCollider[] col = transform.GetChild(0).GetComponents<CapsuleCollider> ();
 		foreach (CapsuleCollider c in col) {
@@ -215,6 +217,8 @@ public class PlayerMovement : MonoBehaviour {
 				lane = 2;
 			else if (lane < 0)
 				lane = 0;
+			else
+				animManager.ChangeLaneAnimation (right);
 		}
 	}
 
@@ -226,6 +230,7 @@ public class PlayerMovement : MonoBehaviour {
 			rigidbody.useGravity = false;
 			rayToFloorEnabled = false;
 			isInGround = false;
+			animManager.JumpAnimation ();
 		}
 	}
 

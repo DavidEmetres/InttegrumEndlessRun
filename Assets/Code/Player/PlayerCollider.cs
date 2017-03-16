@@ -3,15 +3,15 @@ using System.Collections;
 
 public class PlayerCollider : MonoBehaviour {
 
-	private MeshRenderer renderer;
 	private bool invincible;
 	private float invincibleTimer;
 
+	public SkinnedMeshRenderer[] renderer;
 	public float invincibleDuration;
 	public float timeBetweenFlashes;
 
 	private void Awake() {
-		renderer = GetComponent<MeshRenderer> ();
+//		renderer = GetComponent<MeshRenderer> ();
 	}
 
 	private void Start() {
@@ -25,7 +25,8 @@ public class PlayerCollider : MonoBehaviour {
 			if (invincibleTimer >= invincibleDuration) {
 				invincible = false;
 				CancelInvoke ();
-				renderer.material.color = new Color (renderer.material.color.r, renderer.material.color.g, renderer.material.color.b, 1f);
+				foreach(SkinnedMeshRenderer mr in renderer)
+					mr.material.color = new Color (mr.material.color.r, mr.material.color.g, mr.material.color.b, 1f);
 			}
 		}
 	}
@@ -42,10 +43,12 @@ public class PlayerCollider : MonoBehaviour {
 	}
 
 	private void ChangeAlpha() {
-		if (renderer.material.color.a >= 1f)
-			renderer.material.color = new Color (renderer.material.color.r, renderer.material.color.g, renderer.material.color.b, 0.5f);
-		else
-			renderer.material.color = new Color (renderer.material.color.r, renderer.material.color.g, renderer.material.color.b, 1f);
+		foreach (SkinnedMeshRenderer mr in renderer) {
+			if (mr.material.color.a >= 1f)
+				mr.material.color = new Color (mr.material.color.r, mr.material.color.g, mr.material.color.b, 0.5f);
+			else
+				mr.material.color = new Color (mr.material.color.r, mr.material.color.g, mr.material.color.b, 1f);
+		}
 	}
 
 	private void GetHurt() {

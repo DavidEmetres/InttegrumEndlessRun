@@ -21,19 +21,24 @@ public class TileArray {
 				Vector4 info = (Vector4)tiles.GetValue (i, j);
 
 				string t = info.x.ToString ();
-				string[] temp = t.Split ('.');
 
-				path = "Prefabs/" + SceneManager.Instance.currentProvince.climate.ToString () + "/Obstacle_" + temp [0] + "_" + temp [1];
-				pos = new Vector3 (SceneManager.Instance.lanes [j].x, info.y, distance + (GenerationManager.Instance.tileSize * i));
-				rot = Quaternion.Euler (0f, 180f, 0f); 
-				Tile tile1 = new Tile (path, pos, rot, obsParent);
-				objList.Add (tile1.obj);
+				if (t != "0") {
+					string[] temp = t.Split ('.');
+					path = "Prefabs/" + SceneManager.Instance.currentProvince.climate.ToString () + "/Obstacle_" + temp [0] + "_" + temp [1];
+					pos = new Vector3 (SceneManager.Instance.lanes [j].x, info.y, distance + (GenerationManager.Instance.tileSize * i));
+					Tile tile1 = new Tile (path, pos, Quaternion.identity, obsParent);
+					objList.Add (tile1.obj);
+				}
 
-				path = "Prefabs/" + SceneManager.Instance.currentProvince.climate.ToString () + "/Coin";
-				pos = new Vector3 (SceneManager.Instance.lanes [j].x, info.w, distance + (GenerationManager.Instance.tileSize * i));
-				rot.eulerAngles = new Vector3 (90f, 0f, 0f);
-				Tile tile2 = new Tile (path, pos, rot, bonParent);
-				objList.Add (tile2.obj);
+				t = info.z.ToString ();
+
+				if (t == "-1") {
+					path = "Prefabs/" + SceneManager.Instance.currentProvince.climate.ToString () + "/Coin";
+					pos = new Vector3 (SceneManager.Instance.lanes [j].x, info.w, distance + (GenerationManager.Instance.tileSize * i));
+					rot.eulerAngles = new Vector3 (90f, 0f, 0f);
+					Tile tile2 = new Tile (path, pos, rot, bonParent);
+					objList.Add (tile2.obj);
+				}
 			}
 		}
 

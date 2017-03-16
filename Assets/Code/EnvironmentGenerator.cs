@@ -6,10 +6,12 @@ public class EnvironmentGenerator : MonoBehaviour {
 	private float meshStartDistance;
 	private float tileSize;
 	private float tileCount;
+	private int enviroCount;
 
-	public GameObject leftTerrain;
-	public GameObject rightTerrain;
+	[HideInInspector] public GameObject leftTerrain;
+	[HideInInspector] public GameObject rightTerrain;
 	public Transform environmentParent;
+	public int maxEnviroCount;
 
 	public static EnvironmentGenerator Instance;
 
@@ -28,14 +30,9 @@ public class EnvironmentGenerator : MonoBehaviour {
 			UpdateMesh (leftTerrain, false);
 		if (rightTerrain != null)
 			UpdateMesh (rightTerrain, true);
-
-//		if (tileCount >= tileSize) {
-//			GenerateEnvironment ();
-//		}
 	}
 
 	public void GenerateEnvironment() {
-		tileCount = 0;
 		GameObject leftParent = new GameObject ("LeftEnvironment");
 		leftParent.AddComponent<ParentDestroy> ();
 		leftParent.transform.parent = environmentParent;
@@ -44,13 +41,19 @@ public class EnvironmentGenerator : MonoBehaviour {
 		rightParent.transform.parent = environmentParent;
 
 		float pos = leftTerrain.GetComponent<MeshFilter>().mesh.vertices [leftTerrain.GetComponent<MeshFilter>().mesh.vertices.Length - 1].z + meshStartDistance;
-		GameObject leftEnviro = Instantiate (Resources.Load ("Prefabs/Ganadero/Enviro1"), Vector3.zero, Quaternion.identity) as GameObject;
+		string path = "Prefabs/" + SceneManager.Instance.currentProvince.climate.ToString () + "/Enviro" + enviroCount;
+
+		GameObject leftEnviro = Instantiate (Resources.Load (path), Vector3.zero, Quaternion.identity) as GameObject;
 		leftEnviro.transform.position = new Vector3 (0f, 0f, pos);
 		leftEnviro.transform.parent = leftParent.transform;
-		GameObject rightEnviro = Instantiate (Resources.Load ("Prefabs/Ganadero/Enviro1"), Vector3.zero, Quaternion.identity) as GameObject;
+		GameObject rightEnviro = Instantiate (Resources.Load (path), Vector3.zero, Quaternion.identity) as GameObject;
 		rightEnviro.transform.position = new Vector3 (0f, 0f, pos);
 		rightEnviro.transform.localScale = new Vector3 (-1f, 1f, 1f);
 		rightEnviro.transform.parent = rightParent.transform;
+
+		enviroCount++;
+		if (enviroCount > maxEnviroCount)
+			enviroCount = 0;
 	}
 
 	private void UpdateMesh(GameObject obj, bool right) {

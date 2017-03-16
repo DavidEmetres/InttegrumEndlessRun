@@ -42,9 +42,7 @@ public struct Neighbours {
 };
 
 public enum Climate {
-	Ganadero,
-	Forestal,
-	Secano,
-	Regadio,
-	Playa
+	Oceanic,
+	Continental,
+	Mediterranean
 }
