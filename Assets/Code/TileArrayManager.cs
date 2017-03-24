@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Linq;
 
 public class TileArrayManager {
 
@@ -23,7 +24,11 @@ public class TileArrayManager {
 		IDictionary<string, TileArray> d = new Dictionary<string, TileArray> ();
 
 		string path = "TileArrays/";
-		string[] allTileArrays = Directory.GetFiles (Application.dataPath + "/Resources/" + path, "*.txt", SearchOption.TopDirectoryOnly);
+//		string[] allTileArrays;
+
+		TextAsset[] allTileArrays = (Resources.LoadAll (path, typeof(TextAsset))).Cast<TextAsset> ().ToArray ();
+//		allTileArrays = Directory.GetFiles (Application.dataPath + "/Resources/" + path, "*.txt", SearchOption.TopDirectoryOnly);
+
 		string[] temp;
 		string fileName;
 		string line;
@@ -31,14 +36,20 @@ public class TileArrayManager {
 
 		for(int i = 0; i < allTileArrays.Length; i++) {
 
-			temp = allTileArrays [i].Split ('/');
-			fileName = temp [temp.Length - 1].Substring(0, temp[temp.Length - 1].Length - 4);
-			path = "TileArrays/" + fileName;
+//			temp = allTileArrays [i].Split ('/');
+//			fileName = temp [temp.Length - 1].Substring(0, temp[temp.Length - 1].Length - 4);
+//			path = "TileArrays/" + fileName;
 
-			TextAsset txt = (TextAsset)Resources.Load (path);
+//			TextAsset txt = (TextAsset)Resources.Load (path);
+
+			TextAsset txt = allTileArrays[i];
+			fileName = txt.name;
+			Debug.Log (fileName);
 
 			if (txt != null) {
 				StreamReader reader = new StreamReader (new MemoryStream (txt.bytes));
+				bool force = false;
+				string nextTileName = "";
 
 				using (reader) {
 					do {
@@ -47,7 +58,7 @@ public class TileArrayManager {
 						if(line != null) {
 							string[] vectors = line.Split('|');
 
-							if(vectors.Length > 1) {
+							if(vectors.Length > 2) {
 								foreach(string v in vectors) {
 									string[] tile = v.Split(',');
 
@@ -60,10 +71,9 @@ public class TileArrayManager {
 									vectorList.Add(vector);
 								}
 							}
-							else {
-								bool force = (vectors[0] == "TRUE")? true : false;
-								int nextTileArray = (Convert.ToInt32(vectors[1]));
-								GenerationManager.Instance.ForceNextTile(nextTileArray);
+							else if(vectors.Length > 1) {
+								force = (vectors[0] == "TRUE ")? true : false;
+								nextTileName = vectors[1];
 							}
 						}
 					}
@@ -84,8 +94,7 @@ public class TileArrayManager {
 					{vectorList[21], vectorList[22], vectorList[23]},
 					{vectorList[24], vectorList[25], vectorList[26]},
 					{vectorList[27], vectorList[28], vectorList[29]},
-				}));
-
+				}, fileName, force, nextTileName));
 				vectorList.Clear ();
 			}
 		}
@@ -105,6 +114,16 @@ public class TileArrayManager {
 					break;
 			}
 		}
+
+		foreach (TileArray ta in oceanicTileArrays) {
+			if (ta.forceNextTile) {
+				for (int i = 0; i < oceanicTileArrays.Count; i++) {
+					if (oceanicTileArrays [i].tileArrayName.Trim() == ta.nextTileName.Trim()) {
+						ta.SetNextTileIndex (i);
+					}
+				}
+			}
+		}
 	}
 
 	public TileArray GetRandomTileArray() {
@@ -113,6 +132,10 @@ public class TileArrayManager {
 		switch (SceneManager.Instance.currentProvince.climate) {
 			case Climate.Oceanic:
 				i = UnityEngine.Random.Range (0, oceanicTileArrays.Count);
+
+				if (oceanicTileArrays[i].forceNextTile)
+					GenerationManager.Instance.ForceNextTile (oceanicTileArrays[i].nextTileArray);
+				
 				return oceanicTileArrays [i];
 				break;
 			case Climate.Continental:
@@ -125,7 +148,7 @@ public class TileArrayManager {
 				break;
 		}
 
-		return oceanicTileArrays [0];
+		return null;
 	}
 
 	public TileArray GetSpecificTileArray(int index) {
@@ -293,7 +316,7 @@ public class TileArrayManager {
 			{ vectorList [21], vectorList [22], vectorList [23] },
 			{ vectorList [24], vectorList [25], vectorList [26] },
 			{ vectorList [27], vectorList [28], vectorList [29] },
-		});
+		}, "RandomTileArray", false, "");
 
 		return t;
 	}

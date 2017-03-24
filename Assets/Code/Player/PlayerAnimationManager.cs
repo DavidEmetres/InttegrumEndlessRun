@@ -17,5 +17,45 @@ public class PlayerAnimationManager : MonoBehaviour {
 	public void JumpAnimation() {
 		anim.SetInteger ("jumpAnim", Random.Range (1, 4));
 		anim.SetTrigger ("jumping");
+		anim.SetBool ("isJumping", true);
+	}
+
+	public void EndJumpAnimation() {
+		anim.SetBool ("isFalling", true);
+		anim.SetBool ("isJumping", false);
+	}
+
+	public void EndFalling() {
+		anim.SetBool ("isFalling", false);
+	}
+
+	public void RollAnimation() {
+		anim.SetInteger ("rollAnim", Random.Range (1, 3));
+		anim.SetTrigger ("rolling");
+		anim.SetBool ("isRolling", true);
+	}
+
+	public void EndRollAnimation() {
+		anim.SetBool ("isRolling", false);
+	}
+
+	public void DyingAnimation() {
+		anim.SetTrigger ("dying");
+	}
+
+	public void DyingObstacle4Animation() {
+		anim.SetTrigger ("dyingObstacle4");
+	}
+
+	public void GetHurtAnimation() {
+		anim.SetTrigger ("getHurt");
+	}
+
+	public void FallingAnimation() {
+		anim.SetBool ("isFalling", true);
+	}
+
+	public void SendGameOver() {
+		SceneManager.Instance.GameOver ();
 	}
 }

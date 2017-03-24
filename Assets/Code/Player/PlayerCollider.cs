@@ -5,17 +5,20 @@ public class PlayerCollider : MonoBehaviour {
 
 	private bool invincible;
 	private float invincibleTimer;
+	private PlayerAnimationManager animManager;
 
 	public SkinnedMeshRenderer[] renderer;
 	public float invincibleDuration;
 	public float timeBetweenFlashes;
+	public CapsuleCollider triggerCollider;
 
 	private void Awake() {
-//		renderer = GetComponent<MeshRenderer> ();
+		
 	}
 
 	private void Start() {
 		invincible = false;
+		animManager = GetComponent<PlayerAnimationManager> ();
 	}
 
 	private void Update() {
@@ -32,7 +35,14 @@ public class PlayerCollider : MonoBehaviour {
 	}
 
 	public void OnTriggerEnter(Collider other) {
-		if (other.tag == "Obstacle") {
+		if (other.tag == "Obstacle_4") {
+			SceneManager.Instance.life = 0;
+			Vector3 pos = PlayerMovement.Instance.transform.position;
+			PlayerMovement.Instance.transform.position = new Vector3 (pos.x, pos.y, pos.z - 0.5f);
+			animManager.DyingObstacle4Animation ();
+			SceneManager.Instance.GameOver ();
+		}
+		else if (other.tag == "Obstacle") {
 			if (!invincible)
 				GetHurt ();
 		}
@@ -54,8 +64,10 @@ public class PlayerCollider : MonoBehaviour {
 	private void GetHurt() {
 		SceneManager.Instance.life--;
 		if (SceneManager.Instance.life <= 0) {
-			SceneManager.Instance.GameOver ();
+			animManager.DyingAnimation ();
 		}
+		else
+			animManager.GetHurtAnimation ();
 
 		invincible = true;
 		invincibleTimer = 0f;
@@ -64,5 +76,11 @@ public class PlayerCollider : MonoBehaviour {
 
 	private void GetCoin() {
 		SceneManager.Instance.coins++;
+	}
+
+	public void RestoreTriggerCollider() {
+		triggerCollider.direction = 1;
+		triggerCollider.center = new Vector3 (0, 3.2f, -0.4f);
+		triggerCollider.radius = 2;
 	}
 }

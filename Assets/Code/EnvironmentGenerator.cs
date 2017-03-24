@@ -32,15 +32,26 @@ public class EnvironmentGenerator : MonoBehaviour {
 			UpdateMesh (rightTerrain, true);
 	}
 
-	public void GenerateEnvironment() {
+	public void GenerateEnvironment(float pos, GameObject parentLeft, GameObject parentRight) {
 		GameObject leftParent = new GameObject ("LeftEnvironment");
-		leftParent.AddComponent<ParentDestroy> ();
-		leftParent.transform.parent = environmentParent;
 		GameObject rightParent = new GameObject ("RightEnvironment");
-		rightParent.AddComponent<ParentDestroy> ();
-		rightParent.transform.parent = environmentParent;
 
-		float pos = leftTerrain.GetComponent<MeshFilter>().mesh.vertices [leftTerrain.GetComponent<MeshFilter>().mesh.vertices.Length - 1].z + meshStartDistance;
+		if (parentLeft == null || parentRight == null) {
+			leftParent = new GameObject ("LeftEnvironment");
+			leftParent.AddComponent<ParentDestroy> ();
+			leftParent.transform.parent = environmentParent;
+
+			rightParent = new GameObject ("RightEnvironment");
+			rightParent.AddComponent<ParentDestroy> ();
+			rightParent.transform.parent = environmentParent;
+		}
+		else {
+			leftParent = parentLeft;
+			rightParent = parentRight;
+		}
+
+		if(pos == -1f)
+			pos = leftTerrain.GetComponent<MeshFilter>().mesh.vertices [leftTerrain.GetComponent<MeshFilter>().mesh.vertices.Length - 1].z + meshStartDistance;
 		string path = "Prefabs/" + SceneManager.Instance.currentProvince.climate.ToString () + "/Enviro" + enviroCount;
 
 		GameObject leftEnviro = Instantiate (Resources.Load (path), Vector3.zero, Quaternion.identity) as GameObject;
@@ -61,8 +72,8 @@ public class EnvironmentGenerator : MonoBehaviour {
 		Mesh newMesh = new Mesh ();
 		newMesh.Clear ();
 
-		float maxLeft = (right) ? 5f : -45f;
-		float maxRight = (right) ? 45f : -5f;
+		float maxLeft = (right) ? 5f : -60f;
+		float maxRight = (right) ? 60f : -5f;
 
 		Vector3[] vertices = new Vector3[mesh.vertexCount];
 		int[] triangles = new int[mesh.triangles.Length];
@@ -122,8 +133,8 @@ public class EnvironmentGenerator : MonoBehaviour {
 		terrain.AddComponent<MeshFilter> ();
 		terrain.AddComponent<MeshRenderer> ();
 
-		float maxLeft = (right) ? 5f : -45f;
-		float maxRight = (right) ? 45f : -5f;
+		float maxLeft = (right) ? 5f : -60f;
+		float maxRight = (right) ? 60f : -5f;
 
 		Mesh mesh = new Mesh();
 		mesh.Clear ();

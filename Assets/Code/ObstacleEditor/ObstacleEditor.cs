@@ -23,6 +23,8 @@ public class ObstacleEditor : MonoBehaviour {
 	private List<ScrollStruct> allFiles = new List<ScrollStruct>();
 	private string fileLoaded = "";
 	private Climate currentClimate;
+	private bool forcingNextTile;
+	private bool loadingStructure;
 
 	public LayerMask editorRayCast;
 	public Color tileOcuppiedColor;
@@ -42,6 +44,7 @@ public class ObstacleEditor : MonoBehaviour {
 	public GameObject currentFileText;
 	public GameObject climateButton;
 	public GameObject obstacleScrollview;
+	public GameObject forceNextTileToggle;
 
 	public static ObstacleEditor Instance;
 
@@ -122,13 +125,24 @@ public class ObstacleEditor : MonoBehaviour {
 
 	public void SaveStructure() {
 		string path = Application.dataPath + "/Resources/TileArrays/";
-		string[] lines = new string[10];
+		string[] lines = new string[11];
 
-		for (int i = 0; i < tileArray.GetLength (0); i++) {
-			lines [i] = tileArray [i, 0].x + "," + tileArray [i, 0].y + "," + tileArray [i, 0].z + "," + tileArray [i, 0].w + "|" +
+		for (int i = 9; i >= 0; i--) {
+			lines [9-i] = tileArray [i, 0].x + "," + tileArray [i, 0].y + "," + tileArray [i, 0].z + "," + tileArray [i, 0].w + "|" +
 			tileArray [i, 1].x + "," + tileArray [i, 1].y + "," + tileArray [i, 1].z + "," + tileArray [i, 1].w + "|" +
 			tileArray [i, 2].x + "," + tileArray [i, 2].y + "," + tileArray [i, 2].z + "," + tileArray [i, 2].w;
 		}
+
+		if (forceNextTileToggle.GetComponent<Toggle> ().isOn) {
+			string[] temp = forceNextTileToggle.transform.GetChild (1).GetComponent<Text> ().text.Split ('|');
+			if (temp.Length > 1) {
+				lines [10] = "TRUE |" + temp [1];
+			}
+			else
+				lines [10] = "FALSE | null";
+		}
+		else
+			lines [10] = "FALSE | null";
 
 		string g = Guid.NewGuid().ToString("N");
 		fileLoaded = currentClimate.ToString() + "_TileArray" + g;
@@ -142,15 +156,26 @@ public class ObstacleEditor : MonoBehaviour {
 
 	public void EditStructure() {
 		string path = Application.dataPath + "/Resources/TileArrays/";
-		string[] lines = new string[10];
+		string[] lines = new string[11];
 
-		for (int i = 0; i < tileArray.GetLength (0); i++) {
-			lines [i] = tileArray [i, 0].x + "," + tileArray [i, 0].y + "," + tileArray [i, 0].z + "," + tileArray [i, 0].w + "|" +
+		for (int i = 9; i >= 0; i--) {
+			lines [9-i] = tileArray [i, 0].x + "," + tileArray [i, 0].y + "," + tileArray [i, 0].z + "," + tileArray [i, 0].w + "|" +
 				tileArray [i, 1].x + "," + tileArray [i, 1].y + "," + tileArray [i, 1].z + "," + tileArray [i, 1].w + "|" +
 				tileArray [i, 2].x + "," + tileArray [i, 2].y + "," + tileArray [i, 2].z + "," + tileArray [i, 2].w;
 		}
-			
-		path += fileLoaded + ".txt";
+
+		if (forceNextTileToggle.GetComponent<Toggle> ().isOn) {
+			string[] temp = forceNextTileToggle.transform.GetChild (1).GetComponent<Text> ().text.Split ('|');
+			if (temp.Length > 1) {
+				lines [10] = "TRUE |" + temp [1];
+			}
+			else
+				lines [10] = "FALSE | null";
+		}
+		else
+			lines [10] = "FALSE | null";
+
+		path += fileLoaded;
 		string metaPath = path + ".meta";
 		System.IO.File.Delete (path);
 		System.IO.File.Delete (metaPath);
@@ -223,7 +248,7 @@ public class ObstacleEditor : MonoBehaviour {
 					if (line != null) {
 						string[] vectors = line.Split ('|');
 
-						if (vectors.Length > 0) {
+						if (vectors.Length > 2) {
 							foreach (string v in vectors) {
 								string[] tile = v.Split (',');
 
@@ -236,44 +261,33 @@ public class ObstacleEditor : MonoBehaviour {
 								vectorList.Add (vector);
 							}
 						}
+						else if(vectors.Length > 1) {
+							if(vectors[0] == "TRUE ") {
+								forceNextTileToggle.GetComponent<Toggle>().isOn = true;
+								forceNextTileToggle.transform.GetChild(1).GetComponent<Text>().text = "Force Next Tile |" + vectors[1];
+							}
+							else {
+								forceNextTileToggle.GetComponent<Toggle>().isOn = false;
+								forceNextTileToggle.transform.GetChild(1).GetComponent<Text>().text = "Force Next Tile";
+							}
+						}
 					}
 				} while(line != null);
 
 				reader.Close ();
 			}
 
-			int count = 0;
+			int count = vectorList.Count-1;
 			for (int i = 0; i < tileArray.GetLength (0); i++) {
-				for (int j = 0; j < tileArray.GetLength (1); j++) {
+				for (int j = 2; j >= 0; j--) {
 					tileArray [i, j] = vectorList [count];
-					count++;
+					count--;
 
 					Vector3 pos;
 
 					if (tileArray [i, j].x != 0) {
 						pos = transform.GetChild (i).GetChild (j).position;
 						pos = new Vector3 (pos.x, tileArray [i, j].y, pos.z);
-
-//						GameObject prefab = null;
-
-//						switch ((int)tileArray [i, j].x) {
-//							case 1:
-//								path = "Prefabs/" + currentClimate.ToString() + "/Obstacle_1_1";
-//								prefab = (GameObject)Resources.Load (path);
-//								break;
-//							case 2:
-//								path = "Prefabs/" + currentClimate.ToString() + "/Obstacle_2_1";
-//								prefab = (GameObject)Resources.Load (path);
-//								break;
-//							case 3:
-//								path = "Prefabs/" + currentClimate.ToString() + "/Obstacle_3_1";
-//								prefab = (GameObject)Resources.Load (path);
-//								break;
-//							case 4:
-//								path = "Prefabs/" + currentClimate.ToString() + "/Obstacle_4_1";
-//								prefab = (GameObject)Resources.Load (path);
-//								break;
-//						}
 
 						string t = tileArray [i, j].x.ToString ();
 						string[] temp = t.Split ('.');
@@ -307,6 +321,8 @@ public class ObstacleEditor : MonoBehaviour {
 
 						if (obj.GetComponent<Displacement> () != null)
 							obj.GetComponent<Displacement> ().enabled = false;
+						if (obj.GetComponent<Animator> () != null)
+							obj.GetComponent<Animator> ().enabled = false;
 
 						obj.transform.SetParent (transform.GetChild (i).GetChild (j));
 
@@ -320,6 +336,8 @@ public class ObstacleEditor : MonoBehaviour {
 	}
 
 	public void OpenLoadScrollview() {
+		loadingStructure = true;
+
 		if (tileSelected != new Vector2 (-1, -1)) {
 			if (coinSelected != null || objSelected != null) {
 				coinSelected = null;
@@ -392,15 +410,46 @@ public class ObstacleEditor : MonoBehaviour {
 			t.offsetMax = new Vector2 (0, 0);
 			t.offsetMin = new Vector2 (0, 0);
 
-			b.onClick.AddListener (delegate {
-				LoadStructure (b.name);
-			});
+			if (forcingNextTile) {
+				b.onClick.AddListener (delegate {
+					ForceNextTile (b.name);
+				});
+			}
+			else {
+				b.onClick.AddListener (delegate {
+					LoadStructure (b.name);
+				});
+			}
 		}
 	}
 
 	public void CloseLoadScrollview() {
+		loadingStructure = false;
 		scrollview.SetActive (false);
 		allFiles.Clear ();
+	}
+
+	public void ForceNextToggled() {
+		if (forceNextTileToggle.GetComponent<Toggle> ().isOn) {
+			if (!loadingStructure) {
+				forcingNextTile = true;
+				OpenLoadScrollview ();
+			}
+		}
+		else {
+			if (!loadingStructure) {
+				forceNextTileToggle.transform.GetChild (1).GetComponent<Text> ().text = "Force Next Tile";
+				forcingNextTile = false;
+				if (scrollview.activeInHierarchy)
+					CloseLoadScrollview ();
+			}
+		}
+	}
+
+	public void ForceNextTile(string nextTileName) {
+		forcingNextTile = false;
+		forceNextTileToggle.transform.GetChild(1).GetComponent<Text>().text = "Force Next Tile | " + nextTileName;
+		CloseLoadScrollview ();
 	}
 
 	public void RotateCamera(bool right) {
@@ -440,19 +489,22 @@ public class ObstacleEditor : MonoBehaviour {
 		if (prefabSelected != null) {
 			if ((objNumber == -1 && tileArray [(int)tile.x, (int)tile.y].z == 0) || (objNumber != -1 && tileArray [(int)tile.x, (int)tile.y].x == 0)) {
 				Vector3 pos = transform.GetChild ((int)tile.x).GetChild ((int)tile.y).position;
+				Quaternion rot = prefabSelected.transform.rotation;
 				pos = new Vector3 (pos.x + prefabSelected.transform.position.x, prefabSelected.transform.position.y, pos.z + prefabSelected.transform.position.z);
-				GameObject obj = Instantiate (prefabSelected, pos, prefabSelected.transform.rotation) as GameObject;
+				GameObject obj = Instantiate (prefabSelected, pos, rot) as GameObject;
 
 				if (obj.GetComponent<Displacement> () != null)
 					obj.GetComponent<Displacement> ().enabled = false;
+				if (obj.GetComponent<Animator> () != null)
+					obj.GetComponent<Animator> ().enabled = false;
 		
 				obj.transform.SetParent (transform.GetChild ((int)tile.x).GetChild ((int)tile.y));
 
 				transform.GetChild ((int)tile.x).GetChild ((int)tile.y).gameObject.GetComponent<SpriteRenderer> ().color = tileOcuppiedColor;
 
 				if (objNumber == -1) {
-					if (tileArray [(int)tile.x, (int)tile.y].x != 0 && tileArray [(int)tile.x, (int)tile.y].y < 2.5f) {
-						pos = new Vector3 (pos.x, 2.5f, pos.z);
+					if (tileArray [(int)tile.x, (int)tile.y].x != 0 && tileArray [(int)tile.x, (int)tile.y].y < 2.25f) {
+						pos = new Vector3 (pos.x, 2.25f, pos.z);
 						obj.transform.position = pos;
 					}
 
@@ -464,8 +516,8 @@ public class ObstacleEditor : MonoBehaviour {
 					tileArray [(int)tile.x, (int)tile.y].w = pos.y;
 				}
 				else {
-					if (tileArray [(int)tile.x, (int)tile.y].z != 0 && tileArray [(int)tile.x, (int)tile.y].w < 2.5f) {
-						tileArray [(int)tile.x, (int)tile.y].w = 2.5f;
+					if (tileArray [(int)tile.x, (int)tile.y].z != 0 && tileArray [(int)tile.x, (int)tile.y].w < 2.25f) {
+						tileArray [(int)tile.x, (int)tile.y].w = 2.25f;
 
 						int childCount = transform.GetChild ((int)tile.x).GetChild ((int)tile.y).childCount;
 
@@ -630,15 +682,24 @@ public class ObstacleEditor : MonoBehaviour {
 				value = 0f;
 				break;
 			case 250:
-				value = 0.25f;
+				value = 0.14f;
 				break;
 			case 350:
-				value = 0.5f;
+				value = 0.28f;
 				break;
 			case 450:
-				value = 0.75f;
+				value = 0.43f;
 				break;
-			case 500:
+			case 550:
+				value = 0.56f;
+				break;
+			case 650:
+				value = 0.7f;
+				break;
+			case 750:
+				value = 0.86f;
+				break;
+			case 850:
 				value = 1f;
 				break;
 		}
@@ -653,17 +714,26 @@ public class ObstacleEditor : MonoBehaviour {
 			case 0:
 				value = 0f;
 				break;
-			case 25:
+			case 14:
 				value = 2.5f;
 				break;
-			case 50:
+			case 28:
 				value = 3.5f;
 				break;
-			case 75:
+			case 43:
 				value = 4.5f;
 				break;
+			case 56:
+				value = 5.5f;
+				break;
+			case 70:
+				value = 6.5f;
+				break;
+			case 86:
+				value = 7.5f;
+				break;
 			case 100:
-				value = 5f;
+				value = 8.5f;
 				break;
 		}
 

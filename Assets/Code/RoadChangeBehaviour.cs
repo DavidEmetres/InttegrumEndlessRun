@@ -41,6 +41,8 @@ public class RoadChangeBehaviour : MonoBehaviour {
 				BroadcastMessage ("DesactivateDisplacement");
 				env.transform.SetParent (transform);
 				transform.RotateAround (pivotSelected.position, transform.up, speed * Time.deltaTime);
+				float skyboxRot = RenderSettings.skybox.GetFloat ("_Rotation");
+				RenderSettings.skybox.SetFloat ("_Rotation", skyboxRot + (speed * Time.deltaTime));
 
 				//END ROAD CHANGE;
 				if (transform.localEulerAngles.y >= 270f) {
@@ -64,6 +66,8 @@ public class RoadChangeBehaviour : MonoBehaviour {
 				BroadcastMessage ("DesactivateDisplacement");
 				env.transform.SetParent (transform);
 				transform.RotateAround (pivotSelected.position, transform.up, -speed * Time.deltaTime);
+				float skyboxRot = RenderSettings.skybox.GetFloat ("_Rotation");
+				RenderSettings.skybox.SetFloat ("_Rotation", skyboxRot + (-speed * Time.deltaTime));
 
 				//END ROAD CHANGE;
 				if (transform.localEulerAngles.y <= 90f) {
@@ -117,39 +121,40 @@ public class RoadChangeBehaviour : MonoBehaviour {
 				PlayerMovement.Instance.ChangeState (State.changingLane);
 				PlayerMovement.Instance.bloquedMov = true;
 				laneSelected = PlayerMovement.Instance.GetCurrentLane ();
+				GenerationManager.Instance.laneSelected = laneSelected;
 				SceneManager.Instance.ChooseNextNeighbour (rc.GetNeighbour (laneSelected), rc.GetNewDirection(laneSelected));
 
 				switch (laneSelected) {
-				case 0:
-					pivotSelected = leftPivot;
-					animated = true;
-					GenerationManager.Instance.ChangeDisplacementSpeed (5f, false);
-					GenerationManager.Instance.DestroyTerrainMesh ();
-					EnvironmentGenerator.Instance.DestroyTerrainMeshes ();
-					PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;
-					PlayerMovement.Instance.ChangeLane (true);
-					GenerationManager.Instance.tileCount = 4;
-					break;
-				case 1:
-					animated = true;
-					GenerationManager.Instance.DestroyTerrainMesh ();
-					EnvironmentGenerator.Instance.DestroyTerrainMeshes ();
-					GenerationManager.Instance.BuildTerrainMesh (GetEndRoadPos ());
-					EnvironmentGenerator.Instance.leftTerrain = EnvironmentGenerator.Instance.BuildTerrainMesh (GetEndRoadPos (), false);
-					EnvironmentGenerator.Instance.rightTerrain = EnvironmentGenerator.Instance.BuildTerrainMesh (GetEndRoadPos (), true);
-					GenerationManager.Instance.tileCount = 1;
-					GenerationManager.Instance.changingRoad = false;
-					break;
-				case 2:
-					pivotSelected = rightPivot;
-					animated = true;
-					GenerationManager.Instance.ChangeDisplacementSpeed (5f, false);
-					GenerationManager.Instance.DestroyTerrainMesh ();
-					EnvironmentGenerator.Instance.DestroyTerrainMeshes ();
-					PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;
-					PlayerMovement.Instance.ChangeLane (false);
-					GenerationManager.Instance.tileCount = 4;
-					break;
+					case 0:
+						pivotSelected = leftPivot;
+						animated = true;
+						GenerationManager.Instance.ChangeDisplacementSpeed (5f, false);
+						GenerationManager.Instance.DestroyTerrainMesh ();
+						EnvironmentGenerator.Instance.DestroyTerrainMeshes ();
+						PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;
+						PlayerMovement.Instance.ChangeLane (true);
+						GenerationManager.Instance.tileCount = 3;
+						break;
+					case 1:
+						animated = true;
+						GenerationManager.Instance.DestroyTerrainMesh ();
+						EnvironmentGenerator.Instance.DestroyTerrainMeshes ();
+						GenerationManager.Instance.BuildTerrainMesh (GetEndRoadPos ());
+						EnvironmentGenerator.Instance.leftTerrain = EnvironmentGenerator.Instance.BuildTerrainMesh (GetEndRoadPos (), false);
+						EnvironmentGenerator.Instance.rightTerrain = EnvironmentGenerator.Instance.BuildTerrainMesh (GetEndRoadPos (), true);
+						GenerationManager.Instance.tileCount = 4;
+						GenerationManager.Instance.changingRoad = false;
+						break;
+					case 2:
+						pivotSelected = rightPivot;
+						animated = true;
+						GenerationManager.Instance.ChangeDisplacementSpeed (5f, false);
+						GenerationManager.Instance.DestroyTerrainMesh ();
+						EnvironmentGenerator.Instance.DestroyTerrainMeshes ();
+						PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;
+						PlayerMovement.Instance.ChangeLane (false);
+						GenerationManager.Instance.tileCount = 3;
+						break;
 				}
 			}
 		}

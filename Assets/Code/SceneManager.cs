@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class SceneManager : MonoBehaviour {
 
-	private bool gameOver;
 	private Neighbours neighbour;
 	private bool neighbourChoosed;
 	private Direction nextDirection;
@@ -13,6 +12,7 @@ public class SceneManager : MonoBehaviour {
 
 	public Province currentProvince;
 	public Direction displacementDirection;
+	public bool gameOver;
 
 	[Header("Scene Settings")]
 	public Vector3[] lanes;
@@ -377,6 +377,7 @@ public class SceneManager : MonoBehaviour {
 	public void GameOver() {
 		gameOver = true;
 		GenerationManager.Instance.displacementSpeed = 0f;
+		PlayerMovement.Instance.gameObject.GetComponent<Rigidbody> ().isKinematic = true;
 
 		foreach (Province p in provincesRunned) {
 			Debug.Log (p.name);

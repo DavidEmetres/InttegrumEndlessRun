@@ -23,10 +23,13 @@ public class GenerationManager : MonoBehaviour {
 	[HideInInspector] public bool changingRoad;
 	public Transform defaultBonificationParent;
 	public Transform defaultObstacleParent;
+	public Transform defaultEnvironmentParent;
 	[HideInInspector] public Transform bonificationParent;
 	[HideInInspector] public Transform obstacleParent;
+	[HideInInspector] public Transform environmentParent;
 	[HideInInspector] public float tileSize;
 	[HideInInspector] public bool selectedRoad;
+	[HideInInspector] public int laneSelected;
 	public float percentageRandomGeneration;
 
 	public static GenerationManager Instance;
@@ -42,11 +45,12 @@ public class GenerationManager : MonoBehaviour {
 		generationDistance = 200f;
 		destroyDistance = -30f;
 		displacementSpeed = defaultSpeed;
-		tileCount = 0;
 		tileSize = 5f;
+		tileCount = tileSize;
 		selectedRoad = false;
 		bonificationParent = defaultBonificationParent;
 		obstacleParent = defaultObstacleParent;
+		environmentParent = defaultEnvironmentParent;
 
 		BuildTerrainMesh (0f);
 	}
@@ -57,10 +61,10 @@ public class GenerationManager : MonoBehaviour {
 
 		if (tileCount >= tileSize) {
 			GenerateTile ();
-			EnvironmentGenerator.Instance.GenerateEnvironment ();
+			EnvironmentGenerator.Instance.GenerateEnvironment (-1f, null, null);
 		}
 
-		if (SceneManager.Instance.provinceKm >= 5f && !selectedRoad) {
+		if (SceneManager.Instance.provinceKm >= 2f && !selectedRoad) {
 			selectedRoad = true;
 			CreateRoadChange();
 		}
@@ -86,12 +90,12 @@ public class GenerationManager : MonoBehaviour {
 			obsParent.transform.parent = obstacleParent;
 			bonParent.transform.parent = bonificationParent;
 
-			if (forceNextTile)
+			if (forceNextTile) {
+				forceNextTile = false;
 				tileManager.GetSpecificTileArray (nextTile).GenerateTiles (pos, obsParent.transform, bonParent.transform);
+			}
 			else
 				tileManager.CreateRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
-
-			forceNextTile = false;
 		}
 		else {
 			GameObject obsParent = new GameObject ("ObstaclesTiles");
@@ -101,12 +105,12 @@ public class GenerationManager : MonoBehaviour {
 			obsParent.transform.parent = obstacleParent;
 			bonParent.transform.parent = bonificationParent;
 
-			if (forceNextTile)
+			if (forceNextTile) {
+				forceNextTile = false;
 				tileManager.GetSpecificTileArray (nextTile).GenerateTiles (pos, obsParent.transform, bonParent.transform);
+			}
 			else
 				tileManager.GetRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
-
-			forceNextTile = false;
 		}
 	}
 
@@ -213,52 +217,111 @@ public class GenerationManager : MonoBehaviour {
 		frontObsParent.transform.parent = obstacleParent;
 		frontBonParent.transform.parent = bonificationParent;
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 50f, frontObsParent.transform, frontBonParent.transform);
+//		EnvironmentGenerator.Instance.GenerateEnvironment (pos + 50f, null, null);
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 100f, frontObsParent.transform, frontBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 150f, frontObsParent.transform, frontBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 200f, frontObsParent.transform, frontBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 250f, frontObsParent.transform, frontBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 300f, frontObsParent.transform, frontBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 350f, frontObsParent.transform, frontBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 400f, frontObsParent.transform, frontBonParent.transform);
+//		EnvironmentGenerator.Instance.GenerateEnvironment (pos + 100f, null, null);
+//		tileManager.GetRandomTileArray ().GenerateTiles (pos + 150f, frontObsParent.transform, frontBonParent.transform);
+//		EnvironmentGenerator.Instance.GenerateEnvironment (pos + 150f, null, null);
 
+		//RIGHT ROAD OBSTACLES;
 		GameObject roadchange = GameObject.Find ("RoadChange(Clone)");
 		GameObject rightObsParent = new GameObject("RightRoadObstacleTiles");
 		rightObsParent.AddComponent<ParentDestroy> ();
 		GameObject rightBonParent = new GameObject ("RightRoadBonificationTiles");
 		rightBonParent.AddComponent<ParentDestroy> ();
+		GameObject rightLEnviroParent = new GameObject ("RightRoadLeftEnvironmentTiles");
+		rightLEnviroParent.AddComponent<ParentDestroy> ();
+		GameObject rightREnviroParent = new GameObject ("RightRoadRightEnvironmentTiles");
+		rightREnviroParent.AddComponent<ParentDestroy> ();
 		rightObsParent.transform.parent = roadchange.transform;
 		rightBonParent.transform.parent = roadchange.transform;
+		rightLEnviroParent.transform.parent = roadchange.transform;
+		rightREnviroParent.transform.parent = roadchange.transform;
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 50f, rightObsParent.transform, rightBonParent.transform);
+//		EnvironmentGenerator.Instance.GenerateEnvironment (pos + 50f, rightLEnviroParent, rightREnviroParent);
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 100f, rightObsParent.transform, rightBonParent.transform);
+//		EnvironmentGenerator.Instance.GenerateEnvironment (pos + 100f, rightLEnviroParent, rightREnviroParent);
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 150f, rightObsParent.transform, rightBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 200f, rightObsParent.transform, rightBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 250f, rightObsParent.transform, rightBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 300f, rightObsParent.transform, rightBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 350f, rightObsParent.transform, rightBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 400f, rightObsParent.transform, rightBonParent.transform);
+//		EnvironmentGenerator.Instance.GenerateEnvironment (pos + 150f, rightLEnviroParent, rightREnviroParent);
 		rightObsParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, 90f);
 		rightBonParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, 90f);
+		rightLEnviroParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, 90f);
+		rightREnviroParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, 90f);
 		rightObsParent.transform.parent = obstacleParent;
 		rightBonParent.transform.parent = bonificationParent;
+		rightLEnviroParent.transform.parent = environmentParent;
+		rightREnviroParent.transform.parent = environmentParent;
 
+		//LEFT ROAD OBSTACLES;
 		GameObject leftObsParent = new GameObject("LeftRoadObstacleTiles");
 		leftObsParent.AddComponent<ParentDestroy> ();
 		GameObject leftBonParent = new GameObject ("LeftRoadBonificationTiles");
 		leftBonParent.AddComponent<ParentDestroy> ();
+		GameObject leftLEnviroParent = new GameObject ("LeftRoadLeftEnvironmentTiles");
+		leftLEnviroParent.AddComponent<ParentDestroy> ();
+		GameObject leftREnviroParent = new GameObject ("LeftRoadRightEnvironmentTiles");
+		leftREnviroParent.AddComponent<ParentDestroy> ();
 		leftObsParent.transform.parent = roadchange.transform;
 		leftBonParent.transform.parent = roadchange.transform;
+		leftLEnviroParent.transform.parent = roadchange.transform;
+		leftREnviroParent.transform.parent = roadchange.transform;
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 50f, leftObsParent.transform, leftBonParent.transform);
+//		EnvironmentGenerator.Instance.GenerateEnvironment (pos + 50f, leftLEnviroParent, leftREnviroParent);
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 100f, leftObsParent.transform, leftBonParent.transform);
+//		EnvironmentGenerator.Instance.GenerateEnvironment (pos + 100f, leftLEnviroParent, leftREnviroParent);
 		tileManager.GetRandomTileArray ().GenerateTiles (pos + 150f, leftObsParent.transform, leftBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 200f, leftObsParent.transform, leftBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 250f, leftObsParent.transform, leftBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 300f, leftObsParent.transform, leftBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 350f, leftObsParent.transform, leftBonParent.transform);
-		tileManager.GetRandomTileArray ().GenerateTiles (pos + 400f, leftObsParent.transform, leftBonParent.transform);
+//		EnvironmentGenerator.Instance.GenerateEnvironment (pos + 150f, leftLEnviroParent, leftREnviroParent);
 		leftObsParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, -90f);
 		leftBonParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, -90f);
+		leftLEnviroParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, -90f);
+		leftREnviroParent.transform.RotateAround (rc.GetCenter ().position, Vector3.up, -90f);
 		leftObsParent.transform.parent = obstacleParent;
 		leftBonParent.transform.parent = bonificationParent;
+		leftLEnviroParent.transform.parent = environmentParent;
+		leftREnviroParent.transform.parent = environmentParent;
+
+		GameObject[] obsParent = new GameObject[3] { leftObsParent, frontObsParent, rightObsParent };
+		GameObject[] bonParent = new GameObject[3] { leftBonParent, frontBonParent, rightBonParent };
+		StartCoroutine(LoadRoadChangeAssets(obsParent, bonParent, pos, 0));
+	}
+
+	private IEnumerator LoadRoadChangeAssets(GameObject[] obsParent, GameObject[] bonParent, float pos, int count) {
+		while (changingRoad)
+			yield return null;
+
+		Transform parentObs = obsParent [laneSelected].transform;
+		Transform parentBon = bonParent [laneSelected].transform;
+
+		switch (laneSelected) {
+			case 0:
+				EnvironmentGenerator.Instance.GenerateEnvironment (150f, null, null);
+				tileManager.GetRandomTileArray ().GenerateTiles (200f, parentObs, parentBon);
+				EnvironmentGenerator.Instance.GenerateEnvironment (200f, null, null);
+				tileManager.GetRandomTileArray ().GenerateTiles (250f, parentObs, parentBon);
+				EnvironmentGenerator.Instance.GenerateEnvironment (250f, null, null);
+				tileManager.GetRandomTileArray ().GenerateTiles (300f, parentObs, parentBon);
+				EnvironmentGenerator.Instance.GenerateEnvironment (300f, null, null);
+				break;
+			case 1:
+				tileManager.GetRandomTileArray ().GenerateTiles (150f, parentObs, parentBon);
+				EnvironmentGenerator.Instance.GenerateEnvironment (150f, null, null);
+				tileManager.GetRandomTileArray ().GenerateTiles (200f, parentObs, parentBon);
+				EnvironmentGenerator.Instance.GenerateEnvironment (200f, null, null);
+				tileManager.GetRandomTileArray ().GenerateTiles (250f, parentObs, parentBon);
+				EnvironmentGenerator.Instance.GenerateEnvironment (250f, null, null);
+				tileManager.GetRandomTileArray ().GenerateTiles (300f, parentObs, parentBon);
+				EnvironmentGenerator.Instance.GenerateEnvironment (300f, null, null);
+				break;
+			case 2:
+				EnvironmentGenerator.Instance.GenerateEnvironment (150f, null, null);
+				tileManager.GetRandomTileArray ().GenerateTiles (200f, parentObs, parentBon);
+				EnvironmentGenerator.Instance.GenerateEnvironment (200f, null, null);
+				tileManager.GetRandomTileArray ().GenerateTiles (250f, parentObs, parentBon);
+				EnvironmentGenerator.Instance.GenerateEnvironment (250f, null, null);
+				tileManager.GetRandomTileArray ().GenerateTiles (300f, parentObs, parentBon);
+				EnvironmentGenerator.Instance.GenerateEnvironment (300f, null, null);
+				break;
+		}
 	}
 
 	public void ChangeObsBonParent(Transform obsParent, Transform bonParent, bool returnToDefault) {
@@ -367,7 +430,7 @@ public class GenerationManager : MonoBehaviour {
 		terrain.GetComponent<MeshFilter> ().mesh = mesh;
 
 		string matPath = "3D/Materials/" + SceneManager.Instance.currentProvince.climate.ToString () + "/TerrainMat";
-		terrain.GetComponent<MeshRenderer>().material = (Material)Resources.Load(matPath);
+		terrain.GetComponent<MeshRenderer>().material = (Material)Resources.Load (matPath);
 
 		terrain.transform.position = new Vector3 (terrain.transform.position.x, terrain.transform.position.y, startDistance);
 		meshStartDistance = startDistance;

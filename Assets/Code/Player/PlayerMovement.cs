@@ -47,6 +47,7 @@ public class PlayerMovement : MonoBehaviour {
 				break;
 			}
 		}
+		transform.GetChild (0).GetComponent<PlayerCollider> ().triggerCollider = triggerCollider;
 	}
 
 	private void Start () {
@@ -63,7 +64,7 @@ public class PlayerMovement : MonoBehaviour {
 	private void Update () {
 		if(!bloquedMov)
 			CheckMouseInput ();
-
+		
 		Ray ray = new Ray (new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z), Vector3.down);
 		RaycastHit hit;
 
@@ -73,13 +74,16 @@ public class PlayerMovement : MonoBehaviour {
 
 		if (rayToFloorEnabled) {
 			if (transform.position.y <= (groundPos + 1.1f)) {
-				if(!isInGround)
+				animManager.EndFalling ();
+				if (!isInGround)
 					currentState = State.running;
 				isInGround = true;
 				transform.position = new Vector3 (transform.position.x, (groundPos + 1f), transform.position.z);
 			}
-			else
+			else {
+				animManager.FallingAnimation ();
 				isInGround = false;
+			}
 		}
 			
 		if (currentState == State.running) {
@@ -96,19 +100,17 @@ public class PlayerMovement : MonoBehaviour {
 			else {
 				rigidbody.useGravity = true;
 				rayToFloorEnabled = true;
+				animManager.EndJumpAnimation ();
 			}
 
 			jumpTime += jumpSpeed;
 		}
-		if (currentState == State.rolling) {
+		else if (currentState == State.rolling) {
 			rollTimer += Time.deltaTime;
 
 			if (rollTimer >= rollDuration) {
-				triggerCollider.center = Vector3.zero;
 				currentState = State.running;
-
-				//PROVISIONAL VISUAL UPDATE;
-				transform.localScale = new Vector3 (1f, 1f, 1f);
+				animManager.EndRollAnimation();
 			}
 		}
 		else if (currentState == State.changingLane) {
@@ -121,11 +123,8 @@ public class PlayerMovement : MonoBehaviour {
 				rollTimer += Time.deltaTime;
 
 				if (rollTimer >= rollDuration) {
-					triggerCollider.center = Vector3.zero;
 					currentState = State.running;
-
-					//PROVISIONAL VISUAL UPDATE;
-					transform.localScale = new Vector3 (1f, 1f, 1f);
+					animManager.EndRollAnimation();
 				}
 			}
 			else {
@@ -136,6 +135,7 @@ public class PlayerMovement : MonoBehaviour {
 				else {
 					rigidbody.useGravity = true;
 					rayToFloorEnabled = true;
+					animManager.EndJumpAnimation ();
 				}
 
 				jumpTime += jumpSpeed;
@@ -211,37 +211,43 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	public void ChangeLane(bool right) {
-		if (isInGround && (currentState != State.rolling) || currentState == State.changingLane) {
-			lane = (right) ? lane + 1 : lane - 1;
-			if (lane > 2)
-				lane = 2;
-			else if (lane < 0)
-				lane = 0;
-			else
-				animManager.ChangeLaneAnimation (right);
+		if (!SceneManager.Instance.gameOver) {
+			if (isInGround && (currentState != State.rolling) || currentState == State.changingLane) {
+				lane = (right) ? lane + 1 : lane - 1;
+				if (lane > 2)
+					lane = 2;
+				else if (lane < 0)
+					lane = 0;
+				else
+					animManager.ChangeLaneAnimation (right);
+			}
 		}
 	}
 
 	private void Jump() {
-		if (isInGround) {
-			jumpTime = 0f;
-			startJumpHeight = transform.position.y - 1f;
-			currentState = State.jumping;
-			rigidbody.useGravity = false;
-			rayToFloorEnabled = false;
-			isInGround = false;
-			animManager.JumpAnimation ();
+		if (!SceneManager.Instance.gameOver) {
+			if (isInGround && currentState != State.rolling) {
+				jumpTime = 0f;
+				startJumpHeight = transform.position.y - 1f;
+				currentState = State.jumping;
+				rigidbody.useGravity = false;
+				rayToFloorEnabled = false;
+				isInGround = false;
+				animManager.JumpAnimation ();
+			}
 		}
 	}
 
 	private void Roll() {
-		if (isInGround) {
-			triggerCollider.center = new Vector3 (0, -1, 0);
-			rollTimer = 0f;
-			currentState = State.rolling;
-
-			//PROVISIONAL VISUAL UPDATE;
-			transform.localScale = new Vector3 (1f, 0.5f, 1f);
+		if (!SceneManager.Instance.gameOver) {
+			if (isInGround && currentState != State.rolling) {
+				rollTimer = 0f;
+				currentState = State.rolling;
+				triggerCollider.direction = 2;
+				triggerCollider.center = new Vector3 (0, 1.2f, 0.7f);
+				triggerCollider.radius = 1;
+				animManager.RollAnimation ();
+			}
 		}
 	}
 

@@ -1,0 +1,225 @@
+fileFormatVersion: 2
+guid: cc7b7b2e694b3e948977db6b624873a2
+timeCreated: 1490086507
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: cabeza
+    100002: cadera
+    100004: cola_1
+    100006: cola_2
+    100008: cola_3
+    100010: colsa_base
+    100012: //RootNode
+    100014: cuello
+    100016: cuerpo
+    100018: group2
+    100020: l_muslo_delantero
+    100022: l_muslo_trasero
+    100024: l_pie_delantero
+    100026: l_pie_trasero
+    100028: l_pierna_delantera
+    100030: l_pierna_trasera
+    100032: morro
+    100034: Object04
+    100036: Plane01
+    100038: Plane02
+    100040: Plane03
+    100042: r_muslo_delantero
+    100044: r_muslo_trasero
+    100046: r_pie_delantero
+    100048: r_pie_trasero
+    100050: r_pierna_delantera
+    100052: r_pierna_trasera
+    100054: transform1
+    100056: transform2
+    100058: transform3
+    400000: cabeza
+    400002: cadera
+    400004: cola_1
+    400006: cola_2
+    400008: cola_3
+    400010: colsa_base
+    400012: //RootNode
+    400014: cuello
+    400016: cuerpo
+    400018: group2
+    400020: l_muslo_delantero
+    400022: l_muslo_trasero
+    400024: l_pie_delantero
+    400026: l_pie_trasero
+    400028: l_pierna_delantera
+    400030: l_pierna_trasera
+    400032: morro
+    400034: Object04
+    400036: Plane01
+    400038: Plane02
+    400040: Plane03
+    400042: r_muslo_delantero
+    400044: r_muslo_trasero
+    400046: r_pie_delantero
+    400048: r_pie_trasero
+    400050: r_pierna_delantera
+    400052: r_pierna_trasera
+    400054: transform1
+    400056: transform2
+    400058: transform3
+    2300000: Plane03
+    3300000: Plane03
+    4300000: Plane03
+    7400000: Idle
+    9500000: //RootNode
+    13700000: Plane03
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Idle
+      takeName: Take 001
+      firstFrame: 1
+      lastFrame: 100
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: cuerpo
+        weight: 1
+      - path: cuerpo/cadera
+        weight: 1
+      - path: cuerpo/cadera/colsa_base
+        weight: 1
+      - path: cuerpo/cadera/colsa_base/cola_1
+        weight: 1
+      - path: cuerpo/cadera/colsa_base/cola_1/cola_2
+        weight: 1
+      - path: cuerpo/cadera/colsa_base/cola_1/cola_2/cola_3
+        weight: 1
+      - path: cuerpo/cadera/l_muslo_trasero
+        weight: 1
+      - path: cuerpo/cadera/l_muslo_trasero/l_pierna_trasera
+        weight: 1
+      - path: cuerpo/cadera/l_muslo_trasero/l_pierna_trasera/l_pie_trasero
+        weight: 1
+      - path: cuerpo/cadera/r_muslo_trasero
+        weight: 1
+      - path: cuerpo/cadera/r_muslo_trasero/r_pierna_trasera
+        weight: 1
+      - path: cuerpo/cadera/r_muslo_trasero/r_pierna_trasera/r_pie_trasero
+        weight: 1
+      - path: cuerpo/cuello
+        weight: 1
+      - path: cuerpo/cuello/cabeza
+        weight: 1
+      - path: cuerpo/cuello/cabeza/morro
+        weight: 1
+      - path: cuerpo/l_muslo_delantero
+        weight: 1
+      - path: cuerpo/l_muslo_delantero/l_pierna_delantera
+        weight: 1
+      - path: cuerpo/l_muslo_delantero/l_pierna_delantera/l_pie_delantero
+        weight: 1
+      - path: cuerpo/r_muslo_delantero
+        weight: 1
+      - path: cuerpo/r_muslo_delantero/r_pierna_delantera
+        weight: 1
+      - path: cuerpo/r_muslo_delantero/r_pierna_delantera/r_pie_delantero
+        weight: 1
+      - path: group2
+        weight: 1
+      - path: group2/Object04
+        weight: 1
+      - path: group2/Object04/transform2
+        weight: 1
+      - path: group2/Plane01
+        weight: 1
+      - path: group2/Plane01/transform3
+        weight: 1
+      - path: group2/Plane02
+        weight: 1
+      - path: group2/Plane02/transform1
+        weight: 1
+      - path: group2/Plane03
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 30
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
