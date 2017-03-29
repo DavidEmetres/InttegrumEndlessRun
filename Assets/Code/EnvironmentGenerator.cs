@@ -33,8 +33,8 @@ public class EnvironmentGenerator : MonoBehaviour {
 	}
 
 	public void GenerateEnvironment(float pos, GameObject parentLeft, GameObject parentRight) {
-		GameObject leftParent = new GameObject ("LeftEnvironment");
-		GameObject rightParent = new GameObject ("RightEnvironment");
+		GameObject leftParent = null;
+		GameObject rightParent = null;
 
 		if (parentLeft == null || parentRight == null) {
 			leftParent = new GameObject ("LeftEnvironment");
@@ -52,6 +52,11 @@ public class EnvironmentGenerator : MonoBehaviour {
 
 		if(pos == -1f)
 			pos = leftTerrain.GetComponent<MeshFilter>().mesh.vertices [leftTerrain.GetComponent<MeshFilter>().mesh.vertices.Length - 1].z + meshStartDistance;
+
+		if (GenerationManager.Instance.changingRoad) {
+			pos = GenerationManager.Instance.changingRoadStartPos.transform.position.z + (50f * GenerationManager.Instance.count);
+		}
+
 		string path = "Prefabs/" + SceneManager.Instance.currentProvince.climate.ToString () + "/Enviro" + enviroCount;
 
 		GameObject leftEnviro = Instantiate (Resources.Load (path), Vector3.zero, Quaternion.identity) as GameObject;
@@ -85,24 +90,21 @@ public class EnvironmentGenerator : MonoBehaviour {
 		for (int j = 0; j < mesh.vertexCount; j++) {
 			vertices [j] = new Vector3 (vertices [j].x, vertices [j].y, vertices [j].z - GenerationManager.Instance.displacementSpeed * Time.deltaTime);
 
-			if (!GenerationManager.Instance.changingRoad) {
-				if (vertices [j].z < (GenerationManager.Instance.destroyDistance - meshStartDistance)) {
-					for (int i = 0; i < mesh.vertexCount; i += 2) {
-						if (i < mesh.vertexCount - 2) {
-							vertices [i].Set (mesh.vertices [i + 2].x, mesh.vertices [i + 2].y, mesh.vertices [i + 2].z - GenerationManager.Instance.displacementSpeed * Time.deltaTime);
-							vertices [i + 1].Set (mesh.vertices [i + 3].x, mesh.vertices [i + 3].y, mesh.vertices [i + 3].z - GenerationManager.Instance.displacementSpeed * Time.deltaTime);
-							uv [i] = (uv [i] == Vector2.zero) ? new Vector2 (0, 1) : Vector2.zero;
-							uv [i + 1] = (uv [i + 1] == Vector2.one) ? new Vector2 (1, 0) : Vector2.one;
-						}
-						else {
-							vertices [i] = new Vector3 (maxLeft, 0f, vertices [i - 1].z + 10f);
-							vertices [i + 1] = new Vector3 (maxRight, 0f, vertices [i - 1].z + 10f);
-							tileCount++;
-						}
+			if (vertices [j].z < (GenerationManager.Instance.destroyDistance - meshStartDistance)) {
+				for (int i = 0; i < mesh.vertexCount; i += 2) {
+					if (i < mesh.vertexCount - 2) {
+						vertices [i].Set (mesh.vertices [i + 2].x, mesh.vertices [i + 2].y, mesh.vertices [i + 2].z - GenerationManager.Instance.displacementSpeed * Time.deltaTime);
+						vertices [i + 1].Set (mesh.vertices [i + 3].x, mesh.vertices [i + 3].y, mesh.vertices [i + 3].z - GenerationManager.Instance.displacementSpeed * Time.deltaTime);
+						uv [i] = (uv [i] == Vector2.zero) ? new Vector2 (0, 1) : Vector2.zero;
+						uv [i + 1] = (uv [i + 1] == Vector2.one) ? new Vector2 (1, 0) : Vector2.one;
 					}
-
-					break;
+					else {
+						vertices [i] = new Vector3 (maxLeft, 0f, vertices [i - 1].z + 10f);
+						vertices [i + 1] = new Vector3 (maxRight, 0f, vertices [i - 1].z + 10f);
+					}
 				}
+
+				break;
 			}
 		}
 

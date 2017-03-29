@@ -22,7 +22,8 @@ public class ProvinceChangeBehaviour : MonoBehaviour {
 				GenerationManager.Instance.DestroyTerrainMesh ();
 				GenerationManager.Instance.ChangeTerrainMat ();
 				GenerationManager.Instance.BuildTerrainMesh (endTunnel.position.z);
-				GenerationManager.Instance.changingRoad = false;
+//				GenerationManager.Instance.changingRoad = false;
+				GenerationManager.Instance.changingProvince = false;
 			}
 		}
 	}

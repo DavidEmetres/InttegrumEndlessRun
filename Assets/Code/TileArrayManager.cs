@@ -44,7 +44,6 @@ public class TileArrayManager {
 
 			TextAsset txt = allTileArrays[i];
 			fileName = txt.name;
-			Debug.Log (fileName);
 
 			if (txt != null) {
 				StreamReader reader = new StreamReader (new MemoryStream (txt.bytes));

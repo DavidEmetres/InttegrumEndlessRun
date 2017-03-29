@@ -23,6 +23,8 @@ public class RoadChangeBehaviour : MonoBehaviour {
 
 	public void Initialize(RoadChange rc) {
 		this.rc = rc;
+		BroadcastMessage ("DesactivateDisplacement");
+		GetComponent<Displacement> ().ActivateDisplacement ();
 	}
 
 	private void Start () {
@@ -50,9 +52,9 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					transform.eulerAngles = new Vector3 (transform.eulerAngles.x, 270f, transform.eulerAngles.z);
 					transform.position = new Vector3 (-26f, 0f, transform.position.z);
 					GenerationManager.Instance.ChangeDisplacementSpeed (0f, true);
-					GenerationManager.Instance.BuildTerrainMesh (GetEndRoadPos ());
-					EnvironmentGenerator.Instance.leftTerrain = EnvironmentGenerator.Instance.BuildTerrainMesh (GetEndRoadPos (), false);
-					EnvironmentGenerator.Instance.rightTerrain = EnvironmentGenerator.Instance.BuildTerrainMesh (GetEndRoadPos (), true);
+					GenerationManager.Instance.BuildTerrainMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f);
+					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f, false);
+					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f, true);
 					GenerationManager.Instance.changingRoad = false;
 					GenerationManager.Instance.ChangeObsBonParent (transform, transform, true);
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
@@ -60,6 +62,8 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					PlayerMovement.Instance.ChangeState (State.running);
 					BroadcastMessage ("ActivateDisplacement");
 					env.transform.SetParent (null);
+					BroadcastMessage ("DesactivateDisplacement");
+					GetComponent<Displacement> ().ActivateDisplacement ();
 				}
 			}
 			else if (laneSelected == 2) {
@@ -75,9 +79,9 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					transform.eulerAngles = new Vector3 (transform.eulerAngles.x, 90f, transform.eulerAngles.z);
 					transform.position = new Vector3 (26f, 0f, transform.position.z);
 					GenerationManager.Instance.ChangeDisplacementSpeed (0f, true);
-					GenerationManager.Instance.BuildTerrainMesh (GetEndRoadPos ());
-					EnvironmentGenerator.Instance.leftTerrain = EnvironmentGenerator.Instance.BuildTerrainMesh (GetEndRoadPos (), false);
-					EnvironmentGenerator.Instance.rightTerrain = EnvironmentGenerator.Instance.BuildTerrainMesh (GetEndRoadPos (), true);
+					GenerationManager.Instance.BuildTerrainMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f);
+					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100 - 190f, false);
+					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f, true);
 					GenerationManager.Instance.changingRoad = false;
 					GenerationManager.Instance.ChangeObsBonParent (transform, transform, true);
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
@@ -85,6 +89,8 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					PlayerMovement.Instance.ChangeState (State.running);
 					BroadcastMessage ("ActivateDisplacement");
 					env.transform.SetParent (null);
+					BroadcastMessage ("DesactivateDisplacement");
+					GetComponent<Displacement> ().ActivateDisplacement ();
 				}
 			}
 			else {
@@ -130,30 +136,26 @@ public class RoadChangeBehaviour : MonoBehaviour {
 						animated = true;
 						GenerationManager.Instance.ChangeDisplacementSpeed (5f, false);
 						GenerationManager.Instance.DestroyTerrainMesh ();
-						EnvironmentGenerator.Instance.DestroyTerrainMeshes ();
 						PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;
 						PlayerMovement.Instance.ChangeLane (true);
-						GenerationManager.Instance.tileCount = 3;
 						break;
 					case 1:
 						animated = true;
 						GenerationManager.Instance.DestroyTerrainMesh ();
-						EnvironmentGenerator.Instance.DestroyTerrainMeshes ();
-						GenerationManager.Instance.BuildTerrainMesh (GetEndRoadPos ());
-						EnvironmentGenerator.Instance.leftTerrain = EnvironmentGenerator.Instance.BuildTerrainMesh (GetEndRoadPos (), false);
-						EnvironmentGenerator.Instance.rightTerrain = EnvironmentGenerator.Instance.BuildTerrainMesh (GetEndRoadPos (), true);
-						GenerationManager.Instance.tileCount = 4;
+						GenerationManager.Instance.BuildTerrainMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 150f - 200f);
+						GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 150f - 200f, false);
+						GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 150f - 200f, true);
+						GenerationManager.Instance.tileCount = -15;
 						GenerationManager.Instance.changingRoad = false;
+						GenerationManager.Instance.tileCount = 5;
 						break;
 					case 2:
 						pivotSelected = rightPivot;
 						animated = true;
 						GenerationManager.Instance.ChangeDisplacementSpeed (5f, false);
 						GenerationManager.Instance.DestroyTerrainMesh ();
-						EnvironmentGenerator.Instance.DestroyTerrainMeshes ();
 						PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;
 						PlayerMovement.Instance.ChangeLane (false);
-						GenerationManager.Instance.tileCount = 3;
 						break;
 				}
 			}

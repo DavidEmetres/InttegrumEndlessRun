@@ -7,11 +7,54 @@ ModelImporter:
   fileIDToRecycleName:
     100000: Mesh1
     100002: //RootNode
+    100004: polySurface1
+    100006: polySurface2
+    100008: polySurface3
+    100010: polySurface4
+    100012: polySurface5
+    100014: polySurface6
+    100016: polySurface7
+    100018: transform1
+    100020: transform2
+    100022: transform3
+    100024: Model
+    100026: polySurface5 1
+    100028: transform4
+    100030: transform5
     400000: Mesh1
     400002: //RootNode
+    400004: polySurface1
+    400006: polySurface2
+    400008: polySurface3
+    400010: polySurface4
+    400012: polySurface5
+    400014: polySurface6
+    400016: polySurface7
+    400018: transform1
+    400020: transform2
+    400022: transform3
+    400024: Model
+    400026: polySurface5 1
+    400028: transform4
+    400030: transform5
     2300000: Mesh1
+    2300002: polySurface2
+    2300004: polySurface4
+    2300006: polySurface5
+    2300008: polySurface6
+    2300010: polySurface7
     3300000: Mesh1
+    3300002: polySurface2
+    3300004: polySurface4
+    3300006: polySurface5
+    3300008: polySurface6
+    3300010: polySurface7
     4300000: Mesh1
+    4300002: polySurface6
+    4300004: polySurface7
+    4300006: polySurface4
+    4300008: polySurface5
+    4300010: polySurface2
   materials:
     importMaterials: 1
     materialName: 0

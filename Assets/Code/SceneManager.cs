@@ -316,6 +316,7 @@ public class SceneManager : MonoBehaviour {
 		provinceKm = 0f;
 		changingProvince = false;
 		GenerationManager.Instance.selectedRoad = false;
+		GenerationManager.Instance.changingProvince = false;
 	}
 
 	public void ChooseNextNeighbour(Neighbours n, Direction newDir) {

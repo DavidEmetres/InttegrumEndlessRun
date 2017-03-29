@@ -19,7 +19,7 @@ public class RoadChange {
 
 		switch (displacementDirection) {
 		case Direction.north:
-			if (currentProvince.westNeighbours.Length > 0) {
+			if (currentProvince.westNeighbours != null) {
 				i = Random.Range (0, currentProvince.westNeighbours.Length);
 				westN = currentProvince.westNeighbours [i];
 				neighbours.Add (westN);
@@ -29,7 +29,7 @@ public class RoadChange {
 				neighbours.Add (nullN);
 				directions.Add (Direction.west);
 			}
-			if (currentProvince.northNeighbours.Length > 0) {
+			if (currentProvince.northNeighbours != null) {
 				i = Random.Range (0, currentProvince.northNeighbours.Length);
 				northN = currentProvince.northNeighbours [i];
 				neighbours.Add (northN);
@@ -39,7 +39,7 @@ public class RoadChange {
 				neighbours.Add (nullN);
 				directions.Add (Direction.north);
 			}
-			if (currentProvince.eastNeighbours.Length > 0) {
+			if (currentProvince.eastNeighbours != null) {
 				i = Random.Range (0, currentProvince.eastNeighbours.Length);
 				eastN = currentProvince.eastNeighbours [i];
 				neighbours.Add (eastN);
@@ -85,7 +85,7 @@ public class RoadChange {
 				break;
 
 		case Direction.east:
-			if (currentProvince.northNeighbours.Length > 0) {
+			if (currentProvince.northNeighbours != null) {
 				i = Random.Range (0, currentProvince.northNeighbours.Length);
 				northN = currentProvince.northNeighbours [i];
 				neighbours.Add (northN);
@@ -95,7 +95,7 @@ public class RoadChange {
 				neighbours.Add (nullN);
 				directions.Add (Direction.north);
 			}
-			if (currentProvince.eastNeighbours.Length > 0) {
+			if (currentProvince.eastNeighbours != null) {
 				i = Random.Range (0, currentProvince.eastNeighbours.Length);
 				eastN = currentProvince.eastNeighbours [i];
 				neighbours.Add (eastN);
@@ -105,7 +105,7 @@ public class RoadChange {
 				neighbours.Add (nullN);
 				directions.Add (Direction.east);
 			}
-			if (currentProvince.southNeighbours.Length > 0) {
+			if (currentProvince.southNeighbours != null) {
 				i = Random.Range (0, currentProvince.southNeighbours.Length);
 				southN = currentProvince.southNeighbours [i];
 				neighbours.Add (southN);
@@ -118,7 +118,7 @@ public class RoadChange {
 				break;
 
 		case Direction.west:
-			if (currentProvince.southNeighbours.Length > 0) {
+			if (currentProvince.southNeighbours != null) {
 				i = Random.Range (0, currentProvince.southNeighbours.Length);
 				southN = currentProvince.southNeighbours [i];
 				neighbours.Add (southN);
@@ -128,7 +128,7 @@ public class RoadChange {
 				neighbours.Add (nullN);
 				directions.Add (Direction.south);
 			}
-			if (currentProvince.westNeighbours.Length > 0) {
+			if (currentProvince.westNeighbours != null) {
 				i = Random.Range (0, currentProvince.westNeighbours.Length);
 				westN = currentProvince.westNeighbours [i];
 				neighbours.Add (westN);
@@ -138,7 +138,7 @@ public class RoadChange {
 				neighbours.Add (nullN);
 				directions.Add (Direction.west);
 			}
-			if (currentProvince.northNeighbours.Length > 0) {
+			if (currentProvince.northNeighbours != null) {
 				i = Random.Range (0, currentProvince.northNeighbours.Length);
 				northN = currentProvince.northNeighbours [i];
 				neighbours.Add (northN);
@@ -154,9 +154,9 @@ public class RoadChange {
 		Quaternion rot = Quaternion.identity;
 		rot.eulerAngles = new Vector3 (180f, 0f, 0f);
 
-		Vector3 pos = new Vector3 (0f, 0f, distance);
-
-		GameObject obj = MonoBehaviour.Instantiate(Resources.Load ("Prefabs/RoadChange"), pos, rot) as GameObject;
+		Vector3 pos = new Vector3 (0f, 0.1f, distance);
+		string path = "Prefabs/" + SceneManager.Instance.currentProvince.climate.ToString() + "/RoadChange";
+		GameObject obj = MonoBehaviour.Instantiate(Resources.Load (path), pos, rot) as GameObject;
 		rcb = obj.GetComponent<RoadChangeBehaviour> ();
 		rcb.Initialize (this);
 
