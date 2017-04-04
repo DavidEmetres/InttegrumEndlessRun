@@ -14,6 +14,11 @@ public class SceneManager : MonoBehaviour {
 	public Direction displacementDirection;
 	public bool gameOver;
 
+	public delegate void OnRoadChangeStarted ();
+	public event OnRoadChangeStarted onRoadChangeStarted;
+	public delegate void OnRoadChangeFinished();
+	public event OnRoadChangeFinished onRoadChangeFinished;
+
 	[Header("Scene Settings")]
 	public Vector3[] lanes;
 	public Vector3[] cameraLanes;
@@ -30,6 +35,7 @@ public class SceneManager : MonoBehaviour {
 
 	private void Awake() {
 		Instance = this;
+		Application.targetFrameRate = 60;
 
 		//COMUNIDAD VALENCIANA;
 		Province castellon = new Province ("Castellón", Climate.Mediterranean);
@@ -290,10 +296,6 @@ public class SceneManager : MonoBehaviour {
 		RandomNeighbourSelection ();
 	}
 
-	private void Start () {
-		
-	}
-
 	private void Update () {
 		if (!gameOver) {
 			provinceKm += (GenerationManager.Instance.displacementSpeed / 100f) * Time.deltaTime;
@@ -317,6 +319,24 @@ public class SceneManager : MonoBehaviour {
 		changingProvince = false;
 		GenerationManager.Instance.selectedRoad = false;
 		GenerationManager.Instance.changingProvince = false;
+
+		if (currentProvince.climate == Climate.Oceanic) {
+			GenerationManager.Instance.selectedTilesPool = GenerationManager.Instance.oceanicTilesPool;
+			GenerationManager.Instance.selectedEnviroPool = GenerationManager.Instance.oceanicEnviroPool;
+			GenerationManager.Instance.selectedRoadChangePrefab = GenerationManager.Instance.roadChanges [0];
+		}
+
+		if (currentProvince.climate == Climate.Continental) {
+			GenerationManager.Instance.selectedTilesPool = GenerationManager.Instance.continentalTilesPool;
+			GenerationManager.Instance.selectedEnviroPool = GenerationManager.Instance.continentalEnviroPool;
+			GenerationManager.Instance.selectedRoadChangePrefab = GenerationManager.Instance.roadChanges [1];
+		}
+
+		if (currentProvince.climate == Climate.Mediterranean) {
+			GenerationManager.Instance.selectedTilesPool = GenerationManager.Instance.mediterraneanTilesPool;
+			GenerationManager.Instance.selectedEnviroPool = GenerationManager.Instance.mediterraneanEnviroPool;
+			GenerationManager.Instance.selectedRoadChangePrefab = GenerationManager.Instance.roadChanges [2];
+		}
 	}
 
 	public void ChooseNextNeighbour(Neighbours n, Direction newDir) {
@@ -383,6 +403,14 @@ public class SceneManager : MonoBehaviour {
 		foreach (Province p in provincesRunned) {
 			Debug.Log (p.name);
 		}
+	}
+
+	public void RoadChangeStarted() {
+		onRoadChangeStarted ();
+	}
+
+	public void RoadChangeFinished() {
+		onRoadChangeFinished ();
 	}
 
 	private void OnGUI() {

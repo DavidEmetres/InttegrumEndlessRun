@@ -21,9 +21,11 @@ public class ProvinceChangeBehaviour : MonoBehaviour {
 				SceneManager.Instance.ProvinceChange ();
 				GenerationManager.Instance.DestroyTerrainMesh ();
 				GenerationManager.Instance.ChangeTerrainMat ();
-				GenerationManager.Instance.BuildTerrainMesh (endTunnel.position.z);
-//				GenerationManager.Instance.changingRoad = false;
+				GenerationManager.Instance.BuildTerrainMesh (endTunnel.position.z - 190f);
+				GenerationManager.Instance.BuildEnviroMesh (endTunnel.position.z - 190f, false);
+				GenerationManager.Instance.BuildEnviroMesh (endTunnel.position.z - 190f, true);
 				GenerationManager.Instance.changingProvince = false;
+				GenerationManager.Instance.tileCount = 5;
 			}
 		}
 	}

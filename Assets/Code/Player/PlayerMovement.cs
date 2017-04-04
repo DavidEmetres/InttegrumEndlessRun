@@ -6,11 +6,9 @@ public class PlayerMovement : MonoBehaviour {
 
 	private Vector3[] lanes;
 	private Vector3[] cameraLanes;
-	private CharacterController controller;
-	private Rigidbody rigidbody;
+	private Rigidbody rb;
 	private int lane;
 	private Vector2 touchInitialPosition;
-	private bool swipping;
 	private State currentState;
 	private float jumpTime;
 	private bool rayToFloorEnabled;
@@ -36,8 +34,7 @@ public class PlayerMovement : MonoBehaviour {
 	private void Awake() {
 		Instance = this;
 
-		controller = GetComponent<CharacterController> ();
-		rigidbody = GetComponent<Rigidbody> ();
+		rb = GetComponent<Rigidbody> ();
 		animManager = transform.GetChild (0).GetComponent<PlayerAnimationManager> ();
 
 		CapsuleCollider[] col = transform.GetChild(0).GetComponents<CapsuleCollider> ();
@@ -51,7 +48,6 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	private void Start () {
-		swipping = false;
 		lane = 1;
 		isInGround = true;
 		lanes = SceneManager.Instance.lanes;
@@ -59,6 +55,7 @@ public class PlayerMovement : MonoBehaviour {
 		groundPos = 0f;
 		rayToFloorEnabled = true;
 		bloquedMov = false;
+		rollTimer = 1f;
 	}
 	
 	private void Update () {
@@ -75,7 +72,7 @@ public class PlayerMovement : MonoBehaviour {
 		if (rayToFloorEnabled) {
 			if (transform.position.y <= (groundPos + 1.1f)) {
 				animManager.EndFalling ();
-				if (!isInGround)
+				if (!isInGround && rollTimer > 0f)
 					currentState = State.running;
 				isInGround = true;
 				transform.position = new Vector3 (transform.position.x, (groundPos + 1f), transform.position.z);
@@ -92,20 +89,43 @@ public class PlayerMovement : MonoBehaviour {
 			float ctemp = Mathf.Lerp (Camera.main.transform.position.x, cameraLanes [lane].x, lateralDashSpeed * Time.deltaTime);
 			Camera.main.transform.position = new Vector3 (ctemp, Camera.main.transform.position.y, Camera.main.transform.position.z);
 		}
+
 		else if (currentState == State.jumping) {
-			if (jumpTime <= 1) {
-				float t = jumpCurve.Evaluate (jumpTime);
-				transform.position = new Vector3 (transform.position.x, startJumpHeight + 1f + (t * maxJumpDistance), transform.position.z);
+			float temp = Mathf.Lerp (transform.position.x, lanes [lane].x, lateralDashSpeed * Time.deltaTime);
+			transform.position = new Vector3 (temp, transform.position.y, transform.position.z);
+			float ctemp = Mathf.Lerp (Camera.main.transform.position.x, cameraLanes [lane].x, lateralDashSpeed * Time.deltaTime);
+			Camera.main.transform.position = new Vector3 (ctemp, Camera.main.transform.position.y, Camera.main.transform.position.z);
+
+			if (rollTimer > 0f) {
+				if (jumpTime <= 1) {
+					float t = jumpCurve.Evaluate (jumpTime);
+					transform.position = new Vector3 (transform.position.x, startJumpHeight + 1f + (t * maxJumpDistance), transform.position.z);
+				}
+				else {
+					rb.useGravity = true;
+					rayToFloorEnabled = true;
+					animManager.EndJumpAnimation ();
+				}
+
+				jumpTime += jumpSpeed;
 			}
 			else {
-				rigidbody.useGravity = true;
+				rb.useGravity = true;
 				rayToFloorEnabled = true;
-				animManager.EndJumpAnimation ();
-			}
+				transform.Translate (Vector3.down * 15f * Time.deltaTime);
 
-			jumpTime += jumpSpeed;
+				if (isInGround) {
+					Roll ();
+				}
+			}
 		}
+
 		else if (currentState == State.rolling) {
+			float temp = Mathf.Lerp (transform.position.x, lanes [lane].x, lateralDashSpeed * Time.deltaTime);
+			transform.position = new Vector3 (temp, transform.position.y, transform.position.z);
+			float ctemp = Mathf.Lerp (Camera.main.transform.position.x, cameraLanes [lane].x, lateralDashSpeed * Time.deltaTime);
+			Camera.main.transform.position = new Vector3 (ctemp, Camera.main.transform.position.y, Camera.main.transform.position.z);
+
 			rollTimer += Time.deltaTime;
 
 			if (rollTimer >= rollDuration) {
@@ -113,6 +133,7 @@ public class PlayerMovement : MonoBehaviour {
 				animManager.EndRollAnimation();
 			}
 		}
+
 		else if (currentState == State.changingLane) {
 			if (isInGround) {
 				float temp = Mathf.Lerp (transform.position.x, lanes [lane].x, lateralDashSpeed * Time.deltaTime);
@@ -133,7 +154,7 @@ public class PlayerMovement : MonoBehaviour {
 					transform.position = new Vector3 (transform.position.x, startJumpHeight + 1f + (t * maxJumpDistance), transform.position.z);
 				}
 				else {
-					rigidbody.useGravity = true;
+					rb.useGravity = true;
 					rayToFloorEnabled = true;
 					animManager.EndJumpAnimation ();
 				}
@@ -212,28 +233,29 @@ public class PlayerMovement : MonoBehaviour {
 
 	public void ChangeLane(bool right) {
 		if (!SceneManager.Instance.gameOver) {
-			if (isInGround && (currentState != State.rolling) || currentState == State.changingLane) {
-				lane = (right) ? lane + 1 : lane - 1;
-				if (lane > 2)
-					lane = 2;
-				else if (lane < 0)
-					lane = 0;
-				else
-					animManager.ChangeLaneAnimation (right);
-			}
+			lane = (right) ? lane + 1 : lane - 1;
+			if (lane > 2)
+				lane = 2;
+			else if (lane < 0)
+				lane = 0;
+			else if(currentState != State.jumping && currentState != State.rolling)
+				animManager.ChangeLaneAnimation (right);
 		}
 	}
 
 	private void Jump() {
 		if (!SceneManager.Instance.gameOver) {
-			if (isInGround && currentState != State.rolling) {
+			if (isInGround) {
+				int anim = -1;
+				if (currentState == State.rolling)
+					anim = 1;
 				jumpTime = 0f;
 				startJumpHeight = transform.position.y - 1f;
 				currentState = State.jumping;
-				rigidbody.useGravity = false;
+				rb.useGravity = false;
 				rayToFloorEnabled = false;
 				isInGround = false;
-				animManager.JumpAnimation ();
+				animManager.JumpAnimation (anim);
 			}
 		}
 	}
@@ -247,6 +269,9 @@ public class PlayerMovement : MonoBehaviour {
 				triggerCollider.center = new Vector3 (0, 1.2f, 0.7f);
 				triggerCollider.radius = 1;
 				animManager.RollAnimation ();
+			}
+			else {
+				rollTimer = 0f;
 			}
 		}
 	}

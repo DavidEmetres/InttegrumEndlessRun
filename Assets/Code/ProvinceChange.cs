@@ -9,6 +9,7 @@ public class ProvinceChange {
 
 		Vector3 pos = new Vector3 (0f, 0.01f, distance);
 
-		MonoBehaviour.Instantiate (Resources.Load ("Prefabs/Tunnel"), pos, rot);
+		GameObject prefab = MyResources.Instance.GetTunnel ();
+		MonoBehaviour.Instantiate (prefab, pos, rot);
 	}
 }

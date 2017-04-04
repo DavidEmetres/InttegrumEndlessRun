@@ -17,10 +17,9 @@ public class SceneLoader : MonoBehaviour {
 	private IEnumerator LoadScene() {
 		yield return new WaitForSeconds (3);
 
-		AsyncOperation async = Application.LoadLevelAsync (1);
-		ResourceRequest rAsync = Resources.LoadAsync ("");
+		AsyncOperation async = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync (1);
 
-		while (!async.isDone || !rAsync.isDone)
+		while (!async.isDone)
 			yield return null;
 	}
 }

@@ -15,7 +15,14 @@ public class PlayerAnimationManager : MonoBehaviour {
 	}
 
 	public void JumpAnimation() {
-		anim.SetInteger ("jumpAnim", Random.Range (1, 4));
+		JumpAnimation (-1);
+	}
+
+	public void JumpAnimation(int jAnim) {
+		if (jAnim <= 0)
+			jAnim = Random.Range (1, 4);
+
+		anim.SetInteger ("jumpAnim", jAnim);
 		anim.SetTrigger ("jumping");
 		anim.SetBool ("isJumping", true);
 	}

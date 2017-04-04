@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -18,7 +19,10 @@ public class TileArray {
 	}
 
 	public List<GameObject> GenerateTiles(float distance, Transform obsParent, Transform bonParent) {
-		string path;
+		return GenerateTiles (distance, obsParent, bonParent, true);
+	}
+
+	public List<GameObject> GenerateTiles(float distance, Transform obsParent, Transform bonParent, bool displaceActive) {
 		Vector3 pos = Vector3.zero;
 		Quaternion rot = Quaternion.identity;
 		List<GameObject> objList = new List<GameObject> ();
@@ -31,19 +35,17 @@ public class TileArray {
 
 				if (t != "0") {
 					string[] temp = t.Split ('.');
-					path = "Prefabs/" + SceneManager.Instance.currentProvince.climate.ToString () + "/Obstacle_" + temp [0] + "_" + temp [1];
 					pos = new Vector3 (SceneManager.Instance.lanes [2-j].x, info.y, distance + (GenerationManager.Instance.tileSize * i));
-					Tile tile1 = new Tile (path, pos, Quaternion.identity, obsParent);
+					Tile tile1 = new Tile (Int32.Parse(temp[0]), Int32.Parse(temp[1]), pos, Quaternion.identity, obsParent, displaceActive);
 					objList.Add (tile1.obj);
 				}
 
 				t = info.z.ToString ();
 
 				if (t == "-1") {
-					path = "Prefabs/" + SceneManager.Instance.currentProvince.climate.ToString () + "/Coin";
 					pos = new Vector3 (SceneManager.Instance.lanes [2-j].x, info.w, distance + (GenerationManager.Instance.tileSize * i));
 					rot.eulerAngles = new Vector3 (90f, 0f, 0f);
-					Tile tile2 = new Tile (path, pos, rot, bonParent);
+					Tile tile2 = new Tile (-1, 0, pos, rot, bonParent, displaceActive);
 					objList.Add (tile2.obj);
 				}
 			}

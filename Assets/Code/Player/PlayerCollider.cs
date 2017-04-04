@@ -6,19 +6,16 @@ public class PlayerCollider : MonoBehaviour {
 	private bool invincible;
 	private float invincibleTimer;
 	private PlayerAnimationManager animManager;
+	private GameObject model;
 
-	public SkinnedMeshRenderer[] renderer;
 	public float invincibleDuration;
 	public float timeBetweenFlashes;
-	public CapsuleCollider triggerCollider;
-
-	private void Awake() {
-		
-	}
+	[HideInInspector] public CapsuleCollider triggerCollider;
 
 	private void Start() {
 		invincible = false;
 		animManager = GetComponent<PlayerAnimationManager> ();
+		model = transform.GetChild (0).gameObject;
 	}
 
 	private void Update() {
@@ -28,10 +25,17 @@ public class PlayerCollider : MonoBehaviour {
 			if (invincibleTimer >= invincibleDuration) {
 				invincible = false;
 				CancelInvoke ();
-				foreach(SkinnedMeshRenderer mr in renderer)
-					mr.material.color = new Color (mr.material.color.r, mr.material.color.g, mr.material.color.b, 1f);
+				if (!model.activeInHierarchy)
+					model.SetActive (true);
 			}
 		}
+	}
+	
+	private void InvincibleBlink() {
+		if (model.activeInHierarchy)
+			model.SetActive (false);
+		else
+			model.SetActive (true);
 	}
 
 	public void OnTriggerEnter(Collider other) {
@@ -48,16 +52,7 @@ public class PlayerCollider : MonoBehaviour {
 		}
 		else if (other.tag == "Coin") {
 			GetCoin ();
-			Destroy (other.gameObject);
-		}
-	}
-
-	private void ChangeAlpha() {
-		foreach (SkinnedMeshRenderer mr in renderer) {
-			if (mr.material.color.a >= 1f)
-				mr.material.color = new Color (mr.material.color.r, mr.material.color.g, mr.material.color.b, 0.5f);
-			else
-				mr.material.color = new Color (mr.material.color.r, mr.material.color.g, mr.material.color.b, 1f);
+			other.gameObject.SetActive (false);
 		}
 	}
 
@@ -71,7 +66,7 @@ public class PlayerCollider : MonoBehaviour {
 
 		invincible = true;
 		invincibleTimer = 0f;
-		InvokeRepeating ("ChangeAlpha", 0f, timeBetweenFlashes);
+		InvokeRepeating ("InvincibleBlink", 0f, timeBetweenFlashes);
 	}
 
 	private void GetCoin() {

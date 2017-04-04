@@ -7,6 +7,13 @@ public class Displacement : MonoBehaviour {
 
 	public float destroyDistance;
 
+	private void OnEnable() {
+		if (name != "RoadChange(Clone)" && name != "ChangingRoadStartPos") {
+			SceneManager.Instance.onRoadChangeStarted += DesactivateDisplacement;
+			SceneManager.Instance.onRoadChangeFinished += ActivateDisplacement;
+		}
+	}
+
 	private void Update () {
 		if (activated) {
 			transform.position = new Vector3 (transform.position.x, transform.position.y, 
@@ -14,7 +21,15 @@ public class Displacement : MonoBehaviour {
 		}
 
 		if (transform.position.z <= destroyDistance) {
-			Destroy (this.gameObject);
+			if (name != "RoadChange(Clone)" && name != "ChangingRoadStartPos") {
+				SceneManager.Instance.onRoadChangeStarted -= DesactivateDisplacement;
+				SceneManager.Instance.onRoadChangeFinished -= ActivateDisplacement;
+			}
+			
+			gameObject.SetActive (false);
+
+			if (name == "ChangingRoadStartPos")
+				Destroy (gameObject);
 		}
 	}
 

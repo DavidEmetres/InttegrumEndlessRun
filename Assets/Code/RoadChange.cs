@@ -8,7 +8,7 @@ public class RoadChange {
 	private List<Direction> directions = new List<Direction>();
 	private RoadChangeBehaviour rcb;
 
-	public RoadChange(Province currentProvince, Direction displacementDirection, float distance) {
+	public RoadChange(GameObject roadChangePrefab, Province currentProvince, Direction displacementDirection, float distance) {
 		int i;
 		Neighbours northN;
 		Neighbours southN;
@@ -154,10 +154,17 @@ public class RoadChange {
 		Quaternion rot = Quaternion.identity;
 		rot.eulerAngles = new Vector3 (180f, 0f, 0f);
 
-		Vector3 pos = new Vector3 (0f, 0.1f, distance);
-		string path = "Prefabs/" + SceneManager.Instance.currentProvince.climate.ToString() + "/RoadChange";
-		GameObject obj = MonoBehaviour.Instantiate(Resources.Load (path), pos, rot) as GameObject;
-		rcb = obj.GetComponent<RoadChangeBehaviour> ();
+		Vector3 pos = new Vector3 (0f, 0.01f, distance);
+//		GameObject prefab = MyResources.Instance.GetRoadChange(SceneManager.Instance.currentProvince.climate);
+//		GameObject obj = MonoBehaviour.Instantiate (prefab, pos, rot) as GameObject;
+//		rcb = obj.transform.GetComponent<RoadChangeBehaviour> ();
+//		rcb.Initialize (this);
+
+		roadChangePrefab.SetActive (true);
+		roadChangePrefab.transform.rotation = rot;
+		roadChangePrefab.transform.position = pos;
+		roadChangePrefab.AddComponent<RoadChangeBehaviour> ();
+		rcb = roadChangePrefab.GetComponent<RoadChangeBehaviour> ();
 		rcb.Initialize (this);
 
 		string s = "";
@@ -180,10 +187,5 @@ public class RoadChange {
 
 	public Transform GetCenter() {
 		return rcb.centerPivot;
-	}
-
-	public void SetLeftRightObstacles(GameObject leftObs, GameObject rightObs) {
-		rcb.leftRoadObs = leftObs;
-		rcb.rightRoadObs = rightObs;
 	}
 }

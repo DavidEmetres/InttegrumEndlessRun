@@ -3,94 +3,101 @@ using System.Collections;
 
 public class RoadChangeBehaviour : MonoBehaviour {
 
+	private GameObject env;
 	private RoadChange rc;
 	private BoxCollider activationCollider;
 	private BoxCollider animationCollider;
-	private bool activated;
 	private bool animated;
 	private int laneSelected;
 	private Transform pivotSelected;
-	private Transform leftPivot;
-	private Transform rightPivot;
 	private GameObject endRoad;
 	private Transform leftEndRoad;
 	private Transform rightEndRoad;
+	private bool justSelectedRoad;
+	private float skyboxRot;
+	private float currentYAngle;
+	private bool completed;
 
 	public float speed;
 	public Transform centerPivot;
-	public GameObject leftRoadObs;
-	public GameObject rightRoadObs;
+	public Transform leftPivot;
+	public Transform rightPivot;
 
 	public void Initialize(RoadChange rc) {
 		this.rc = rc;
-		BroadcastMessage ("DesactivateDisplacement");
-		GetComponent<Displacement> ().ActivateDisplacement ();
+		env = GameObject.Find ("Environment");
+		speed = -80f;
+		leftPivot = transform.GetChild (0).GetChild (1).transform;
+		rightPivot = transform.GetChild (0).GetChild (2).transform;
+		centerPivot = transform.GetChild (0).GetChild (3).transform;
 	}
 
-	private void Start () {
-		leftPivot = transform.GetChild (1);
-		rightPivot = transform.GetChild (2);
-
-		activated = false;
+	private void OnEnable () {
 		animated = false;
 	}
-	
-	private void Update () {
-		if (animated) {
-			GameObject env = GameObject.Find ("Environment");
 
+	private void Update () {
+		if (animated && !completed) {
 			if (laneSelected == 0) {
-				BroadcastMessage ("DesactivateDisplacement");
-				env.transform.SetParent (transform);
+				if (justSelectedRoad) {
+					env.transform.SetParent (transform);
+					skyboxRot = RenderSettings.skybox.GetFloat ("_Rotation");
+					justSelectedRoad = false;
+				}
+
+				skyboxRot += (speed * Time.deltaTime);
+				RenderSettings.skybox.SetFloat ("_Rotation", skyboxRot);
 				transform.RotateAround (pivotSelected.position, transform.up, speed * Time.deltaTime);
-				float skyboxRot = RenderSettings.skybox.GetFloat ("_Rotation");
-				RenderSettings.skybox.SetFloat ("_Rotation", skyboxRot + (speed * Time.deltaTime));
 
 				//END ROAD CHANGE;
 				if (transform.localEulerAngles.y >= 270f) {
+					completed = true;
 					animated = false;
 					transform.eulerAngles = new Vector3 (transform.eulerAngles.x, 270f, transform.eulerAngles.z);
-					transform.position = new Vector3 (-26f, 0f, transform.position.z);
+					transform.position = new Vector3 (-26f, 0.01f, transform.position.z);
 					GenerationManager.Instance.ChangeDisplacementSpeed (0f, true);
 					GenerationManager.Instance.BuildTerrainMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f);
 					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f, false);
 					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f, true);
 					GenerationManager.Instance.changingRoad = false;
-					GenerationManager.Instance.ChangeObsBonParent (transform, transform, true);
+//					GenerationManager.Instance.ChangeObsBonParent (transform, transform, true);
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
 					PlayerMovement.Instance.bloquedMov = false;
 					PlayerMovement.Instance.ChangeState (State.running);
-					BroadcastMessage ("ActivateDisplacement");
+					SceneManager.Instance.RoadChangeFinished ();
 					env.transform.SetParent (null);
-					BroadcastMessage ("DesactivateDisplacement");
-					GetComponent<Displacement> ().ActivateDisplacement ();
+					Destroy (this);
 				}
 			}
 			else if (laneSelected == 2) {
-				BroadcastMessage ("DesactivateDisplacement");
-				env.transform.SetParent (transform);
+				if (justSelectedRoad) {
+					env.transform.SetParent (transform);
+					skyboxRot = RenderSettings.skybox.GetFloat ("_Rotation");
+					justSelectedRoad = false;
+				}
+
+				skyboxRot += (-speed * Time.deltaTime);
+				RenderSettings.skybox.SetFloat ("_Rotation", skyboxRot);
 				transform.RotateAround (pivotSelected.position, transform.up, -speed * Time.deltaTime);
-				float skyboxRot = RenderSettings.skybox.GetFloat ("_Rotation");
-				RenderSettings.skybox.SetFloat ("_Rotation", skyboxRot + (-speed * Time.deltaTime));
 
 				//END ROAD CHANGE;
 				if (transform.localEulerAngles.y <= 90f) {
+					completed = true;
 					animated = false;
 					transform.eulerAngles = new Vector3 (transform.eulerAngles.x, 90f, transform.eulerAngles.z);
-					transform.position = new Vector3 (26f, 0f, transform.position.z);
+					transform.position = new Vector3 (26f, 0.01f, transform.position.z);
 					GenerationManager.Instance.ChangeDisplacementSpeed (0f, true);
 					GenerationManager.Instance.BuildTerrainMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f);
 					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100 - 190f, false);
 					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f, true);
 					GenerationManager.Instance.changingRoad = false;
-					GenerationManager.Instance.ChangeObsBonParent (transform, transform, true);
+//					GenerationManager.Instance.ChangeObsBonParent (transform, transform, true);
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
 					PlayerMovement.Instance.bloquedMov = false;
 					PlayerMovement.Instance.ChangeState (State.running);
-					BroadcastMessage ("ActivateDisplacement");
+					SceneManager.Instance.RoadChangeFinished ();
 					env.transform.SetParent (null);
-					BroadcastMessage ("DesactivateDisplacement");
-					GetComponent<Displacement> ().ActivateDisplacement ();
+					Destroy (this);
 				}
 			}
 			else {
@@ -98,6 +105,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					animated = false;
 					PlayerMovement.Instance.bloquedMov = false;
 					PlayerMovement.Instance.ChangeState (State.running);
+					Destroy (this);
 				}
 			}
 		}
@@ -123,17 +131,19 @@ public class RoadChangeBehaviour : MonoBehaviour {
 
 	private void OnTriggerEnter(Collider other) {
 		if (other.tag == "Player") {
-			if (!animated) {
+			if (!animated && !completed) {
 				PlayerMovement.Instance.ChangeState (State.changingLane);
 				PlayerMovement.Instance.bloquedMov = true;
 				laneSelected = PlayerMovement.Instance.GetCurrentLane ();
 				GenerationManager.Instance.laneSelected = laneSelected;
 				SceneManager.Instance.ChooseNextNeighbour (rc.GetNeighbour (laneSelected), rc.GetNewDirection(laneSelected));
+				justSelectedRoad = true;
 
 				switch (laneSelected) {
 					case 0:
 						pivotSelected = leftPivot;
 						animated = true;
+						SceneManager.Instance.RoadChangeStarted ();
 						GenerationManager.Instance.ChangeDisplacementSpeed (5f, false);
 						GenerationManager.Instance.DestroyTerrainMesh ();
 						PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;
@@ -152,6 +162,7 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					case 2:
 						pivotSelected = rightPivot;
 						animated = true;
+						SceneManager.Instance.RoadChangeStarted ();
 						GenerationManager.Instance.ChangeDisplacementSpeed (5f, false);
 						GenerationManager.Instance.DestroyTerrainMesh ();
 						PlayerMovement.Instance.lateralDashSpeed = PlayerMovement.Instance.lateralDashSpeed / 5f;

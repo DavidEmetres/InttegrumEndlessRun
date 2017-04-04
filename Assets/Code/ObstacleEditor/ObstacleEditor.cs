@@ -124,34 +124,94 @@ public class ObstacleEditor : MonoBehaviour {
 	}
 
 	public void SaveStructure() {
-		string path = Application.dataPath + "/Resources/TileArrays/";
-		string[] lines = new string[11];
+//		string path = Application.dataPath + "/Resources/TileArrays/";
+//		string[] lines = new string[11];
+//
+//		for (int i = 9; i >= 0; i--) {
+//			lines [9-i] = tileArray [i, 0].x + "," + tileArray [i, 0].y + "," + tileArray [i, 0].z + "," + tileArray [i, 0].w + "|" +
+//			tileArray [i, 1].x + "," + tileArray [i, 1].y + "," + tileArray [i, 1].z + "," + tileArray [i, 1].w + "|" +
+//			tileArray [i, 2].x + "," + tileArray [i, 2].y + "," + tileArray [i, 2].z + "," + tileArray [i, 2].w;
+//		}
+//
+//		if (forceNextTileToggle.GetComponent<Toggle> ().isOn) {
+//			string[] temp = forceNextTileToggle.transform.GetChild (1).GetComponent<Text> ().text.Split ('|');
+//			if (temp.Length > 1) {
+//				lines [10] = "TRUE |" + temp [1];
+//			}
+//			else
+//				lines [10] = "FALSE | null";
+//		}
+//		else
+//			lines [10] = "FALSE | null";
+//
+//		string g = Guid.NewGuid().ToString("N");
+//		fileLoaded = currentClimate.ToString() + "_TileArray" + g;
+//		path += fileLoaded;
+//		System.IO.File.WriteAllLines (path + ".txt", lines);
+//		textSaved.GetComponent<Text> ().text = "SAVED";
+//		textSaved.SetActive (true);
+//		StartCoroutine ("ChangeTextAlpha", textSaved.GetComponent<Text> ());
+//		AssetDatabase.Refresh ();
 
-		for (int i = 9; i >= 0; i--) {
-			lines [9-i] = tileArray [i, 0].x + "," + tileArray [i, 0].y + "," + tileArray [i, 0].z + "," + tileArray [i, 0].w + "|" +
-			tileArray [i, 1].x + "," + tileArray [i, 1].y + "," + tileArray [i, 1].z + "," + tileArray [i, 1].w + "|" +
-			tileArray [i, 2].x + "," + tileArray [i, 2].y + "," + tileArray [i, 2].z + "," + tileArray [i, 2].w;
-		}
-
-		if (forceNextTileToggle.GetComponent<Toggle> ().isOn) {
-			string[] temp = forceNextTileToggle.transform.GetChild (1).GetComponent<Text> ().text.Split ('|');
-			if (temp.Length > 1) {
-				lines [10] = "TRUE |" + temp [1];
-			}
-			else
-				lines [10] = "FALSE | null";
-		}
-		else
-			lines [10] = "FALSE | null";
+		string temp;
+		string[] t;
+		GameObject obj = null;
+		Vector3 pos;
+		GameObject coin = null;
+		Vector3 cPos;
 
 		string g = Guid.NewGuid().ToString("N");
 		fileLoaded = currentClimate.ToString() + "_TileArray" + g;
-		path += fileLoaded;
-		System.IO.File.WriteAllLines (path + ".txt", lines);
-		textSaved.GetComponent<Text> ().text = "SAVED";
-		textSaved.SetActive (true);
-		StartCoroutine ("ChangeTextAlpha", textSaved.GetComponent<Text> ());
-		AssetDatabase.Refresh ();
+		GameObject prefab = new GameObject (fileLoaded);
+
+		for (int i = 9; i >= 0; i--) {
+			if (tileArray [i, 0].x != 0) {
+				temp = tileArray [i, 0].x.ToString ();
+				t = temp.Split ('.');
+				obj = MyResources.Instance.GetObstacle (currentClimate, Int32.Parse (t [0]), Int32.Parse (t [1]));
+				pos = new Vector3 (-3f, tileArray [i, 0].y, (9 - i) * 5f);
+				Instantiate (obj, pos + obj.transform.position, obj.transform.rotation, prefab.transform);
+			}
+
+			if (tileArray [i, 0].z != 0) {
+				coin = MyResources.Instance.GetCoin ();
+				cPos = new Vector3 (-3f, tileArray [i, 0].w, (9 - i) * 5f);
+				Instantiate (coin, cPos + coin.transform.position, coin.transform.rotation, prefab.transform);
+			}
+
+			if (tileArray [i, 1].x != 0) {
+				temp = tileArray [i, 1].x.ToString ();
+				t = temp.Split ('.');
+				obj = MyResources.Instance.GetObstacle (currentClimate, Int32.Parse (t [0]), Int32.Parse (t [1]));
+				pos = new Vector3 (0f, tileArray [i, 1].y, (9 - i) * 5f);
+				Instantiate (obj, pos + obj.transform.position, obj.transform.rotation, prefab.transform);
+			}
+
+			if (tileArray [i, 1].z != 0) {
+				coin = MyResources.Instance.GetCoin ();
+				cPos = new Vector3 (0f, tileArray [i, 1].w, (9 - i) * 5f);
+				Instantiate (coin, cPos + coin.transform.position, coin.transform.rotation, prefab.transform);
+			}
+
+			if (tileArray [i, 2].x != 0) {
+				temp = tileArray [i, 2].x.ToString ();
+				t = temp.Split ('.');
+				obj = MyResources.Instance.GetObstacle (currentClimate, Int32.Parse (t [0]), Int32.Parse (t [1]));
+				pos = new Vector3 (3f, tileArray [i, 2].y, (9 - i) * 5f);
+				Instantiate (obj, pos + obj.transform.position, obj.transform.rotation, prefab.transform);
+			}
+
+			if (tileArray [i, 2].z != 0) {
+				coin = MyResources.Instance.GetCoin ();
+				cPos = new Vector3 (3f, tileArray [i, 2].w, (9 - i) * 5f);
+				Instantiate (coin, cPos + coin.transform.position, coin.transform.rotation, prefab.transform);
+			}
+		}
+			
+		prefab.AddComponent<Displacement> ();
+		prefab.GetComponent<Displacement> ().destroyDistance = -50f;
+		PrefabUtility.CreatePrefab ("Assets/Resources/TileArrays/" + prefab.name + ".prefab", prefab.gameObject);
+		Destroy (prefab);
 	}
 
 	public void EditStructure() {
@@ -293,7 +353,7 @@ public class ObstacleEditor : MonoBehaviour {
 						string[] temp = t.Split ('.');
 						path = "Prefabs/" + currentClimate.ToString () + "/Obstacle_" + temp[0] + "_" + temp[1];
 
-						GameObject prefab = (GameObject)Resources.Load(path);
+						GameObject prefab = MyResources.Instance.GetObstacle(currentClimate, Int32.Parse(temp[0]), Int32.Parse(temp[1]));
 						GameObject obj = Instantiate (prefab, pos, prefab.transform.rotation) as GameObject;
 
 						if (obj.GetComponent<Displacement> () != null)
@@ -312,8 +372,7 @@ public class ObstacleEditor : MonoBehaviour {
 
 						switch ((int)tileArray [i, j].z) {
 							case -1:
-								path = "Prefabs/" + currentClimate.ToString() + "/Coin";
-								prefab = (GameObject)Resources.Load (path);
+								prefab = MyResources.Instance.GetCoin ();
 								break;
 						}
 
@@ -599,6 +658,8 @@ public class ObstacleEditor : MonoBehaviour {
 	}
 
 	public void SelectPrefab(string obj) {
+		GameObject newPrefab = null;
+
 		if (obj.Contains ("Obstacle")) {
 			string[] temp = obj.Split ('_');
 			int i;
@@ -606,12 +667,12 @@ public class ObstacleEditor : MonoBehaviour {
 			int j;
 			Int32.TryParse (temp [2], out j);
 			objNumber = i + (j / 10f);
+			newPrefab = MyResources.Instance.GetObstacle (currentClimate, i, j);
 		}
-		else
+		else {
 			objNumber = -1;
-
-		string path = "Prefabs/" + currentClimate.ToString() + "/" + obj;
-		GameObject newPrefab = (GameObject)Resources.Load (path);
+			newPrefab = MyResources.Instance.GetCoin ();
+		}
 
 		if (prefabSelected != null) {
 			if (prefabSelected == newPrefab) {
