@@ -8,8 +8,11 @@ using System.Linq;
 public class TileArrayManager {
 
 	public List<GameObject> oceanicTileArrays = new List<GameObject>();
+	public List<GameObject> oceanicForceNextTile = new List<GameObject> ();
 	public List<GameObject> continentalTileArrays = new List<GameObject>();
+	public List<GameObject> continentalForceNextTile = new List<GameObject> ();
 	public List<GameObject> mediterraneanTileArrays = new List<GameObject>();
+	public List<GameObject> mediterraneanForceNextTile = new List<GameObject> ();
 
 	public List<GameObject> oceanicEnviros = new List<GameObject>();
 	public List<GameObject> continentalEnviros = new List<GameObject>();

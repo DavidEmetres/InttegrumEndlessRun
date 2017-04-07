@@ -60,7 +60,6 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f, false);
 					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f, true);
 					GenerationManager.Instance.changingRoad = false;
-//					GenerationManager.Instance.ChangeObsBonParent (transform, transform, true);
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
 					PlayerMovement.Instance.bloquedMov = false;
 					PlayerMovement.Instance.ChangeState (State.running);
@@ -91,7 +90,6 @@ public class RoadChangeBehaviour : MonoBehaviour {
 					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100 - 190f, false);
 					GenerationManager.Instance.BuildEnviroMesh (GenerationManager.Instance.changingRoadStartPos.transform.position.z + 100f - 190f, true);
 					GenerationManager.Instance.changingRoad = false;
-//					GenerationManager.Instance.ChangeObsBonParent (transform, transform, true);
 					PlayerMovement.Instance.lateralDashSpeed *= 5f;
 					PlayerMovement.Instance.bloquedMov = false;
 					PlayerMovement.Instance.ChangeState (State.running);
@@ -136,8 +134,10 @@ public class RoadChangeBehaviour : MonoBehaviour {
 				PlayerMovement.Instance.bloquedMov = true;
 				laneSelected = PlayerMovement.Instance.GetCurrentLane ();
 				GenerationManager.Instance.laneSelected = laneSelected;
-				SceneManager.Instance.ChooseNextNeighbour (rc.GetNeighbour (laneSelected), rc.GetNewDirection(laneSelected));
+				Neighbours n = rc.GetNeighbour (laneSelected);
+				SceneManager.Instance.ChooseNextNeighbour (n, rc.GetNewDirection(laneSelected));
 				justSelectedRoad = true;
+				HUDManager.Instance.ShowNextProvince (n.neighbourProvince.name);
 
 				switch (laneSelected) {
 					case 0:

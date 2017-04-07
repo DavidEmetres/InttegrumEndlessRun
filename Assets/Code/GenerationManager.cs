@@ -12,19 +12,33 @@ public class GenerationManager : MonoBehaviour {
 	private float meshStartDistance;
 	private bool forceNextTile;
 	private int nextTile;
-	private int enviroCount;
 
 	[HideInInspector] public List<GameObject> oceanicTilesPool = new List<GameObject> ();
 	[HideInInspector] public List<GameObject> oceanicEnviroPool = new List<GameObject> ();
+	[HideInInspector] public List<Material> oceanicMaterialsPool = new List<Material>();
 	[HideInInspector] public List<GameObject> continentalTilesPool = new List<GameObject> ();
 	[HideInInspector] public List<GameObject> continentalEnviroPool = new List<GameObject> ();
+	[HideInInspector] public List<Material> continentalMaterialsPool = new List<Material>();
 	[HideInInspector] public List<GameObject> mediterraneanTilesPool = new List<GameObject> ();
 	[HideInInspector] public List<GameObject> mediterraneanEnviroPool = new List<GameObject> ();
+	[HideInInspector] public List<Material> mediterraneanMaterialsPool = new List<Material>();
 	[HideInInspector] public List<GameObject> roadChanges = new List<GameObject> ();
+	[HideInInspector] public GameObject tunnel;
+	[HideInInspector] public GameObject roadChangeSign;
+	[HideInInspector] public GameObject provinceChangeSign;
 
 	[HideInInspector] public List<GameObject> selectedTilesPool = new List<GameObject>();
 	[HideInInspector] public List<GameObject> selectedEnviroPool = new List<GameObject> ();
+	[HideInInspector] public List<Material> selectedMaterialsPool = new List<Material>();
 	[HideInInspector] public GameObject selectedRoadChangePrefab;
+	[HideInInspector] public Transform selectedTilesParent;
+	[HideInInspector] public Transform selectedEnviroParent;
+	[HideInInspector] public GameObject oceanicTiles;
+	[HideInInspector] public GameObject oceanicEnviro;
+	[HideInInspector] public GameObject continentalTiles;
+	[HideInInspector] public GameObject continentalEnviro;
+	[HideInInspector] public GameObject mediterraneanTiles;
+	[HideInInspector] public GameObject mediterraneanEnviro;
 
 	[HideInInspector] public float tileCount;
 	[HideInInspector] public float displacementSpeed;
@@ -40,12 +54,14 @@ public class GenerationManager : MonoBehaviour {
 	[HideInInspector] public int count;
 	[HideInInspector] public float previousEnviroPos;
 	[HideInInspector] public GameObject changingRoadStartPos;
+	[HideInInspector] public int enviroCount;
 	public float defaultSpeed;
 	public Transform obstacleParent;
 	public Transform environmentParent;
 	public int maxEnviroCount;
 	public float percentageRandomGeneration;
 	public bool justEnteredRoadChange;
+	public bool signAppeared;
 
 	public static GenerationManager Instance;
 
@@ -54,40 +70,50 @@ public class GenerationManager : MonoBehaviour {
 
 		tileManager = new TileArrayManager ();
 
+		//ROAD CHANGE POOL;
+
 		GameObject rc = Instantiate ((GameObject)Resources.Load ("RoadChanges/Oceanic_RoadChange"), new Vector3 (0f, 0f, -200f), Quaternion.identity) as GameObject;
 		rc.SetActive (false);
 		roadChanges.Add (rc);
-		//		roadChanges.Add ((GameObject)Resources.Load ("RoadChanges/Continental_RoadChange"));
-		//		roadChanges.Add ((GameObject)Resources.Load ("RoadChanges/Mediterranean_RoadChange"));
+//		rc = Instantiate ((GameObject)Resources.Load ("RoadChanges/Continental_RoadChange"), new Vector3 (0f, 0f, -200f), Quaternion.identity) as GameObject;
+//		rc.SetActive (false);
+//		roadChanges.Add (rc);
+//		rc = Instantiate ((GameObject)Resources.Load ("RoadChanges/Mediterranean_RoadChange"), new Vector3 (0f, 0f, -200f), Quaternion.identity) as GameObject;
+//		rc.SetActive (false);
+//		roadChanges.Add (rc);
 
-		if (SceneManager.Instance.currentProvince.climate == Climate.Oceanic) {
-			selectedTilesPool = oceanicTilesPool;
-			selectedEnviroPool = oceanicEnviroPool;
-			selectedRoadChangePrefab = roadChanges [0];
-		}
+		GameObject pref = (GameObject)Resources.Load ("Signs/RoadChangeSign");
+		roadChangeSign = Instantiate (pref, new Vector3 (0f, 0f, -20f), pref.transform.rotation) as GameObject;
+		roadChangeSign.SetActive (false);
 
-		if (SceneManager.Instance.currentProvince.climate == Climate.Continental) {
-			selectedTilesPool = continentalTilesPool;
-			selectedEnviroPool = continentalEnviroPool;
-			selectedRoadChangePrefab = roadChanges [1];
-		}
+		//TUNNEL POOL;
 
-		if (SceneManager.Instance.currentProvince.climate == Climate.Mediterranean) {
-			selectedTilesPool = mediterraneanTilesPool;
-			selectedEnviroPool = mediterraneanEnviroPool;
-			selectedRoadChangePrefab = roadChanges [2];
-		}
+		tunnel = Instantiate ((GameObject)Resources.Load ("Tunnel/Tunnel"), new Vector3 (0f, 0f, -200f), Quaternion.identity) as GameObject;
+		tunnel.SetActive (false);
 
-		for (int i = 0; i < 10; i++) {
-			GameObject prefab = tileManager.oceanicTileArrays [0];
+		//MATERIALS POOL;
+
+		oceanicMaterialsPool.Add ((Material)Resources.Load ("Materials/Oceanic_TerrainMat"));
+		oceanicMaterialsPool.Add ((Material)Resources.Load ("Materials/Oceanic_EnviroMat"));
+//		continentalMaterialsPool.Add ((Material)Resources.Load ("Materials/Continental_TerrainMat"));
+//		continentalMaterialsPool.Add ((Material)Resources.Load ("Materials/Continental_EnviroMat"));
+//		mediterraneanMaterialsPool.Add ((Material)Resources.Load ("Materials/Mediterranean_TerrainMat"));
+//		mediterraneanMaterialsPool.Add ((Material)Resources.Load ("Materials/Mediterranean_EnviroMat"));
+
+		//OBSTACLES POOL;
+
+		oceanicTiles = new GameObject ("Oceanic_Tiles");
+
+		for (int i = 0; i < tileManager.oceanicTileArrays.Count; i++) {
+			GameObject prefab = tileManager.oceanicTileArrays [i];
 			GameObject obj1 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
-			obj1.transform.parent = obstacleParent;
+			obj1.transform.parent = oceanicTiles.transform;
 			obj1.SetActive (false);
 			GameObject obj2 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
-			obj2.transform.parent = obstacleParent;
+			obj2.transform.parent = oceanicTiles.transform;
 			obj2.SetActive (false);
 			GameObject obj3 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
-			obj3.transform.parent = obstacleParent;
+			obj3.transform.parent = oceanicTiles.transform;
 			obj3.SetActive (false);
 
 			oceanicTilesPool.Add (obj1);
@@ -95,24 +121,97 @@ public class GenerationManager : MonoBehaviour {
 			oceanicTilesPool.Add (obj3);
 		}
 
+		//ENVIRONMENT POOL;
+
+		oceanicEnviro = new GameObject ("Oceanic_Enviro");
+
 		for (int i = 0; i < 10; i++) {
 			GameObject prefab = tileManager.oceanicEnviros [0];
 
 			GameObject enviro = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
-			enviro.transform.parent = environmentParent;
+			enviro.transform.parent = oceanicEnviro.transform;
 			enviro.SetActive (false);
 
 			GameObject enviro2 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
-			enviro2.transform.parent = environmentParent;
+			enviro2.transform.parent = oceanicEnviro.transform;
 			enviro2.SetActive (false);
 
 			GameObject enviro3 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
-			enviro3.transform.parent = environmentParent;
+			enviro3.transform.parent = oceanicEnviro.transform;
 			enviro3.SetActive (false);
 
 			oceanicEnviroPool.Add (enviro);
 			oceanicEnviroPool.Add (enviro2);
 			oceanicEnviroPool.Add (enviro3);
+		}
+
+		continentalTiles = new GameObject ("Continental_Tiles");
+		continentalEnviro = new GameObject ("Continental_Enviro");
+		mediterraneanTiles = new GameObject ("Mediterranean_Tiles");
+		mediterraneanEnviro = new GameObject ("Mediterranean_Enviro");
+
+		//SELECT CURRENT CLIMATE POOL;
+
+		if (SceneManager.Instance.currentProvince.climate == Climate.Oceanic) {
+			oceanicTiles.transform.parent = obstacleParent;
+			selectedTilesParent = oceanicTiles.transform;
+			oceanicEnviro.transform.parent = environmentParent;
+			selectedEnviroParent = oceanicEnviro.transform;
+			selectedTilesPool = oceanicTilesPool;
+			selectedEnviroPool = oceanicEnviroPool;
+			selectedMaterialsPool = oceanicMaterialsPool;
+			selectedRoadChangePrefab = roadChanges [0];
+		}
+
+		if (SceneManager.Instance.currentProvince.climate == Climate.Continental) {
+//			continentalTiles.transform.parent = obstacleParent;
+//			selectedTilesParent = continentalTiles.transform;
+//			continentalEnviro.transform.parent = environmentParent;
+//			selectedEnviroParent = continentalEnviro.transform;
+			selectedTilesPool = continentalTilesPool;
+			selectedEnviroPool = continentalEnviroPool;
+			selectedMaterialsPool = continentalMaterialsPool;
+			selectedRoadChangePrefab = roadChanges [1];
+		}
+
+		if (SceneManager.Instance.currentProvince.climate == Climate.Mediterranean) {
+//			mediterraneanTiles.transform.parent = obstacleParent;
+//			selectedTilesParent = mediterraneanTiles.transform;
+//			mediterraneanEnviro.transform.parent = environmentParent;
+//			selectedEnviroParent = mediterraneanEnviro.transform;
+			selectedTilesPool = mediterraneanTilesPool;
+			selectedEnviroPool = mediterraneanEnviroPool;
+			selectedMaterialsPool = mediterraneanMaterialsPool;
+			selectedRoadChangePrefab = roadChanges [2];
+		}
+
+		//INITIAL OBSTACLES;
+
+		enviroCount = 0;
+
+		for (int i = 0; i < 4; i++) {
+			GameObject enviro = selectedEnviroPool [enviroCount];
+			enviro.SetActive (true);
+			enviro.transform.position = new Vector3 (0f, 0f, -10f + (50f * i));
+			enviro.transform.eulerAngles = Vector3.zero;
+			enviro.transform.parent = selectedEnviroParent;
+
+			GameObject obs = null;
+
+			while (obs == null) {
+				obs = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
+				if (obs.activeInHierarchy)
+					obs = null;
+			}
+
+			obs.SetActive (true);
+			obs.transform.position = new Vector3 (0f, 0f, -10f + (50f * i));
+			obs.transform.eulerAngles = Vector3.zero;
+			obs.transform.parent = selectedTilesParent;
+
+			enviroCount += 3;
+			if (enviroCount > ((maxEnviroCount * 3) - 1))
+				enviroCount = 0;
 		}
 	}
 
@@ -138,17 +237,20 @@ public class GenerationManager : MonoBehaviour {
 			UpdateMesh (rightTerrain, true);
 		}
 
-		Debug.Log (tileCount);
+		if (SceneManager.Instance.provinceKm >= 15f && !signAppeared) {
+			signAppeared = true;
+			CreateRoadChangeSign ();
+		}
 
-		if (SceneManager.Instance.provinceKm >= 2f && !selectedRoad && tileCount >= tileSize) {
+		if (SceneManager.Instance.provinceKm >= 20f && !selectedRoad && tileCount >= tileSize) {
 			selectedRoad = true;
 			CreateRoadChange();
 		}
 
-		if (SceneManager.Instance.provinceKm >= 6f && !provinceChanged && tileCount >= tileSize) {
-			provinceChanged = true;
-			CreateProvinceChange ();
-		}
+//		if (SceneManager.Instance.provinceKm >= 6f && !provinceChanged && tileCount >= tileSize) {
+//			provinceChanged = true;
+//			CreateProvinceChange ();
+//		}
 
 		if (tileCount >= tileSize && !changingRoad) {
 			GenerateEnvironment ();
@@ -162,32 +264,17 @@ public class GenerationManager : MonoBehaviour {
 		forceNextTile = true;
 	}
 
+	private void CreateRoadChangeSign() {
+		float pos = terrain.GetComponent<MeshFilter> ().mesh.vertices [terrain.GetComponent<MeshFilter> ().mesh.vertices.Length - 1].z + meshStartDistance;
+
+		roadChangeSign.GetComponent<RoadChangeSign> ().Initialize (pos);
+	}
+
 	private void GenerateEnvironment() {
 		if (changingProvince)
 			return;
 
-//		Mesh mesh = terrain.GetComponent<MeshFilter> ().sharedMesh;
-
 		float pos = terrain.GetComponent<MeshFilter> ().mesh.vertices [terrain.GetComponent<MeshFilter> ().mesh.vertices.Length - 1].z + meshStartDistance;
-
-//		GameObject leftParent = null;
-//		GameObject rightParent = null;
-//
-//		if (parentLeft == null || parentRight == null) {
-//			leftParent = new GameObject ("LeftEnvironment");
-//			leftParent.AddComponent<ParentDestroy> ();
-//			rightParent = new GameObject ("RightEnvironment");
-//			rightParent.AddComponent<ParentDestroy> ();
-//			leftParent.transform.parent = environmentParent;
-//			rightParent.transform.parent = environmentParent;
-//		}
-//		else {
-//			leftParent = parentLeft.gameObject;
-//			rightParent = parentRight.gameObject;
-//		}
-//
-//		GameObject prefab = MyResources.Instance.GetEnviro (SceneManager.Instance.currentProvince.climate, enviroCount);
-//		GameObject leftEnviro = Instantiate (prefab, Vector3.zero, Quaternion.identity) as GameObject;
 
 		GameObject enviro = selectedEnviroPool [enviroCount];
 
@@ -195,14 +282,6 @@ public class GenerationManager : MonoBehaviour {
 
 		enviro.transform.position = new Vector3 (0f, 0f, pos);
 		enviro.transform.eulerAngles = Vector3.zero;
-		enviro.transform.parent = environmentParent;
-//		GameObject rightEnviro = Instantiate (prefab, Vector3.zero, Quaternion.identity) as GameObject;
-//
-//		if (!displaceActive) {
-//			for (int i = 0; i < rightEnviro.transform.childCount; i++) {
-//				rightEnviro.transform.GetChild (i).GetComponent<Displacement> ().enabled = false;
-//			}
-//		}
 
 		enviroCount += 3;
 		if (enviroCount >= ((maxEnviroCount * 3) - 1))
@@ -210,33 +289,15 @@ public class GenerationManager : MonoBehaviour {
 	}
 
 	private void GenerateTile() {
-//		Mesh mesh = terrain.GetComponent<MeshFilter> ().sharedMesh;
-
 		float pos = terrain.GetComponent<MeshFilter> ().mesh.vertices [terrain.GetComponent<MeshFilter> ().mesh.vertices.Length - 1].z + meshStartDistance;
-
-//		GameObject obsParent = null;
-
-//		if (parent == null) {
-//			obsParent = new GameObject ("ObstaclesTiles");
-//			obsParent.AddComponent<ParentDestroy> ();
-			//		GameObject bonParent = new GameObject ("BonificationTiles");
-			//		bonParent.AddComponent<ParentDestroy> ();
-//			obsParent.transform.parent = obstacleParent;
-			//		bonParent.transform.parent = bonificationParent;
-//		}
-//		else {
-//			obsParent = parent.gameObject;
-//		}
-
-//		GameObject prefab = tileManager.GetRandomTileArray ();
-//		GameObject obs = Instantiate (prefab, Vector3.zero, prefab.transform.rotation) as GameObject;
 
 		GameObject obs = null;
 
 		while (obs == null) {
 			obs = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
-			if (obs.activeInHierarchy)
+			if (obs.activeInHierarchy) {
 				obs = null;
+			}
 		}
 
 		obs.SetActive (true);
@@ -248,24 +309,6 @@ public class GenerationManager : MonoBehaviour {
 		Vector3 finalPos = new Vector3 (0f, 0f, pos);
 		obs.transform.position = finalPos;
 		obs.transform.eulerAngles = Vector3.zero;
-
-//		float porc = Random.Range (0f, 101f);
-//		if (porc >= 0f && porc <= percentageRandomGeneration) {
-//			if (forceNextTile) {
-//				forceNextTile = false;
-//				tileManager.GetSpecificTileArray (nextTile).GenerateTiles (pos, obsParent.transform, bonParent.transform);
-//			}
-//			else
-//				tileManager.CreateRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
-//		}
-//		else {
-//			if (forceNextTile) {
-//				forceNextTile = false;
-//				tileManager.GetSpecificTileArray (nextTile).GenerateTiles (pos, obsParent.transform, bonParent.transform);
-//			}
-//			else
-//				tileManager.GetRandomTileArray ().GenerateTiles (pos, obsParent.transform, bonParent.transform);
-//		}
 	}
 
 	public void ChangeDisplacementSpeed(float newSpeed, bool returnToDefault) {
@@ -278,10 +321,6 @@ public class GenerationManager : MonoBehaviour {
 	}
 
 	private void UpdateMesh(GameObject terrain, bool right) {
-//		Mesh mesh = terrain.GetComponent<MeshFilter> ().sharedMesh;
-//		Mesh newMesh = new Mesh ();
-//		newMesh.Clear ();
-
 		float maxLeft;
 		float maxRight;
 
@@ -325,18 +364,7 @@ public class GenerationManager : MonoBehaviour {
 		}
 
 		triangles = terrain.GetComponent<MeshFilter> ().mesh.triangles;
-//
-//		newMesh.vertices = vertices;
-//		newMesh.triangles = triangles;
-//		newMesh.uv = uv;
-//		newMesh.RecalculateBounds ();
-//		newMesh.RecalculateNormals ();
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.Clear ();
-//		terrain.GetComponent<MeshFilter> ().sharedMesh = newMesh;
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.UploadMeshData (false);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetVertices(vertices.ToList<Vector3>());
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetTriangles (triangles.ToList<int>(), 0);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetUVs (0, uv.ToList<Vector2>());
+
 		terrain.GetComponent<MeshFilter> ().mesh.Clear();
 		terrain.GetComponent<MeshFilter> ().mesh.vertices = vertices;
 		terrain.GetComponent<MeshFilter> ().mesh.triangles = triangles;
@@ -346,15 +374,9 @@ public class GenerationManager : MonoBehaviour {
 		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
 	}
 
-	public void ChangeTerrainMat() {
-		Material mat = MyResources.Instance.GetMaterial (SceneManager.Instance.currentProvince.climate, true);
-		terrain.GetComponent<MeshRenderer>().sharedMaterial = mat;
-	}
-
 	private void CreateRoadChange() {
 		changingRoad = true;
 
-//		Mesh mesh = terrain.GetComponent<MeshFilter> ().sharedMesh;
 		List<Vector3> vertices = new List<Vector3> (terrain.GetComponent<MeshFilter> ().mesh.vertices);
 		vertices.RemoveAt (vertices.Count - 1);
 		vertices.RemoveAt (vertices.Count - 1);
@@ -377,16 +399,6 @@ public class GenerationManager : MonoBehaviour {
 		triangles.RemoveAt (triangles.Count - 1);
 		triangles.RemoveAt (triangles.Count - 1);
 
-//		mesh.Clear ();
-//		mesh.vertices = vertices.ToArray();
-//		mesh.triangles = triangles.ToArray ();
-//		mesh.uv = uv.ToArray();
-//		mesh.RecalculateBounds ();
-//		mesh.RecalculateNormals ();
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.UploadMeshData (false);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetVertices(vertices);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetTriangles (triangles, 0);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetUVs (0, uv);
 		terrain.GetComponent<MeshFilter> ().mesh.Clear();
 		terrain.GetComponent<MeshFilter> ().mesh.vertices = vertices.ToArray ();
 		terrain.GetComponent<MeshFilter> ().mesh.triangles = triangles.ToArray ();
@@ -395,7 +407,7 @@ public class GenerationManager : MonoBehaviour {
 		terrain.GetComponent<MeshFilter> ().mesh.RecalculateNormals ();
 		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
 
-		RoadChange rc = new RoadChange (selectedRoadChangePrefab, SceneManager.Instance.currentProvince, SceneManager.Instance.displacementDirection, pos);
+		RoadChange rc = new RoadChange (selectedRoadChangePrefab, roadChangeSign, pos);
 
 		StartCoroutine (LoadRoadChangeAssets (rc));
 	}
@@ -408,7 +420,6 @@ public class GenerationManager : MonoBehaviour {
 		leftRoadEnviro1.SetActive (true);
 		leftRoadEnviro1.transform.position = new Vector3 (0f, 0f, changingRoadStartPos.transform.position.z + 50f);
 		leftRoadEnviro1.transform.eulerAngles = Vector3.zero;
-		leftRoadEnviro1.transform.parent = environmentParent;
 
 		GameObject leftRoadObs1 = null;
 
@@ -439,7 +450,6 @@ public class GenerationManager : MonoBehaviour {
 		frontRoadEnviro1.SetActive (true);
 		frontRoadEnviro1.transform.position = new Vector3 (0f, 0f, changingRoadStartPos.transform.position.z + 50f);
 		frontRoadEnviro1.transform.eulerAngles = Vector3.zero;
-		frontRoadEnviro1.transform.parent = environmentParent;
 
 		GameObject frontRoadObs1 = null;
 
@@ -451,7 +461,7 @@ public class GenerationManager : MonoBehaviour {
 
 		frontRoadObs1.SetActive (true);
 
-		for (int i = 0; i < leftRoadObs1.transform.childCount; i++) {
+		for (int i = 0; i < frontRoadObs1.transform.childCount; i++) {
 			frontRoadObs1.transform.GetChild (i).gameObject.SetActive (true);
 		}
 
@@ -465,7 +475,6 @@ public class GenerationManager : MonoBehaviour {
 		rightRoadEnviro1.SetActive (true);
 		rightRoadEnviro1.transform.position = new Vector3 (0f, 0f, changingRoadStartPos.transform.position.z + 50f);
 		rightRoadEnviro1.transform.eulerAngles = Vector3.zero;
-		rightRoadEnviro1.transform.parent = environmentParent;
 
 		GameObject rightRoadObs1 = null;
 
@@ -500,7 +509,6 @@ public class GenerationManager : MonoBehaviour {
 		leftRoadEnviro2.SetActive (true);
 		leftRoadEnviro2.transform.position = new Vector3 (0f, 0f, changingRoadStartPos.transform.position.z + 100f);
 		leftRoadEnviro2.transform.eulerAngles = Vector3.zero;
-		leftRoadEnviro2.transform.parent = environmentParent;
 
 		GameObject leftRoadObs2 = null;
 
@@ -531,7 +539,6 @@ public class GenerationManager : MonoBehaviour {
 		frontRoadEnviro2.SetActive (true);
 		frontRoadEnviro2.transform.position = new Vector3 (0f, 0f, changingRoadStartPos.transform.position.z + 100f);
 		frontRoadEnviro2.transform.eulerAngles = Vector3.zero;
-		frontRoadEnviro2.transform.parent = environmentParent;
 
 		GameObject frontRoadObs2 = null;
 
@@ -557,7 +564,6 @@ public class GenerationManager : MonoBehaviour {
 		rightRoadEnviro2.SetActive (true);
 		rightRoadEnviro2.transform.position = new Vector3 (0f, 0f, changingRoadStartPos.transform.position.z + 100f);
 		rightRoadEnviro2.transform.eulerAngles = Vector3.zero;
-		rightRoadEnviro2.transform.parent = environmentParent;
 
 		GameObject rightRoadObs2 = null;
 
@@ -584,20 +590,10 @@ public class GenerationManager : MonoBehaviour {
 		rightRoadObs2.transform.RotateAround (rc.GetCenter ().position, Vector3.up, 90f);
 	}
 
-//	public void ChangeObsBonParent(Transform obsParent, Transform bonParent, bool returnToDefault) {
-//		if (!returnToDefault) {
-//			obstacleParent = obsParent;
-//			bonificationParent = bonParent;
-//		}
-//		else {
-//			obstacleParent = defaultObstacleParent;
-//		}
-//	}
-
 	public void CreateProvinceChange() {
+		provinceChanged = true;
 		changingProvince = true;
 
-//		Mesh mesh = terrain.GetComponent<MeshFilter> ().sharedMesh;
 		List<Vector3> vertices = new List<Vector3> (terrain.GetComponent<MeshFilter> ().mesh.vertices);
 		vertices.RemoveAt (vertices.Count - 1);
 		vertices.RemoveAt (vertices.Count - 1);
@@ -616,16 +612,6 @@ public class GenerationManager : MonoBehaviour {
 		triangles.RemoveAt (triangles.Count - 1);
 		triangles.RemoveAt (triangles.Count - 1);
 
-//		mesh.Clear ();
-//		mesh.vertices = vertices.ToArray();
-//		mesh.triangles = triangles.ToArray ();
-//		mesh.uv = uv.ToArray();
-//		mesh.RecalculateBounds ();
-//		mesh.RecalculateNormals ();
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.UploadMeshData (false);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetVertices(vertices);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetTriangles (triangles, 0);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetUVs (0, uv);
 		terrain.GetComponent<MeshFilter> ().mesh.Clear();
 		terrain.GetComponent<MeshFilter> ().mesh.vertices = vertices.ToArray ();
 		terrain.GetComponent<MeshFilter> ().mesh.triangles = triangles.ToArray ();
@@ -634,7 +620,7 @@ public class GenerationManager : MonoBehaviour {
 		terrain.GetComponent<MeshFilter> ().mesh.RecalculateNormals ();
 		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
 
-		ProvinceChange pc = new ProvinceChange (pos);
+		new ProvinceChange (tunnel, pos);
 	}
 
 	public void DestroyTerrainMesh() {
@@ -701,11 +687,6 @@ public class GenerationManager : MonoBehaviour {
 			}
 		}
 
-//		mesh.vertices = tempVertices;
-//		mesh.triangles = tempTriangles;
-//		mesh.uv = tempUv;
-//		mesh.RecalculateBounds ();
-//		mesh.RecalculateNormals ();
 		terrain.GetComponent<MeshFilter> ().mesh = mesh;
 		terrain.GetComponent<MeshFilter> ().mesh.vertices = tempVertices;
 		terrain.GetComponent<MeshFilter> ().mesh.triangles = tempTriangles;
@@ -713,11 +694,8 @@ public class GenerationManager : MonoBehaviour {
 		terrain.GetComponent<MeshFilter> ().mesh.RecalculateBounds ();
 		terrain.GetComponent<MeshFilter> ().mesh.RecalculateNormals ();
 		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetVertices(tempVertices.ToList<Vector3>());
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetTriangles (tempTriangles.ToList<int> (), 0);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetUVs (0, tempUv.ToList<Vector2> ());
 
-		Material mat = MyResources.Instance.GetMaterial (SceneManager.Instance.currentProvince.climate, true);
+		Material mat = selectedMaterialsPool [0];
 		terrain.GetComponent<MeshRenderer>().sharedMaterial = mat;
 
 		terrain.transform.position = new Vector3 (terrain.transform.position.x, terrain.transform.position.y, startDistance);
@@ -785,11 +763,6 @@ public class GenerationManager : MonoBehaviour {
 			}
 		}
 
-//		mesh.vertices = tempVertices;
-//		mesh.triangles = tempTriangles;
-//		mesh.uv = tempUv;
-//		mesh.RecalculateBounds ();
-//		mesh.RecalculateNormals ();
 		terrain.GetComponent<MeshFilter> ().mesh = mesh;
 		terrain.GetComponent<MeshFilter> ().mesh.vertices = tempVertices;
 		terrain.GetComponent<MeshFilter> ().mesh.triangles = tempTriangles;
@@ -797,11 +770,8 @@ public class GenerationManager : MonoBehaviour {
 		terrain.GetComponent<MeshFilter> ().mesh.RecalculateBounds ();
 		terrain.GetComponent<MeshFilter> ().mesh.RecalculateNormals ();
 		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetVertices(tempVertices.ToList<Vector3>());
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetTriangles (tempTriangles.ToList<int>(), 0);
-//		terrain.GetComponent<MeshFilter> ().sharedMesh.SetUVs (0, tempUv.ToList<Vector2>());
 
-		Material mat = MyResources.Instance.GetMaterial (SceneManager.Instance.currentProvince.climate, false);
+		Material mat = selectedMaterialsPool [1];
 		terrain.GetComponent<MeshRenderer>().sharedMaterial = mat;
 
 		terrain.transform.position = new Vector3 (terrain.transform.position.x, terrain.transform.position.y, startDistance);

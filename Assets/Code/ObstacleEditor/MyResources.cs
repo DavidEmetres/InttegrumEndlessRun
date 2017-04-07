@@ -46,7 +46,6 @@ public class MyResources : MonoBehaviour {
 
 	private void Awake() {
 		Instance = this;
-		DontDestroyOnLoad (gameObject);
 	}
 
 	public Material GetMaterial(Climate climate, bool terrain) {

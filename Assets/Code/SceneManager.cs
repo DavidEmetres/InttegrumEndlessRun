@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class SceneManager : MonoBehaviour {
 
@@ -298,14 +299,14 @@ public class SceneManager : MonoBehaviour {
 
 	private void Update () {
 		if (!gameOver) {
-			provinceKm += (GenerationManager.Instance.displacementSpeed / 100f) * Time.deltaTime;
+			provinceKm += (GenerationManager.Instance.displacementSpeed / 50f) * Time.deltaTime;
 
-//			if (neighbourChoosed) {
-//				if (provinceKm >= (neighbour.distanceBetweenProvinces - 17f) && !changingProvince) {
-//					changingProvince = true;
-//					GenerationManager.Instance.CreateProvinceChange ();
-//				}
-//			}
+			if (neighbourChoosed) {
+				if (provinceKm >= (neighbour.distanceBetweenProvinces - 17f) && !changingProvince) {
+					changingProvince = true;
+					GenerationManager.Instance.CreateProvinceChange ();
+				}
+			}
 		}
 	}
 
@@ -321,20 +322,47 @@ public class SceneManager : MonoBehaviour {
 		GenerationManager.Instance.changingProvince = false;
 
 		if (currentProvince.climate == Climate.Oceanic) {
+			GenerationManager.Instance.oceanicTiles.transform.parent = GenerationManager.Instance.obstacleParent;
+			GenerationManager.Instance.oceanicEnviro.transform.parent = GenerationManager.Instance.environmentParent;
+			GenerationManager.Instance.continentalTiles.transform.parent = null;
+			GenerationManager.Instance.continentalEnviro.transform.parent = null;
+			GenerationManager.Instance.mediterraneanTiles.transform.parent = null;
+			GenerationManager.Instance.mediterraneanEnviro.transform.parent = null;
+			GenerationManager.Instance.selectedTilesParent = GenerationManager.Instance.oceanicTiles.transform;
+			GenerationManager.Instance.selectedEnviroParent = GenerationManager.Instance.oceanicEnviro.transform;
 			GenerationManager.Instance.selectedTilesPool = GenerationManager.Instance.oceanicTilesPool;
 			GenerationManager.Instance.selectedEnviroPool = GenerationManager.Instance.oceanicEnviroPool;
+			GenerationManager.Instance.selectedMaterialsPool = GenerationManager.Instance.oceanicMaterialsPool;
 			GenerationManager.Instance.selectedRoadChangePrefab = GenerationManager.Instance.roadChanges [0];
 		}
 
 		if (currentProvince.climate == Climate.Continental) {
+			GenerationManager.Instance.oceanicTiles.transform.parent = null;
+			GenerationManager.Instance.oceanicEnviro.transform.parent = null;
+			GenerationManager.Instance.continentalTiles.transform.parent = GenerationManager.Instance.obstacleParent;
+			GenerationManager.Instance.continentalEnviro.transform.parent = GenerationManager.Instance.environmentParent;
+			GenerationManager.Instance.mediterraneanTiles.transform.parent = null;
+			GenerationManager.Instance.mediterraneanEnviro.transform.parent = null;
+			GenerationManager.Instance.selectedTilesParent = GenerationManager.Instance.continentalTiles.transform;
+			GenerationManager.Instance.selectedEnviroParent = GenerationManager.Instance.continentalEnviro.transform;
 			GenerationManager.Instance.selectedTilesPool = GenerationManager.Instance.continentalTilesPool;
 			GenerationManager.Instance.selectedEnviroPool = GenerationManager.Instance.continentalEnviroPool;
+			GenerationManager.Instance.selectedMaterialsPool = GenerationManager.Instance.continentalMaterialsPool;
 			GenerationManager.Instance.selectedRoadChangePrefab = GenerationManager.Instance.roadChanges [1];
 		}
 
 		if (currentProvince.climate == Climate.Mediterranean) {
+			GenerationManager.Instance.oceanicTiles.transform.parent = null;
+			GenerationManager.Instance.oceanicEnviro.transform.parent = null;
+			GenerationManager.Instance.continentalTiles.transform.parent = null;
+			GenerationManager.Instance.continentalEnviro.transform.parent = null;
+			GenerationManager.Instance.mediterraneanTiles.transform.parent = GenerationManager.Instance.obstacleParent;
+			GenerationManager.Instance.mediterraneanEnviro.transform.parent = GenerationManager.Instance.environmentParent;
+			GenerationManager.Instance.selectedTilesParent = GenerationManager.Instance.mediterraneanTiles.transform;
+			GenerationManager.Instance.selectedEnviroParent = GenerationManager.Instance.mediterraneanEnviro.transform;
 			GenerationManager.Instance.selectedTilesPool = GenerationManager.Instance.mediterraneanTilesPool;
 			GenerationManager.Instance.selectedEnviroPool = GenerationManager.Instance.mediterraneanEnviroPool;
+			GenerationManager.Instance.selectedMaterialsPool = GenerationManager.Instance.mediterraneanMaterialsPool;
 			GenerationManager.Instance.selectedRoadChangePrefab = GenerationManager.Instance.roadChanges [2];
 		}
 	}
@@ -413,11 +441,11 @@ public class SceneManager : MonoBehaviour {
 		onRoadChangeFinished ();
 	}
 
-	private void OnGUI() {
-		GUI.Label(new Rect(10, 10, 100, 20), currentProvince.name, style);
-		GUI.Label(new Rect(350, 10, 100, 20), (totalKm + provinceKm).ToString("F") + " Km", style);
-		GUI.Label(new Rect(10, 70, 100, 20), "Vidas: " + life, style);
-		GUI.Label(new Rect(300, 70, 100, 20), "Monedas: " + coins, style);
+	public void PauseResumeGame() {
+		if (Time.timeScale > 0f)
+			Time.timeScale = 0f;
+		else
+			Time.timeScale = 1f;
 	}
 }
 

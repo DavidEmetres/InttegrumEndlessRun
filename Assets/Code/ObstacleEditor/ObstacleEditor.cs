@@ -313,10 +313,10 @@ public class ObstacleEditor : MonoBehaviour {
 								string[] tile = v.Split (',');
 
 								float n1, n2, n3, n4;
-								bool b = float.TryParse (tile [0], out n1);
-								b = float.TryParse (tile [1], out n2);
-								b = float.TryParse (tile [2], out n3);
-								b = float.TryParse (tile [3], out n4);
+								float.TryParse (tile [0], out n1);
+								float.TryParse (tile [1], out n2);
+								float.TryParse (tile [2], out n3);
+								float.TryParse (tile [3], out n4);
 								Vector4 vector = new Vector4 (n1, n2, n3, n4);
 								vectorList.Add (vector);
 							}

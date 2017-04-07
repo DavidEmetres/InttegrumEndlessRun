@@ -96,7 +96,7 @@ public class PlayerMovement : MonoBehaviour {
 			float ctemp = Mathf.Lerp (Camera.main.transform.position.x, cameraLanes [lane].x, lateralDashSpeed * Time.deltaTime);
 			Camera.main.transform.position = new Vector3 (ctemp, Camera.main.transform.position.y, Camera.main.transform.position.z);
 
-			if (rollTimer > 0f) {
+			if (rollTimer > 0) {
 				if (jumpTime <= 1) {
 					float t = jumpCurve.Evaluate (jumpTime);
 					transform.position = new Vector3 (transform.position.x, startJumpHeight + 1f + (t * maxJumpDistance), transform.position.z);
@@ -112,7 +112,7 @@ public class PlayerMovement : MonoBehaviour {
 			else {
 				rb.useGravity = true;
 				rayToFloorEnabled = true;
-				transform.Translate (Vector3.down * 15f * Time.deltaTime);
+				transform.Translate (Vector3.down * 20f * Time.deltaTime);
 
 				if (isInGround) {
 					Roll ();
