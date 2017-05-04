@@ -10,6 +10,7 @@ public class MainMenu : MonoBehaviour {
 	public GameObject button1;
 	public GameObject button2;
 	public GameObject button3;
+	public GameObject exitDialog;
 
 	public static MainMenu Instance;
 
@@ -17,6 +18,35 @@ public class MainMenu : MonoBehaviour {
 		Instance = this;
 
 		provincesData = CSVReader.Read ("provinces_data");
+	}
+
+	private void Update() {
+		if (Input.GetKeyDown (KeyCode.Escape)) {	//BACK BUTTON;
+			ShowExitDialog(true);
+		}
+	}
+
+	public void ShowExitDialog(bool visible) {
+		exitDialog.SetActive (visible);
+		button1.GetComponent<Button> ().enabled = !visible;
+		button2.GetComponent<Button> ().enabled = !visible;
+		button3.GetComponent<Button> ().enabled = !visible;
+	}
+
+	public void ExitApplication() {
+		GlobalData.Instance.SaveGame ();
+		Application.Quit ();
+	}
+
+	public void AddCoins() {
+		GlobalData.Instance.coins += 10000;
+		GlobalData.Instance.SaveGame ();
+	}
+
+	public void Delete() {
+		GlobalData.Instance.DeleteSaveGame ();
+		GlobalData.Instance.SaveGame ();
+		GlobalData.Instance.LoadGame ();
 	}
 
 	public void ButtonPressed(int button) {

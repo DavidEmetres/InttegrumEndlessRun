@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class ButtonBehaviour : MonoBehaviour {
 
@@ -17,5 +18,14 @@ public class ButtonBehaviour : MonoBehaviour {
 		if (toScreen >= 0) {
 			screens [toScreen].GetComponent<Animator> ().SetTrigger ("appear");
 		}
+		else {
+			MainMenu.Instance.button1.GetComponent<Button> ().enabled = true;
+			MainMenu.Instance.button2.GetComponent<Button> ().enabled = true;
+			MainMenu.Instance.button3.GetComponent<Button> ().enabled = true;
+		}
+	}
+
+	public void ChangeScene(string scene) {
+		UnityEngine.SceneManagement.SceneManager.LoadScene (scene);
 	}
 }

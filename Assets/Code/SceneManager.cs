@@ -8,17 +8,23 @@ public class SceneManager : MonoBehaviour {
 	private Neighbours neighbour;
 	private bool neighbourChoosed;
 	private Direction nextDirection;
-	private List<Province> provincesRunned = new List<Province>();
 	private bool changingProvince;
 
 	public Province currentProvince;
 	public Direction displacementDirection;
 	public bool gameOver;
 
+	public List<Province> provincesRunned = new List<Province>();
 	public delegate void OnRoadChangeStarted ();
 	public event OnRoadChangeStarted onRoadChangeStarted;
 	public delegate void OnRoadChangeFinished();
 	public event OnRoadChangeFinished onRoadChangeFinished;
+
+	public float[] difSpeed;
+	public int[] changeDifKm;
+	public int dif;
+	public float kmDifCount;
+	public bool slowed;
 
 	[Header("Scene Settings")]
 	public Vector3[] lanes;
@@ -294,7 +300,7 @@ public class SceneManager : MonoBehaviour {
 		currentProvince = navarra;
 		displacementDirection = Direction.south;
 		provincesRunned.Add (currentProvince);
-		RandomNeighbourSelection ();
+//		RandomNeighbourSelection ();
 	}
 
 	private void Update () {
@@ -302,9 +308,18 @@ public class SceneManager : MonoBehaviour {
 			provinceKm += (GenerationManager.Instance.displacementSpeed / 50f) * Time.deltaTime;
 
 			if (neighbourChoosed) {
-				if (provinceKm >= (neighbour.distanceBetweenProvinces - 17f) && !changingProvince) {
+				if (/*provinceKm >= (neighbour.distanceBetweenProvinces)*/provinceKm >= 20f && !changingProvince) {
 					changingProvince = true;
 					GenerationManager.Instance.CreateProvinceChange ();
+				}
+			}
+
+			if (!slowed) {
+				kmDifCount += (GenerationManager.Instance.displacementSpeed / 50f) * Time.deltaTime;
+				if (kmDifCount >= changeDifKm [dif] && dif < 3) {
+					GenerationManager.Instance.displacementSpeed = difSpeed [dif];
+					kmDifCount = 0;
+					dif++;
 				}
 			}
 		}
@@ -427,6 +442,9 @@ public class SceneManager : MonoBehaviour {
 		gameOver = true;
 		GenerationManager.Instance.displacementSpeed = 0f;
 		PlayerMovement.Instance.gameObject.GetComponent<Rigidbody> ().isKinematic = true;
+		ResultsScreen.Instance.ShowScreen ();
+		GlobalData.Instance.coins += coins;
+		GlobalData.Instance.kmRunned += totalKm;
 
 		foreach (Province p in provincesRunned) {
 			Debug.Log (p.name);
@@ -442,8 +460,10 @@ public class SceneManager : MonoBehaviour {
 	}
 
 	public void PauseResumeGame() {
-		if (Time.timeScale > 0f)
+		if (Time.timeScale > 0f) {
 			Time.timeScale = 0f;
+
+		}
 		else
 			Time.timeScale = 1f;
 	}

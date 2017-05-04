@@ -1112,6 +1112,13 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 1
+        functionName: EndEndingRolling
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -1350,6 +1357,13 @@ ModelImporter:
       events:
       - time: 0.41726616
         functionName: RestoreTriggerCollider
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 1
+        functionName: EndEndingRolling
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

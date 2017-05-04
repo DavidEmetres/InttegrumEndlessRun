@@ -28,7 +28,12 @@ public class ProvinceChangeBehaviour : MonoBehaviour {
 				GenerationManager.Instance.enviroCount = 0;
 				HUDManager.Instance.ChangeProvince ();
 				sign.transform.GetChild (0).GetChild (0).GetComponent<Text> ().text = SceneManager.Instance.currentProvince.name.ToUpper();
+				Invoke ("ReActivate", 3f);
 			}
 		}
+	}
+
+	private void ReActivate() {
+		activated = false;
 	}
 }

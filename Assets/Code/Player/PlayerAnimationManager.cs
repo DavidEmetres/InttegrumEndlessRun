@@ -10,8 +10,10 @@ public class PlayerAnimationManager : MonoBehaviour {
 	}
 
 	public void ChangeLaneAnimation(bool right) {
-		anim.SetTrigger ("changing");
-		anim.SetBool ("changeRight", right);
+		if (!anim.GetBool ("endingRolling")) {
+			anim.SetTrigger ("changing");
+			anim.SetBool ("changeRight", right);
+		}
 	}
 
 	public void JumpAnimation() {
@@ -44,6 +46,7 @@ public class PlayerAnimationManager : MonoBehaviour {
 
 	public void EndRollAnimation() {
 		anim.SetBool ("isRolling", false);
+		anim.SetBool ("endingRolling", true);
 	}
 
 	public void DyingAnimation() {
@@ -64,5 +67,9 @@ public class PlayerAnimationManager : MonoBehaviour {
 
 	public void SendGameOver() {
 		SceneManager.Instance.GameOver ();
+	}
+
+	public void EndEndingRolling() {
+		anim.SetBool ("endingRolling", false);
 	}
 }

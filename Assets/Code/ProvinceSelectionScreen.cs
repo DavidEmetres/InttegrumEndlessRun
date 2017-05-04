@@ -8,6 +8,25 @@ public class ProvinceSelectionScreen : MonoBehaviour {
 	[SerializeField] private Text provinceSelectedText;
 	[SerializeField] private GameObject[] provincesShapes;
 
+	private void Start() {
+		int[] pu = GlobalData.Instance.provincesUnlocked;
+
+		while (pu.Length == 0) {
+			pu = GlobalData.Instance.provincesUnlocked;
+		}
+
+		for (int i = 0; i < pu.Length; i++) {
+			if (pu[i] == 1) {
+				provincesShapes [i].SetActive (true);
+			}
+			else {
+				provincesShapes [i].SetActive (false);
+			}
+		}
+
+		ProvinceClicked ("MADRID");
+	}
+
 	public void ProvinceClicked(string province) {
 		ProvincesData.Instance.selectedProvince = province.ToLower();
 		provinceSelectedText.text = province;

@@ -5,7 +5,9 @@ using System.Collections.Generic;
 public class ProvincesData : MonoBehaviour {
 
 	private List<Dictionary<string, object>> provincesData;
+
 	public string selectedProvince;
+	public Sprite[] provincesImages;
 
 	public static ProvincesData Instance;
 

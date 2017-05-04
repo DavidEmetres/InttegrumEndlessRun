@@ -238,7 +238,7 @@ public class PlayerMovement : MonoBehaviour {
 				lane = 2;
 			else if (lane < 0)
 				lane = 0;
-			else if(currentState != State.jumping && currentState != State.rolling)
+			else if(currentState == State.running)
 				animManager.ChangeLaneAnimation (right);
 		}
 	}

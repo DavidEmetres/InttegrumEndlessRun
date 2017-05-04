@@ -55,6 +55,8 @@ public class GenerationManager : MonoBehaviour {
 	[HideInInspector] public float previousEnviroPos;
 	[HideInInspector] public GameObject changingRoadStartPos;
 	[HideInInspector] public int enviroCount;
+	[HideInInspector] public GameObject lastTile;
+	[HideInInspector] public GameObject lastEnviro;
 	public float defaultSpeed;
 	public Transform obstacleParent;
 	public Transform environmentParent;
@@ -196,18 +198,20 @@ public class GenerationManager : MonoBehaviour {
 			enviro.transform.eulerAngles = Vector3.zero;
 			enviro.transform.parent = selectedEnviroParent;
 
-			GameObject obs = null;
+			if (i >= 2) {
+				GameObject obs = null;
 
-			while (obs == null) {
-				obs = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
-				if (obs.activeInHierarchy)
-					obs = null;
+				while (obs == null) {
+					obs = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
+					if (obs.activeInHierarchy)
+						obs = null;
+				}
+
+				obs.SetActive (true);
+				obs.transform.position = new Vector3 (0f, 0f, -10f + (50f * i));
+				obs.transform.eulerAngles = Vector3.zero;
+				obs.transform.parent = selectedTilesParent;
 			}
-
-			obs.SetActive (true);
-			obs.transform.position = new Vector3 (0f, 0f, -10f + (50f * i));
-			obs.transform.eulerAngles = Vector3.zero;
-			obs.transform.parent = selectedTilesParent;
 
 			enviroCount += 3;
 			if (enviroCount > ((maxEnviroCount * 3) - 1))
@@ -218,7 +222,7 @@ public class GenerationManager : MonoBehaviour {
 	private void Start () {
 		generationDistance = 200f;
 		destroyDistance = -30f;
-		displacementSpeed = defaultSpeed;
+		displacementSpeed = SceneManager.Instance.difSpeed[SceneManager.Instance.dif];
 		tileSize = 5f;
 		tileCount = tileSize;
 		selectedRoad = false;
@@ -237,12 +241,12 @@ public class GenerationManager : MonoBehaviour {
 			UpdateMesh (rightTerrain, true);
 		}
 
-		if (SceneManager.Instance.provinceKm >= 15f && !signAppeared) {
+		if (SceneManager.Instance.provinceKm >= 5f && !signAppeared) {
 			signAppeared = true;
 			CreateRoadChangeSign ();
 		}
 
-		if (SceneManager.Instance.provinceKm >= 20f && !selectedRoad && tileCount >= tileSize) {
+		if (SceneManager.Instance.provinceKm >= 10f && !selectedRoad && tileCount >= tileSize) {
 			selectedRoad = true;
 			CreateRoadChange();
 		}
@@ -282,6 +286,7 @@ public class GenerationManager : MonoBehaviour {
 
 		enviro.transform.position = new Vector3 (0f, 0f, pos);
 		enviro.transform.eulerAngles = Vector3.zero;
+		lastEnviro = enviro;
 
 		enviroCount += 3;
 		if (enviroCount >= ((maxEnviroCount * 3) - 1))
@@ -289,6 +294,9 @@ public class GenerationManager : MonoBehaviour {
 	}
 
 	private void GenerateTile() {
+		if (changingProvince)
+			return;
+
 		float pos = terrain.GetComponent<MeshFilter> ().mesh.vertices [terrain.GetComponent<MeshFilter> ().mesh.vertices.Length - 1].z + meshStartDistance;
 
 		GameObject obs = null;
@@ -306,6 +314,8 @@ public class GenerationManager : MonoBehaviour {
 			obs.transform.GetChild (i).gameObject.SetActive (true);
 		}
 
+		lastTile = obs;
+
 		Vector3 finalPos = new Vector3 (0f, 0f, pos);
 		obs.transform.position = finalPos;
 		obs.transform.eulerAngles = Vector3.zero;
@@ -313,7 +323,7 @@ public class GenerationManager : MonoBehaviour {
 
 	public void ChangeDisplacementSpeed(float newSpeed, bool returnToDefault) {
 		if (returnToDefault) {
-			displacementSpeed = defaultSpeed;
+			displacementSpeed = SceneManager.Instance.difSpeed[SceneManager.Instance.dif];
 		}
 		else {
 			displacementSpeed = newSpeed;
@@ -620,7 +630,7 @@ public class GenerationManager : MonoBehaviour {
 		terrain.GetComponent<MeshFilter> ().mesh.RecalculateNormals ();
 		terrain.GetComponent<MeshFilter> ().mesh.UploadMeshData (false);
 
-		new ProvinceChange (tunnel, pos);
+		new ProvinceChange (tunnel);
 	}
 
 	public void DestroyTerrainMesh() {

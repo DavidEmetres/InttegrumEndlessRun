@@ -15,6 +15,9 @@ public class HUDManager : MonoBehaviour {
 	public GameObject frontProvince;
 	public Animator rcHudAnim;
 	public Animator topProvincesAnim;
+	public GameObject pauseScreen;
+	public Animator startTitle;
+	public GameObject tutorial;
 
 	public static HUDManager Instance;
 
@@ -24,6 +27,18 @@ public class HUDManager : MonoBehaviour {
 
 	private void Start() {
 		provinceName.text = SceneManager.Instance.currentProvince.name.ToUpper();
+
+		if (GlobalData.Instance.firstTime) {
+			Invoke ("StartTutorial", 2f);
+		}
+
+		startTitle.SetTrigger ("correr");
+	}
+
+	private void StartTutorial() {
+		GlobalData.Instance.firstTime = false;
+		tutorial.SetActive (true);
+		tutorial.GetComponent<Animator> ().SetTrigger ("tutorial");
 	}
 
 	private void Update() {
@@ -49,10 +64,15 @@ public class HUDManager : MonoBehaviour {
 				frontProvince.GetComponent<Image> ().color = new Color(0.5f, 0.5f, 0.5f, 1f);
 			}
 		}
+
+		if (Input.GetKeyDown (KeyCode.Escape)) {
+			PauseResumeGame ();
+		}
 	}
 
 	public void ShowRoadChangeHUD(string[] provinces, string[] distances) {
 		showingRCHud = true;
+		float d = 0;
 
 		if (provinces [0] != "null") {
 			leftProvince.SetActive (true);
@@ -92,5 +112,22 @@ public class HUDManager : MonoBehaviour {
 
 	public void ChangeTopNames() {
 		provinceName.text = nextProvinceName.text;
+	}
+
+	public void PauseResumeGame() {
+		if (Time.timeScale > 0f) {
+			Time.timeScale = 0f;
+			pauseScreen.SetActive (true);
+			PlayerMovement.Instance.bloquedMov = true;
+		}
+		else {
+			Time.timeScale = 1f;
+			pauseScreen.SetActive (false);
+			PlayerMovement.Instance.bloquedMov = false;
+		}
+	}
+
+	public void HideTutorial() {
+		tutorial.SetActive (false);
 	}
 }
