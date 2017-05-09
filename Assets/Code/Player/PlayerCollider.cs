@@ -58,6 +58,7 @@ public class PlayerCollider : MonoBehaviour {
 
 	private void GetHurt() {
 		SceneManager.Instance.life--;
+		HUDManager.Instance.LooseLife ();
 		if (SceneManager.Instance.life <= 0) {
 			animManager.DyingAnimation ();
 		}

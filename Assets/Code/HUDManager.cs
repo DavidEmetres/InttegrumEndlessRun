@@ -18,6 +18,7 @@ public class HUDManager : MonoBehaviour {
 	public GameObject pauseScreen;
 	public Animator startTitle;
 	public GameObject tutorial;
+	public GameObject[] lifes;
 
 	public static HUDManager Instance;
 
@@ -67,6 +68,15 @@ public class HUDManager : MonoBehaviour {
 
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			PauseResumeGame ();
+		}
+	}
+
+	public void LooseLife() {
+		foreach (GameObject life in lifes) {
+			if (life.GetComponent<Image> ().color.a >= 1f) {
+				life.GetComponent<Image> ().color = new Color (1f, 1f, 1f, 0.2f);
+				return;
+			}
 		}
 	}
 

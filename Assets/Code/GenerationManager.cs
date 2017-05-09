@@ -77,9 +77,9 @@ public class GenerationManager : MonoBehaviour {
 		GameObject rc = Instantiate ((GameObject)Resources.Load ("RoadChanges/Oceanic_RoadChange"), new Vector3 (0f, 0f, -200f), Quaternion.identity) as GameObject;
 		rc.SetActive (false);
 		roadChanges.Add (rc);
-//		rc = Instantiate ((GameObject)Resources.Load ("RoadChanges/Continental_RoadChange"), new Vector3 (0f, 0f, -200f), Quaternion.identity) as GameObject;
-//		rc.SetActive (false);
-//		roadChanges.Add (rc);
+		rc = Instantiate ((GameObject)Resources.Load ("RoadChanges/Continental_RoadChange"), new Vector3 (0f, 0f, -200f), Quaternion.identity) as GameObject;
+		rc.SetActive (false);
+		roadChanges.Add (rc);
 //		rc = Instantiate ((GameObject)Resources.Load ("RoadChanges/Mediterranean_RoadChange"), new Vector3 (0f, 0f, -200f), Quaternion.identity) as GameObject;
 //		rc.SetActive (false);
 //		roadChanges.Add (rc);
@@ -97,8 +97,8 @@ public class GenerationManager : MonoBehaviour {
 
 		oceanicMaterialsPool.Add ((Material)Resources.Load ("Materials/Oceanic_TerrainMat"));
 		oceanicMaterialsPool.Add ((Material)Resources.Load ("Materials/Oceanic_EnviroMat"));
-//		continentalMaterialsPool.Add ((Material)Resources.Load ("Materials/Continental_TerrainMat"));
-//		continentalMaterialsPool.Add ((Material)Resources.Load ("Materials/Continental_EnviroMat"));
+		continentalMaterialsPool.Add ((Material)Resources.Load ("Materials/Continental_TerrainMat"));
+		continentalMaterialsPool.Add ((Material)Resources.Load ("Materials/Continental_EnviroMat"));
 //		mediterraneanMaterialsPool.Add ((Material)Resources.Load ("Materials/Mediterranean_TerrainMat"));
 //		mediterraneanMaterialsPool.Add ((Material)Resources.Load ("Materials/Mediterranean_EnviroMat"));
 
@@ -123,12 +123,32 @@ public class GenerationManager : MonoBehaviour {
 			oceanicTilesPool.Add (obj3);
 		}
 
+		continentalTiles = new GameObject ("Continental_Tiles");
+
+		for (int i = 0; i < tileManager.continentalTileArrays.Count; i++) {
+			GameObject prefab = tileManager.continentalTileArrays [i];
+			GameObject obj1 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			obj1.transform.parent = continentalTiles.transform;
+			obj1.SetActive (false);
+			GameObject obj2 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			obj2.transform.parent = continentalTiles.transform;
+			obj2.SetActive (false);
+			GameObject obj3 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			obj3.transform.parent = continentalTiles.transform;
+			obj3.SetActive (false);
+
+			continentalTilesPool.Add (obj1);
+			continentalTilesPool.Add (obj2);
+			continentalTilesPool.Add (obj3);
+		}
+
 		//ENVIRONMENT POOL;
 
 		oceanicEnviro = new GameObject ("Oceanic_Enviro");
+		int count = 0;
 
 		for (int i = 0; i < 10; i++) {
-			GameObject prefab = tileManager.oceanicEnviros [0];
+			GameObject prefab = tileManager.oceanicEnviros [count];
 
 			GameObject enviro = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
 			enviro.transform.parent = oceanicEnviro.transform;
@@ -145,10 +165,39 @@ public class GenerationManager : MonoBehaviour {
 			oceanicEnviroPool.Add (enviro);
 			oceanicEnviroPool.Add (enviro2);
 			oceanicEnviroPool.Add (enviro3);
+
+			count++;
+			if (count >= tileManager.oceanicEnviros.Count)
+				count = 0;
 		}
 
-		continentalTiles = new GameObject ("Continental_Tiles");
 		continentalEnviro = new GameObject ("Continental_Enviro");
+		count = 0;
+
+		for (int i = 0; i < 10; i++) {
+			GameObject prefab = tileManager.continentalEnviros [count];
+
+			GameObject enviro = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			enviro.transform.parent = continentalEnviro.transform;
+			enviro.SetActive (false);
+
+			GameObject enviro2 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			enviro2.transform.parent = continentalEnviro.transform;
+			enviro2.SetActive (false);
+
+			GameObject enviro3 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			enviro3.transform.parent = continentalEnviro.transform;
+			enviro3.SetActive (false);
+
+			continentalEnviroPool.Add (enviro);
+			continentalEnviroPool.Add (enviro2);
+			continentalEnviroPool.Add (enviro3);
+
+			count++;
+			if (count >= tileManager.continentalEnviros.Count)
+				count = 0;
+		}
+
 		mediterraneanTiles = new GameObject ("Mediterranean_Tiles");
 		mediterraneanEnviro = new GameObject ("Mediterranean_Enviro");
 
@@ -166,10 +215,10 @@ public class GenerationManager : MonoBehaviour {
 		}
 
 		if (SceneManager.Instance.currentProvince.climate == Climate.Continental) {
-//			continentalTiles.transform.parent = obstacleParent;
-//			selectedTilesParent = continentalTiles.transform;
-//			continentalEnviro.transform.parent = environmentParent;
-//			selectedEnviroParent = continentalEnviro.transform;
+			continentalTiles.transform.parent = obstacleParent;
+			selectedTilesParent = continentalTiles.transform;
+			continentalEnviro.transform.parent = environmentParent;
+			selectedEnviroParent = continentalEnviro.transform;
 			selectedTilesPool = continentalTilesPool;
 			selectedEnviroPool = continentalEnviroPool;
 			selectedMaterialsPool = continentalMaterialsPool;
@@ -432,11 +481,14 @@ public class GenerationManager : MonoBehaviour {
 		leftRoadEnviro1.transform.eulerAngles = Vector3.zero;
 
 		GameObject leftRoadObs1 = null;
+		int r = Random.Range (0, selectedTilesPool.Count);
 
 		while (leftRoadObs1 == null) {
-			leftRoadObs1 = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
-			if (leftRoadObs1.activeInHierarchy)
+			leftRoadObs1 = selectedTilesPool [r];
+			if (leftRoadObs1.activeInHierarchy) {
 				leftRoadObs1 = null;
+				r++;
+			}
 		}
 
 		leftRoadObs1.SetActive (true);
@@ -462,11 +514,14 @@ public class GenerationManager : MonoBehaviour {
 		frontRoadEnviro1.transform.eulerAngles = Vector3.zero;
 
 		GameObject frontRoadObs1 = null;
+		r = Random.Range (0, selectedTilesPool.Count);
 
 		while (frontRoadObs1 == null) {
-			frontRoadObs1 = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
-			if (frontRoadObs1.activeInHierarchy)
+			frontRoadObs1 = selectedTilesPool [r];
+			if (frontRoadObs1.activeInHierarchy) {
 				frontRoadObs1 = null;
+				r++;
+			}
 		}
 
 		frontRoadObs1.SetActive (true);
@@ -487,11 +542,14 @@ public class GenerationManager : MonoBehaviour {
 		rightRoadEnviro1.transform.eulerAngles = Vector3.zero;
 
 		GameObject rightRoadObs1 = null;
+		r = Random.Range (0, selectedTilesPool.Count);
 
 		while (rightRoadObs1 == null) {
-			rightRoadObs1 = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
-			if (rightRoadObs1.activeInHierarchy)
+			rightRoadObs1 = selectedTilesPool [r];
+			if (rightRoadObs1.activeInHierarchy) {
 				rightRoadObs1 = null;
+				r++;
+			}
 		}
 
 		rightRoadObs1.SetActive (true);
@@ -521,11 +579,14 @@ public class GenerationManager : MonoBehaviour {
 		leftRoadEnviro2.transform.eulerAngles = Vector3.zero;
 
 		GameObject leftRoadObs2 = null;
+		r = Random.Range (0, selectedTilesPool.Count);
 
 		while (leftRoadObs2 == null) {
-			leftRoadObs2 = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
-			if (leftRoadObs2.activeInHierarchy)
+			leftRoadObs2 = selectedTilesPool [r];
+			if (leftRoadObs2.activeInHierarchy) {
 				leftRoadObs2 = null;
+				r++;
+			}
 		}
 
 		leftRoadObs2.SetActive (true);
@@ -551,11 +612,14 @@ public class GenerationManager : MonoBehaviour {
 		frontRoadEnviro2.transform.eulerAngles = Vector3.zero;
 
 		GameObject frontRoadObs2 = null;
+		r = Random.Range (0, selectedTilesPool.Count);
 
 		while (frontRoadObs2 == null) {
-			frontRoadObs2 = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
-			if (frontRoadObs2.activeInHierarchy)
+			frontRoadObs2 = selectedTilesPool [r];
+			if (frontRoadObs2.activeInHierarchy) {
 				frontRoadObs2 = null;
+				r++;
+			}
 		}
 
 		frontRoadObs2.SetActive (true);
@@ -576,11 +640,14 @@ public class GenerationManager : MonoBehaviour {
 		rightRoadEnviro2.transform.eulerAngles = Vector3.zero;
 
 		GameObject rightRoadObs2 = null;
+		r = Random.Range (0, selectedTilesPool.Count);
 
 		while (rightRoadObs2 == null) {
-			rightRoadObs2 = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
-			if (rightRoadObs2.activeInHierarchy)
+			rightRoadObs2 = selectedTilesPool [r];
+			if (rightRoadObs2.activeInHierarchy) {
 				rightRoadObs2 = null;
+				r++;
+			}
 		}
 
 		rightRoadObs2.SetActive (true);

@@ -9,6 +9,7 @@ public class SceneManager : MonoBehaviour {
 	private bool neighbourChoosed;
 	private Direction nextDirection;
 	private bool changingProvince;
+	private List<Province> provinces = new List<Province> ();
 
 	public Province currentProvince;
 	public Direction displacementDirection;
@@ -45,67 +46,114 @@ public class SceneManager : MonoBehaviour {
 		Application.targetFrameRate = 60;
 
 		//COMUNIDAD VALENCIANA;
-		Province castellon = new Province ("Castellón", Climate.Mediterranean);
-		Province valencia = new Province ("Valencia", Climate.Mediterranean);
-		Province alicante = new Province ("Alicante", Climate.Mediterranean);
+		Province castellon = new Province ("castellón", Climate.Mediterranean);
+		provinces.Add (castellon);
+		Province valencia = new Province ("valencia", Climate.Mediterranean);
+		provinces.Add (valencia);
+		Province alicante = new Province ("alicante", Climate.Mediterranean);
+		provinces.Add (alicante);
 		//CATALUÑA;
-		Province tarragona = new Province ("Tarragona", Climate.Mediterranean);
-		Province barcelona = new Province ("Barcelona", Climate.Mediterranean);
-		Province gerona = new Province ("Gerona", Climate.Mediterranean);
-		Province lerida = new Province ("Lérida", Climate.Continental);
+		Province tarragona = new Province ("tarragona", Climate.Mediterranean);
+		provinces.Add (tarragona);
+		Province barcelona = new Province ("barcelona", Climate.Mediterranean);
+		provinces.Add (barcelona);
+		Province gerona = new Province ("gerona", Climate.Mediterranean);
+		provinces.Add (gerona);
+		Province lerida = new Province ("lérida", Climate.Continental);
+		provinces.Add (lerida);
 		//ARAGÓN;
-		Province huesca = new Province ("Huesca", Climate.Continental);
-		Province zaragoza = new Province ("Zaragoza", Climate.Continental);
-		Province teruel = new Province ("Teruel", Climate.Continental);
+		Province huesca = new Province ("huesca", Climate.Continental);
+		provinces.Add (huesca);
+		Province zaragoza = new Province ("zaragoza", Climate.Continental);
+		provinces.Add (zaragoza);
+		Province teruel = new Province ("teruel", Climate.Continental);
+		provinces.Add (teruel);
 		//NAVARRA;
-		Province navarra = new Province ("Navarra", Climate.Oceanic);
+		Province navarra = new Province ("navarra", Climate.Oceanic);
+		provinces.Add (navarra);
 		//PAIS VASCO;
-		Province guipuzcoa = new Province ("Guipúzcoa", Climate.Oceanic);
-		Province vizcaya = new Province ("Vizcaya", Climate.Oceanic);
-		Province alava = new Province ("Álava", Climate.Oceanic);
+		Province guipuzcoa = new Province ("guipúzcoa", Climate.Oceanic);
+		provinces.Add (guipuzcoa);
+		Province vizcaya = new Province ("vizcaya", Climate.Oceanic);
+		provinces.Add (vizcaya);
+		Province alava = new Province ("álava", Climate.Oceanic);
+		provinces.Add (alava);
 		//LA RIOJA;
-		Province larioja = new Province ("La Rioja", Climate.Continental);
+		Province larioja = new Province ("la rioja", Climate.Continental);
+		provinces.Add (larioja);
 		//CANTABRIA;
-		Province cantabria = new Province ("Cantabria", Climate.Oceanic);
+		Province cantabria = new Province ("cantabria", Climate.Oceanic);
+		provinces.Add (cantabria);
 		//ASTURIAS;
-		Province asturias = new Province ("Asturias", Climate.Oceanic);
+		Province asturias = new Province ("asturias", Climate.Oceanic);
+		provinces.Add (asturias);
 		//GALICIA;
-		Province lacoruna = new Province ("La Coruña", Climate.Oceanic);
-		Province lugo = new Province ("Lugo", Climate.Oceanic);
-		Province pontevedra = new Province ("Pontevedra", Climate.Oceanic);
-		Province ourense = new Province ("Ourense", Climate.Oceanic);
+		Province lacoruna = new Province ("la coruña", Climate.Oceanic);
+		provinces.Add (lacoruna);
+		Province lugo = new Province ("lugo", Climate.Oceanic);
+		provinces.Add (lugo);
+		Province pontevedra = new Province ("pontevedra", Climate.Oceanic);
+		provinces.Add (pontevedra);
+		Province ourense = new Province ("ourense", Climate.Oceanic);
+		provinces.Add (ourense);
 		//CASTILLA Y LEÓN;
-		Province leon = new Province ("León", Climate.Continental);
-		Province palencia = new Province ("Palencia", Climate.Continental);
-		Province burgos = new Province ("Burgos", Climate.Continental);
-		Province soria = new Province ("Soria", Climate.Continental);
-		Province segovia = new Province ("Segovia", Climate.Continental);
-		Province valladolid = new Province ("Valladolid", Climate.Continental);
-		Province zamora = new Province ("Zamora", Climate.Continental);
-		Province salamanca = new Province ("Salamanca", Climate.Continental);
-		Province avila = new Province ("Ávila", Climate.Continental);
+		Province leon = new Province ("león", Climate.Continental);
+		provinces.Add (leon);
+		Province palencia = new Province ("palencia", Climate.Continental);
+		provinces.Add (palencia);
+		Province burgos = new Province ("burgos", Climate.Continental);
+		provinces.Add (burgos);
+		Province soria = new Province ("soria", Climate.Continental);
+		provinces.Add (soria);
+		Province segovia = new Province ("segovia", Climate.Continental);
+		provinces.Add (segovia);
+		Province valladolid = new Province ("valladolid", Climate.Continental);
+		provinces.Add (valladolid);
+		Province zamora = new Province ("zamora", Climate.Continental);
+		provinces.Add (zamora);
+		Province salamanca = new Province ("salamanca", Climate.Continental);
+		provinces.Add (salamanca);
+		Province avila = new Province ("ávila", Climate.Continental);
+		provinces.Add (avila);
 		//MADRID;
-		Province madrid = new Province ("Madrid", Climate.Continental);
+		Province madrid = new Province ("madrid", Climate.Continental);
+		provinces.Add (madrid);
 		//CASTILLA LA MANCHA;
-		Province guadalajara = new Province ("Guadalajara", Climate.Continental);
-		Province cuenca = new Province ("Cuenca", Climate.Continental);
-		Province toledo = new Province ("Toledo", Climate.Continental);
-		Province ciudadreal = new Province ("Ciudad Real", Climate.Continental);
-		Province albacete = new Province ("Albacete", Climate.Continental);
+		Province guadalajara = new Province ("guadalajara", Climate.Continental);
+		provinces.Add (guadalajara);
+		Province cuenca = new Province ("cuenca", Climate.Continental);
+		provinces.Add (cuenca);
+		Province toledo = new Province ("toledo", Climate.Continental);
+		provinces.Add (toledo);
+		Province ciudadreal = new Province ("ciudad real", Climate.Continental);
+		provinces.Add (ciudadreal);
+		Province albacete = new Province ("albacete", Climate.Continental);
+		provinces.Add (albacete);
 		//EXTREMADURA;
-		Province caceres = new Province ("Cáceres", Climate.Continental);
-		Province badajoz = new Province ("Badajoz", Climate.Continental);
+		Province caceres = new Province ("cáceres", Climate.Continental);
+		provinces.Add (caceres);
+		Province badajoz = new Province ("badajoz", Climate.Continental);
+		provinces.Add (badajoz);
 		//ANDALUCÍA;
-		Province huelva = new Province ("Huelva", Climate.Mediterranean);
-		Province sevilla = new Province ("Sevilla", Climate.Continental);
-		Province cadiz = new Province ("Cádiz", Climate.Mediterranean);
-		Province cordoba = new Province ("Córdoba", Climate.Continental);
-		Province malaga = new Province ("Málaga", Climate.Mediterranean);
-		Province jaen = new Province ("Jaén", Climate.Continental);
-		Province granada = new Province ("Granada", Climate.Mediterranean);
-		Province almeria = new Province ("Almería", Climate.Mediterranean);
+		Province huelva = new Province ("huelva", Climate.Mediterranean);
+		provinces.Add (huelva);
+		Province sevilla = new Province ("sevilla", Climate.Continental);
+		provinces.Add (sevilla);
+		Province cadiz = new Province ("cádiz", Climate.Mediterranean);
+		provinces.Add (cadiz);
+		Province cordoba = new Province ("córdoba", Climate.Continental);
+		provinces.Add (cordoba);
+		Province malaga = new Province ("málaga", Climate.Mediterranean);
+		provinces.Add (malaga);
+		Province jaen = new Province ("jaén", Climate.Continental);
+		provinces.Add (jaen);
+		Province granada = new Province ("granada", Climate.Mediterranean);
+		provinces.Add (granada);
+		Province almeria = new Province ("almería", Climate.Mediterranean);
+		provinces.Add (almeria);
 		//MURCIA;
-		Province murcia = new Province ("Murcia", Climate.Mediterranean);
+		Province murcia = new Province ("murcia", Climate.Mediterranean);
+		provinces.Add (murcia);
 
 		//SET NEIGHBOURS;
 		castellon.SetNeighbours(new Neighbours[] {new Neighbours(tarragona, 167.05f)}, 
@@ -297,10 +345,23 @@ public class SceneManager : MonoBehaviour {
 			new Neighbours[]{ new Neighbours (alicante, 68.48f) },
 			null);
 
-		currentProvince = navarra;
-		displacementDirection = Direction.south;
+
+		foreach (Province p in provinces) {
+			if (p.name == ProvincesData.Instance.selectedProvince)
+				currentProvince = p;
+		}
+
+//		currentProvince = madrid;
+		displacementDirection = (Direction)Random.Range(0, 4);
 		provincesRunned.Add (currentProvince);
 //		RandomNeighbourSelection ();
+
+		if (currentProvince.climate == Climate.Oceanic)
+			SoundManager.Instance.ChangeMusic ("oceanicClimate");
+		else if (currentProvince.climate == Climate.Continental)
+			SoundManager.Instance.ChangeMusic ("continentalClimate");
+		else if (currentProvince.climate == Climate.Mediterranean)
+			SoundManager.Instance.ChangeMusic ("mediterraneanClimate");
 	}
 
 	private void Update () {
@@ -380,6 +441,13 @@ public class SceneManager : MonoBehaviour {
 			GenerationManager.Instance.selectedMaterialsPool = GenerationManager.Instance.mediterraneanMaterialsPool;
 			GenerationManager.Instance.selectedRoadChangePrefab = GenerationManager.Instance.roadChanges [2];
 		}
+
+		if (currentProvince.climate == Climate.Oceanic)
+			SoundManager.Instance.ChangeMusic ("oceanicClimate");
+		else if (currentProvince.climate == Climate.Continental)
+			SoundManager.Instance.ChangeMusic ("continentalClimate");
+		else if (currentProvince.climate == Climate.Mediterranean)
+			SoundManager.Instance.ChangeMusic ("mediterraneanClimate");
 	}
 
 	public void ChooseNextNeighbour(Neighbours n, Direction newDir) {
@@ -445,10 +513,7 @@ public class SceneManager : MonoBehaviour {
 		ResultsScreen.Instance.ShowScreen ();
 		GlobalData.Instance.coins += coins;
 		GlobalData.Instance.kmRunned += totalKm;
-
-		foreach (Province p in provincesRunned) {
-			Debug.Log (p.name);
-		}
+		GlobalData.Instance.SaveGame ();
 	}
 
 	public void RoadChangeStarted() {

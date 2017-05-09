@@ -41,8 +41,8 @@ public class ProvinceSelectionScreen : MonoBehaviour {
 	}
 
 	public void PlayButtonClicked() {
-		GameObject obj = new GameObject (provinceSelected);
-		DontDestroyOnLoad (obj);
+//		GameObject obj = new GameObject (provinceSelected);
+//		DontDestroyOnLoad (obj);
 		UnityEngine.SceneManagement.SceneManager.LoadScene ("LoadingScreen");
 	}
 }

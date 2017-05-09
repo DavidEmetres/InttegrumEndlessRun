@@ -31,7 +31,7 @@ public class GlobalData : MonoBehaviour {
 
 			for (int i = 0; i < 47; i++) {
 				stampsUnlocked.Add (new int[5] { 0, 0, 0, 0, 0 });
-				provincesUnlocked [i] = 0;
+				provincesUnlocked [i] = 1;
 			}
 
 			provincesUnlocked [27] = 1;

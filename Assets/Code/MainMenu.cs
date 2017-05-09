@@ -18,6 +18,8 @@ public class MainMenu : MonoBehaviour {
 		Instance = this;
 
 		provincesData = CSVReader.Read ("provinces_data");
+
+		SoundManager.Instance.ChangeMusic ("mainMenu");
 	}
 
 	private void Update() {

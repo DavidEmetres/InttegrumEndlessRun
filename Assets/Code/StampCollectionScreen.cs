@@ -41,6 +41,8 @@ public class StampCollectionScreen : MonoBehaviour {
 		}
 
 		CheckPrices (currentPage);
+
+		SoundManager.Instance.ChangeMusic ("stampCollection");
 	}
 
 	private void Update() {
