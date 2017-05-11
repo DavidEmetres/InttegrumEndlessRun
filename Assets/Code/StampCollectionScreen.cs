@@ -30,12 +30,14 @@ public class StampCollectionScreen : MonoBehaviour {
 		coinsText.text = GlobalData.Instance.coins.ToString();
 		List<int[]> su = GlobalData.Instance.stampsUnlocked;
 
-		for (int i = 0; i < su.Count; i++) {
-			Debug.Log ("Provincia " + i + ": ");
-			for (int j = 0; j < su [i].Length; j++) {
-				Debug.Log("Stamp " + j + " = " + su[i][j]);
-				if (su [i] [j] == 1) {
-					UnlockStamp (i, j, false);
+		if (su != null && su.Count > 0) {
+			for (int i = 0; i < su.Count; i++) {
+				Debug.Log ("Provincia " + i + ": ");
+				for (int j = 0; j < su [i].Length; j++) {
+					Debug.Log ("Stamp " + j + " = " + su [i] [j]);
+					if (su [i] [j] == 1) {
+						UnlockStamp (i, j, false);
+					}
 				}
 			}
 		}

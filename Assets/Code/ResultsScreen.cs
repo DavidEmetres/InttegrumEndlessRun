@@ -64,7 +64,6 @@ public class ResultsScreen : MonoBehaviour {
 
 	IEnumerator ShowProvinces() {
 		for (int i = 0; i < provincesRunned.Count; i++) {
-			Debug.Log (provincesRunned [i].name.ToLower ());
 			GameObject p = GameObject.Find (provincesRunned [i].name.ToLower ());
 			p.GetComponent<Image> ().enabled = true;
 			yield return new WaitForSeconds (1f);
@@ -83,6 +82,7 @@ public class ResultsScreen : MonoBehaviour {
 	}
 
 	public void RestartGame() {
+		SoundManager.Instance.ChangeMusic ("mainMenu");
 		UnityEngine.SceneManagement.SceneManager.LoadScene ("LoadingScreen");
 	}
 }

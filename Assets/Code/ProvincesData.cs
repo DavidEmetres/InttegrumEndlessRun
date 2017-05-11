@@ -2,18 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ProvincesData : MonoBehaviour {
+public class ProvincesData : MonoBehaviourSingleton<ProvincesData> {
 
 	private List<Dictionary<string, object>> provincesData;
 
 	public string selectedProvince;
 	public Sprite[] provincesImages;
 
-	public static ProvincesData Instance;
-
 	private void Awake() {
-		Instance = this;
-		DontDestroyOnLoad (this.gameObject);
 		provincesData = CSVReader.Read ("provinces_data");
 	}
 

@@ -5,30 +5,21 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Collections.Generic;
 
-public class GlobalData : MonoBehaviour {
+public class GlobalData : MonoBehaviourSingleton<GlobalData> {
 
 	public int coins;
 	public int tickets;
 	public float kmRunned;
-	public List<int[]> stampsUnlocked;
+	public List<int[]> stampsUnlocked = new List<int[]> ();
 	public int[] provincesUnlocked;
 	public bool firstTime;
 
-	public static GlobalData Instance;
-
 	private void Awake() {
-		if (Instance != null && Instance != this)
-			Destroy (gameObject);
-
-		Instance = this;
-		DontDestroyOnLoad (gameObject);
+		provincesUnlocked = new int[47];
 
 		bool b = false;
 
 		if (!b) {
-			stampsUnlocked = new List<int[]> ();
-			provincesUnlocked = new int[47];
-
 			for (int i = 0; i < 47; i++) {
 				stampsUnlocked.Add (new int[5] { 0, 0, 0, 0, 0 });
 				provincesUnlocked [i] = 1;

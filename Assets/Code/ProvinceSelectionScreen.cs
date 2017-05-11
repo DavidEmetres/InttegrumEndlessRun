@@ -8,12 +8,12 @@ public class ProvinceSelectionScreen : MonoBehaviour {
 	[SerializeField] private Text provinceSelectedText;
 	[SerializeField] private GameObject[] provincesShapes;
 
-	private void Start() {
+	public void Start() {
 		int[] pu = GlobalData.Instance.provincesUnlocked;
 
-		while (pu.Length == 0) {
-			pu = GlobalData.Instance.provincesUnlocked;
-		}
+//		while (pu.Length == 0) {
+//			pu = GlobalData.Instance.provincesUnlocked;
+//		}
 
 		for (int i = 0; i < pu.Length; i++) {
 			if (pu[i] == 1) {
@@ -41,8 +41,6 @@ public class ProvinceSelectionScreen : MonoBehaviour {
 	}
 
 	public void PlayButtonClicked() {
-//		GameObject obj = new GameObject (provinceSelected);
-//		DontDestroyOnLoad (obj);
 		UnityEngine.SceneManagement.SceneManager.LoadScene ("LoadingScreen");
 	}
 }

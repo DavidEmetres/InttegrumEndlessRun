@@ -355,7 +355,9 @@ public class SceneManager : MonoBehaviour {
 		displacementDirection = (Direction)Random.Range(0, 4);
 		provincesRunned.Add (currentProvince);
 //		RandomNeighbourSelection ();
+	}
 
+	void Start() {
 		if (currentProvince.climate == Climate.Oceanic)
 			SoundManager.Instance.ChangeMusic ("oceanicClimate");
 		else if (currentProvince.climate == Climate.Continental)
@@ -387,6 +389,7 @@ public class SceneManager : MonoBehaviour {
 	}
 
 	public void ProvinceChange() {
+		Province previousProvince = currentProvince;
 		currentProvince = neighbour.neighbourProvince;
 		displacementDirection = nextDirection;
 		provincesRunned.Add (currentProvince);
@@ -442,12 +445,12 @@ public class SceneManager : MonoBehaviour {
 			GenerationManager.Instance.selectedRoadChangePrefab = GenerationManager.Instance.roadChanges [2];
 		}
 
-		if (currentProvince.climate == Climate.Oceanic)
-			SoundManager.Instance.ChangeMusic ("oceanicClimate");
-		else if (currentProvince.climate == Climate.Continental)
-			SoundManager.Instance.ChangeMusic ("continentalClimate");
-		else if (currentProvince.climate == Climate.Mediterranean)
-			SoundManager.Instance.ChangeMusic ("mediterraneanClimate");
+		if (currentProvince.climate == Climate.Oceanic && previousProvince.climate != Climate.Oceanic)
+			SoundManager.Instance.FadeOut ("oceanicClimate");
+		else if (currentProvince.climate == Climate.Continental && previousProvince.climate != Climate.Continental)
+			SoundManager.Instance.FadeOut ("continentalClimate");
+		else if (currentProvince.climate == Climate.Mediterranean && previousProvince.climate != Climate.Mediterranean)
+			SoundManager.Instance.FadeOut ("mediterraneanClimate");
 	}
 
 	public void ChooseNextNeighbour(Neighbours n, Direction newDir) {

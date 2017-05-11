@@ -80,9 +80,9 @@ public class GenerationManager : MonoBehaviour {
 		rc = Instantiate ((GameObject)Resources.Load ("RoadChanges/Continental_RoadChange"), new Vector3 (0f, 0f, -200f), Quaternion.identity) as GameObject;
 		rc.SetActive (false);
 		roadChanges.Add (rc);
-//		rc = Instantiate ((GameObject)Resources.Load ("RoadChanges/Mediterranean_RoadChange"), new Vector3 (0f, 0f, -200f), Quaternion.identity) as GameObject;
-//		rc.SetActive (false);
-//		roadChanges.Add (rc);
+		rc = Instantiate ((GameObject)Resources.Load ("RoadChanges/Mediterranean_RoadChange"), new Vector3 (0f, 0f, -200f), Quaternion.identity) as GameObject;
+		rc.SetActive (false);
+		roadChanges.Add (rc);
 
 		GameObject pref = (GameObject)Resources.Load ("Signs/RoadChangeSign");
 		roadChangeSign = Instantiate (pref, new Vector3 (0f, 0f, -20f), pref.transform.rotation) as GameObject;
@@ -99,8 +99,8 @@ public class GenerationManager : MonoBehaviour {
 		oceanicMaterialsPool.Add ((Material)Resources.Load ("Materials/Oceanic_EnviroMat"));
 		continentalMaterialsPool.Add ((Material)Resources.Load ("Materials/Continental_TerrainMat"));
 		continentalMaterialsPool.Add ((Material)Resources.Load ("Materials/Continental_EnviroMat"));
-//		mediterraneanMaterialsPool.Add ((Material)Resources.Load ("Materials/Mediterranean_TerrainMat"));
-//		mediterraneanMaterialsPool.Add ((Material)Resources.Load ("Materials/Mediterranean_EnviroMat"));
+		mediterraneanMaterialsPool.Add ((Material)Resources.Load ("Materials/Mediterranean_TerrainMat"));
+		mediterraneanMaterialsPool.Add ((Material)Resources.Load ("Materials/Mediterranean_EnviroMat"));
 
 		//OBSTACLES POOL;
 
@@ -140,6 +140,25 @@ public class GenerationManager : MonoBehaviour {
 			continentalTilesPool.Add (obj1);
 			continentalTilesPool.Add (obj2);
 			continentalTilesPool.Add (obj3);
+		}
+
+		mediterraneanTiles = new GameObject ("Mediterranean_Tiles");
+
+		for (int i = 0; i < tileManager.mediterraneanTileArrays.Count; i++) {
+			GameObject prefab = tileManager.mediterraneanTileArrays [i];
+			GameObject obj1 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			obj1.transform.parent = mediterraneanTiles.transform;
+			obj1.SetActive (false);
+			GameObject obj2 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			obj2.transform.parent = mediterraneanTiles.transform;
+			obj2.SetActive (false);
+			GameObject obj3 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			obj3.transform.parent = mediterraneanTiles.transform;
+			obj3.SetActive (false);
+
+			mediterraneanTilesPool.Add (obj1);
+			mediterraneanTilesPool.Add (obj2);
+			mediterraneanTilesPool.Add (obj3);
 		}
 
 		//ENVIRONMENT POOL;
@@ -198,8 +217,32 @@ public class GenerationManager : MonoBehaviour {
 				count = 0;
 		}
 
-		mediterraneanTiles = new GameObject ("Mediterranean_Tiles");
 		mediterraneanEnviro = new GameObject ("Mediterranean_Enviro");
+		count = 0;
+
+		for (int i = 0; i < 10; i++) {
+			GameObject prefab = tileManager.mediterraneanEnviros [count];
+
+			GameObject enviro = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			enviro.transform.parent = mediterraneanEnviro.transform;
+			enviro.SetActive (false);
+
+			GameObject enviro2 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			enviro2.transform.parent = mediterraneanEnviro.transform;
+			enviro2.SetActive (false);
+
+			GameObject enviro3 = Instantiate (prefab, new Vector3 (0f, 0f, -10f), prefab.transform.rotation) as GameObject;
+			enviro3.transform.parent = mediterraneanEnviro.transform;
+			enviro3.SetActive (false);
+
+			mediterraneanEnviroPool.Add (enviro);
+			mediterraneanEnviroPool.Add (enviro2);
+			mediterraneanEnviroPool.Add (enviro3);
+
+			count++;
+			if (count >= tileManager.mediterraneanEnviros.Count)
+				count = 0;
+		}
 
 		//SELECT CURRENT CLIMATE POOL;
 
@@ -226,10 +269,10 @@ public class GenerationManager : MonoBehaviour {
 		}
 
 		if (SceneManager.Instance.currentProvince.climate == Climate.Mediterranean) {
-//			mediterraneanTiles.transform.parent = obstacleParent;
-//			selectedTilesParent = mediterraneanTiles.transform;
-//			mediterraneanEnviro.transform.parent = environmentParent;
-//			selectedEnviroParent = mediterraneanEnviro.transform;
+			mediterraneanTiles.transform.parent = obstacleParent;
+			selectedTilesParent = mediterraneanTiles.transform;
+			mediterraneanEnviro.transform.parent = environmentParent;
+			selectedEnviroParent = mediterraneanEnviro.transform;
 			selectedTilesPool = mediterraneanTilesPool;
 			selectedEnviroPool = mediterraneanEnviroPool;
 			selectedMaterialsPool = mediterraneanMaterialsPool;
@@ -481,7 +524,7 @@ public class GenerationManager : MonoBehaviour {
 		leftRoadEnviro1.transform.eulerAngles = Vector3.zero;
 
 		GameObject leftRoadObs1 = null;
-		int r = Random.Range (0, selectedTilesPool.Count);
+		int r = Random.Range (0, selectedTilesPool.Count-1);
 
 		while (leftRoadObs1 == null) {
 			leftRoadObs1 = selectedTilesPool [r];
@@ -514,7 +557,7 @@ public class GenerationManager : MonoBehaviour {
 		frontRoadEnviro1.transform.eulerAngles = Vector3.zero;
 
 		GameObject frontRoadObs1 = null;
-		r = Random.Range (0, selectedTilesPool.Count);
+		r = Random.Range (0, selectedTilesPool.Count-1);
 
 		while (frontRoadObs1 == null) {
 			frontRoadObs1 = selectedTilesPool [r];
@@ -542,7 +585,7 @@ public class GenerationManager : MonoBehaviour {
 		rightRoadEnviro1.transform.eulerAngles = Vector3.zero;
 
 		GameObject rightRoadObs1 = null;
-		r = Random.Range (0, selectedTilesPool.Count);
+		r = Random.Range (0, selectedTilesPool.Count-1);
 
 		while (rightRoadObs1 == null) {
 			rightRoadObs1 = selectedTilesPool [r];
@@ -579,7 +622,7 @@ public class GenerationManager : MonoBehaviour {
 		leftRoadEnviro2.transform.eulerAngles = Vector3.zero;
 
 		GameObject leftRoadObs2 = null;
-		r = Random.Range (0, selectedTilesPool.Count);
+		r = Random.Range (0, selectedTilesPool.Count-1);
 
 		while (leftRoadObs2 == null) {
 			leftRoadObs2 = selectedTilesPool [r];
@@ -612,7 +655,7 @@ public class GenerationManager : MonoBehaviour {
 		frontRoadEnviro2.transform.eulerAngles = Vector3.zero;
 
 		GameObject frontRoadObs2 = null;
-		r = Random.Range (0, selectedTilesPool.Count);
+		r = Random.Range (0, selectedTilesPool.Count-1);
 
 		while (frontRoadObs2 == null) {
 			frontRoadObs2 = selectedTilesPool [r];
@@ -640,7 +683,7 @@ public class GenerationManager : MonoBehaviour {
 		rightRoadEnviro2.transform.eulerAngles = Vector3.zero;
 
 		GameObject rightRoadObs2 = null;
-		r = Random.Range (0, selectedTilesPool.Count);
+		r = Random.Range (0, selectedTilesPool.Count-1);
 
 		while (rightRoadObs2 == null) {
 			rightRoadObs2 = selectedTilesPool [r];

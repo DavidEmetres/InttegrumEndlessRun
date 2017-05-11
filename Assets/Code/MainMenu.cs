@@ -19,7 +19,16 @@ public class MainMenu : MonoBehaviour {
 
 		provincesData = CSVReader.Read ("provinces_data");
 
+		if (Time.timeScale < 1)
+			Time.timeScale = 1;
+	}
+
+	private void Start() {
 		SoundManager.Instance.ChangeMusic ("mainMenu");
+
+		button1.GetComponent<Button> ().enabled = true;
+		button2.GetComponent<Button> ().enabled = true;
+		button3.GetComponent<Button> ().enabled = true;
 	}
 
 	private void Update() {
