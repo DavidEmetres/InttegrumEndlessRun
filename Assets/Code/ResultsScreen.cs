@@ -31,7 +31,7 @@ public class ResultsScreen : MonoBehaviour {
 				kmShown+=10;
 				kmText.text = kmShown.ToString ("F1") + " km";
 			}
-			else if (kmShown >= totalKm || Input.GetMouseButtonDown(0)) {
+			if (kmShown >= totalKm || Input.GetMouseButtonDown(0)) {
 				kmText.text = totalKm.ToString ("F1") + " km";
 			}
 		}
@@ -41,7 +41,7 @@ public class ResultsScreen : MonoBehaviour {
 				coinsShown+=10;
 				coinsText.text = coinsShown.ToString ();
 			}
-			else if (coinsShown >= totalCoins || Input.GetMouseButtonDown(0)) {
+			if (coinsShown >= totalCoins || Input.GetMouseButtonDown(0)) {
 				coinsText.text = totalCoins.ToString ();
 				Invoke ("ShowRun", 1f);
 			}

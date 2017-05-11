@@ -28,11 +28,11 @@ public class SoundManager : MonoBehaviourSingleton<SoundManager> {
 		music = audios [0];
 		fx = audios [1];
 
-		mainMenuMusic = (AudioClip)Resources.Load ("Audio/Music/main_menu_music") as AudioClip;
-		stampCollectionMusic = (AudioClip)Resources.Load ("Audio/Music/stamp_collection_music") as AudioClip;
-		oceanicClimateMusic = (AudioClip)Resources.Load ("Audio/Music/oceanic_climate_music") as AudioClip;
-		continentalClimateMusic = (AudioClip)Resources.Load ("Audio/Music/continental_climate_music") as AudioClip;
-		mediterraneanClimateMusic = (AudioClip)Resources.Load ("Audio/Music/mediterranean_climate_music") as AudioClip;
+		mainMenuMusic = Resources.Load<AudioClip> ("Audio/Music/main_menu_music");
+		stampCollectionMusic = Resources.Load<AudioClip> ("Audio/Music/stamp_collection_music");
+		oceanicClimateMusic = Resources.Load<AudioClip> ("Audio/Music/oceanic_climate_music");
+		continentalClimateMusic = Resources.Load<AudioClip> ("Audio/Music/continental_climate_music");
+		mediterraneanClimateMusic = Resources.Load<AudioClip> ("Audio/Music/mediterranean_climate_music");
 		audio = music.outputAudioMixerGroup.audioMixer;
 	}
 

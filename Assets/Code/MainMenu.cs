@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class MainMenu : MonoBehaviour {
 
 	private List<Dictionary<string, object>> provincesData;
+	private AudioPlayer audio;
 
 	public GameObject button1;
 	public GameObject button2;
@@ -18,6 +19,8 @@ public class MainMenu : MonoBehaviour {
 		Instance = this;
 
 		provincesData = CSVReader.Read ("provinces_data");
+
+		audio = GetComponent<AudioPlayer> ();
 
 		if (Time.timeScale < 1)
 			Time.timeScale = 1;
@@ -61,20 +64,20 @@ public class MainMenu : MonoBehaviour {
 	}
 
 	public void ButtonPressed(int button) {
+		audio.PlayFX (0);
+
+		button1.GetComponent<Button> ().enabled = false;
+		button2.GetComponent<Button> ().enabled = false;
+		button3.GetComponent<Button> ().enabled = false;
+
 		switch (button) {
 			case 1:
-				button2.GetComponent<Button> ().enabled = false;
-				button3.GetComponent<Button> ().enabled = false;
 				button1.GetComponent<Animator> ().SetTrigger ("buttonPressed");
 				break;
 			case 2:
-				button1.GetComponent<Button> ().enabled = false;
-				button3.GetComponent<Button> ().enabled = false;
 				button2.GetComponent<Animator> ().SetTrigger ("buttonPressed");
 				break;
 			case 3:
-				button1.GetComponent<Button> ().enabled = false;
-				button2.GetComponent<Button> ().enabled = false;
 				button3.GetComponent<Animator> ().SetTrigger ("buttonPressed");
 				break;
 		}

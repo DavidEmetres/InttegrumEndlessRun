@@ -15,10 +15,15 @@ public class StampCollectionScreen : MonoBehaviour {
 	[SerializeField] private GameObject nextButton;
 	[SerializeField] private GameObject previousButton;
 	[SerializeField] private Text coinsText;
+	[SerializeField] private ScrollRect scroll;
+	private float scrollPos;
+	private AudioPlayer audio;
 
 	public int[] stampPrices;
 
 	private void Start() {
+		audio = GetComponent<AudioPlayer> ();
+
 		for (int i = 1; i < pages.Length; i++) {
 			pages [i].transform.RotateAround (pivot.transform.position, transform.up, -90f);
 			pages [i].SetActive (false);
@@ -74,6 +79,11 @@ public class StampCollectionScreen : MonoBehaviour {
 				nextButton.SetActive (f);
 			}
 		}
+
+		if (scroll.horizontalNormalizedPosition >= (scrollPos + 0.02f) || scroll.horizontalNormalizedPosition <= (scrollPos - 0.02f)) {
+			audio.WaitPlayFX (2);
+			scrollPos = scroll.horizontalNormalizedPosition;
+		}
 	}
 
 	public void UnlockStamp(int stamp) {
@@ -82,9 +92,8 @@ public class StampCollectionScreen : MonoBehaviour {
 
 	public void UnlockStamp(int page, int stamp, bool purchase) {
 		if (purchase) {
-			if (GlobalData.Instance.coins >= stampPrices [stamp]) {
-				if (GlobalData.Instance.stampsUnlocked [page] [stamp] == 0)
-					GlobalData.Instance.stampsUnlocked [page] [stamp] = 1;
+			if (GlobalData.Instance.coins >= stampPrices [stamp] && GlobalData.Instance.stampsUnlocked [page] [stamp] == 0) {
+				GlobalData.Instance.stampsUnlocked [page] [stamp] = 1;
 
 				GlobalData.Instance.coins -= stampPrices [stamp];
 				coinsText.text = GlobalData.Instance.coins.ToString ();
@@ -96,9 +105,12 @@ public class StampCollectionScreen : MonoBehaviour {
 					}
 				}
 				if (count == 4) {
+					audio.WaitPlayFX (4);
 					GlobalData.Instance.provincesUnlocked [page] = 1;
 					GlobalData.Instance.SaveGame ();
 				}
+
+				audio.PlayFX (3);
 
 				CheckPrices (currentPage);
 			}
@@ -134,6 +146,7 @@ public class StampCollectionScreen : MonoBehaviour {
 			rotating = true;
 			direction = 1;
 			angle = 0f;
+			audio.PlayFX (1);
 			CheckPrices (pageRotating);
 		}
 	}
@@ -144,6 +157,7 @@ public class StampCollectionScreen : MonoBehaviour {
 			rotating = true;
 			direction = -1;
 			angle = 0f;
+			audio.PlayFX (1);
 			CheckPrices (currentPage - 1);
 		}
 	}
@@ -177,10 +191,13 @@ public class StampCollectionScreen : MonoBehaviour {
 		f = (currentPage == pages.Length - 1) ? false : true;
 		nextButton.SetActive (f);
 
+		audio.PlayFX (1);
+
 		CheckPrices (page);
 	}
 
 	public void BackToMainMenu() {
+		audio.PlayFX (0);
 		UnityEngine.SceneManagement.SceneManager.LoadScene ("MainMenu");
 	}
 }
