@@ -41,4 +41,8 @@ public class AudioPlayer : MonoBehaviour {
 		else
 			PlayFX (fx);
 	}
+
+	public float GetClipLength(int clip) {
+		return effects [clip].length;
+	}
 }

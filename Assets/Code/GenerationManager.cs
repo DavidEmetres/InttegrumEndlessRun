@@ -290,20 +290,20 @@ public class GenerationManager : MonoBehaviour {
 			enviro.transform.eulerAngles = Vector3.zero;
 			enviro.transform.parent = selectedEnviroParent;
 
-			if (i >= 2) {
-				GameObject obs = null;
-
-				while (obs == null) {
-					obs = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
-					if (obs.activeInHierarchy)
-						obs = null;
-				}
-
-				obs.SetActive (true);
-				obs.transform.position = new Vector3 (0f, 0f, -10f + (50f * i));
-				obs.transform.eulerAngles = Vector3.zero;
-				obs.transform.parent = selectedTilesParent;
-			}
+//			if (i >= 2) {
+//				GameObject obs = null;
+//
+//				while (obs == null) {
+//					obs = selectedTilesPool [Random.Range (0, selectedTilesPool.Count)];
+//					if (obs.activeInHierarchy)
+//						obs = null;
+//				}
+//
+//				obs.SetActive (true);
+//				obs.transform.position = new Vector3 (0f, 0f, -10f + (50f * i));
+//				obs.transform.eulerAngles = Vector3.zero;
+//				obs.transform.parent = selectedTilesParent;
+//			}
 
 			enviroCount += 3;
 			if (enviroCount > ((maxEnviroCount * 3) - 1))
@@ -313,7 +313,8 @@ public class GenerationManager : MonoBehaviour {
 
 	private void Start () {
 		generationDistance = 200f;
-		destroyDistance = -30f;
+//		destroyDistance = -30f;
+		destroyDistance = -100f;
 		displacementSpeed = SceneManager.Instance.difSpeed[SceneManager.Instance.dif];
 		tileSize = 5f;
 		tileCount = tileSize;
@@ -350,7 +351,7 @@ public class GenerationManager : MonoBehaviour {
 
 		if (tileCount >= tileSize && !changingRoad) {
 			GenerateEnvironment ();
-			GenerateTile ();
+//			GenerateTile ();
 			tileCount = 0;
 		}
 	}

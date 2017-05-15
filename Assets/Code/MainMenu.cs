@@ -41,6 +41,7 @@ public class MainMenu : MonoBehaviour {
 	}
 
 	public void ShowExitDialog(bool visible) {
+		audio.PlayFX (0);
 		exitDialog.SetActive (visible);
 		button1.GetComponent<Button> ().enabled = !visible;
 		button2.GetComponent<Button> ().enabled = !visible;
@@ -48,6 +49,7 @@ public class MainMenu : MonoBehaviour {
 	}
 
 	public void ExitApplication() {
+		audio.PlayFX (0);
 		GlobalData.Instance.SaveGame ();
 		Application.Quit ();
 	}

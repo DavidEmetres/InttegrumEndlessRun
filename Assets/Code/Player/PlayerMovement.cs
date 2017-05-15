@@ -59,8 +59,10 @@ public class PlayerMovement : MonoBehaviour {
 	}
 	
 	private void Update () {
-		if(!bloquedMov)
+		if (!bloquedMov) {
 			CheckMouseInput ();
+			CheckKeyboardInput ();
+		}
 		
 		Ray ray = new Ray (new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z), Vector3.down);
 		RaycastHit hit;
@@ -221,6 +223,18 @@ public class PlayerMovement : MonoBehaviour {
 					Roll ();
 			}
 		}
+	}
+
+	private void CheckKeyboardInput() {
+		if (Input.GetKeyDown (KeyCode.RightArrow))
+			ChangeLane (true);
+		if (Input.GetKeyDown (KeyCode.LeftArrow))
+			ChangeLane (false);
+
+		if (Input.GetKeyDown (KeyCode.UpArrow))
+			Jump ();
+		if (Input.GetKeyDown (KeyCode.DownArrow))
+			Roll ();
 	}
 
 	public void ChangeState(State state) {
