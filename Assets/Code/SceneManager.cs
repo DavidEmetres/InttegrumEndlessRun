@@ -346,12 +346,12 @@ public class SceneManager : MonoBehaviour {
 			null);
 
 
-//		foreach (Province p in provinces) {
-//			if (p.name == ProvincesData.Instance.selectedProvince)
-//				currentProvince = p;
-//		}
+		foreach (Province p in provinces) {
+			if (p.name == ProvincesData.Instance.selectedProvince)
+				currentProvince = p;
+		}
 
-		currentProvince = malaga;
+//		currentProvince = malaga;
 		displacementDirection = (Direction)Random.Range(0, 4);
 		provincesRunned.Add (currentProvince);
 //		RandomNeighbourSelection ();

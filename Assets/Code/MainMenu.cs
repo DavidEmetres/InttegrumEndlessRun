@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
 
 public class MainMenu : MonoBehaviour {
 
@@ -12,6 +13,8 @@ public class MainMenu : MonoBehaviour {
 	public GameObject button2;
 	public GameObject button3;
 	public GameObject exitDialog;
+	public GameObject rewardButton;
+	public GameObject rewardDialog;
 
 	public static MainMenu Instance;
 
@@ -38,6 +41,41 @@ public class MainMenu : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.Escape)) {	//BACK BUTTON;
 			ShowExitDialog(true);
 		}
+
+		CheckRefill ();
+	}
+
+	public void CheckRefill() {
+		if (DateTime.Compare(DateTime.Now, GlobalData.Instance.nextRefill) > -1) {
+			rewardButton.SetActive (true);
+			GameObject.Find ("ProvinceSelectionScreen").GetComponent<ProvinceSelectionScreen> ().ShowRewardButton (true);
+			if (GlobalData.Instance.justEnteredGame) {
+				rewardButton.GetComponent<Button> ().onClick.Invoke ();
+				GlobalData.Instance.justEnteredGame = false;
+			}
+		}
+		else {
+			GameObject.Find ("ProvinceSelectionScreen").GetComponent<ProvinceSelectionScreen> ().UpdateTicketTimer ();
+			if (GlobalData.Instance.justEnteredGame)
+				GlobalData.Instance.justEnteredGame = false;
+		}
+	}
+
+	public void ShowRewardDialog(bool visible) {
+		rewardDialog.SetActive (visible);
+		button1.GetComponent<Button> ().enabled = !visible;
+		button2.GetComponent<Button> ().enabled = !visible;
+		button3.GetComponent<Button> ().enabled = !visible;
+		rewardButton.GetComponent<Button> ().enabled = !visible;
+	}
+
+	public void GetReward() {
+		GlobalData.Instance.tickets += 5;
+		ShowRewardDialog (false);
+		rewardButton.SetActive (false);
+		GameObject.Find ("ProvinceSelectionScreen").GetComponent<ProvinceSelectionScreen> ().ShowRewardButton (false);
+		GameObject.Find ("TicketCount").transform.GetChild (0).GetComponent<Text> ().text = GlobalData.Instance.tickets.ToString ();
+		GlobalData.Instance.nextRefill = DateTime.Now.AddHours (24);
 	}
 
 	public void ShowExitDialog(bool visible) {

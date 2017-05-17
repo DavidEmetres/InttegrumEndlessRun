@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class ProvinceSelectionScreen : MonoBehaviour {
 
@@ -8,8 +9,14 @@ public class ProvinceSelectionScreen : MonoBehaviour {
 	[SerializeField] private Text provinceSelectedText;
 	[SerializeField] private GameObject[] provincesShapes;
 	[SerializeField] private Button backButton;
+	[SerializeField] private Text tickets;
+	[SerializeField] private GameObject ticketAdPopUp;
+	[SerializeField] private GameObject rewardButton;
+	[SerializeField] private Text rewardLabel;
+	[SerializeField] private Text rewardTimer;
 	private AudioPlayer audio;
 	private bool ready;
+	private bool popUpVisible;
 
 	public void Start() {
 		audio = GetComponent<AudioPlayer> ();
@@ -29,11 +36,13 @@ public class ProvinceSelectionScreen : MonoBehaviour {
 			}
 		}
 
+		tickets.text = GlobalData.Instance.tickets.ToString ();
+
 		ProvinceClicked ("MADRID");
 	}
 
 	public void ProvinceClicked(string province) {
-		if (!ready) {
+		if (!ready && !popUpVisible) {
 			audio.PlayFX (1);
 			ProvincesData.Instance.selectedProvince = province.ToLower ();
 			provinceSelectedText.text = province;
@@ -49,10 +58,15 @@ public class ProvinceSelectionScreen : MonoBehaviour {
 	}
 
 	public void PlayButtonClicked() {
-		if (!ready) {
-			StartCoroutine (PlayButtonCoroutine ());
-			backButton.enabled = false;
-			ready = true;
+		if (!ready && !popUpVisible) {
+			if (GlobalData.Instance.tickets == 0) {
+				ShowTicketAdPopUp (true);
+			}
+			else {
+				StartCoroutine (PlayButtonCoroutine ());
+				backButton.enabled = false;
+				ready = true;
+			}
 		}
 	}
 
@@ -62,5 +76,30 @@ public class ProvinceSelectionScreen : MonoBehaviour {
 		yield return new WaitForSeconds (audio.GetClipLength (2) + 0.5f);
 
 		UnityEngine.SceneManagement.SceneManager.LoadScene ("LoadingScreen");
+	}
+
+	public void ShowTicketAdPopUp(bool visible) {
+		popUpVisible = visible;
+		backButton.enabled = !visible;
+		ticketAdPopUp.SetActive (visible);
+	}
+
+	public void ShowRewardButton(bool visible) {
+		rewardButton.SetActive (visible);
+		if (visible) {
+			rewardLabel.text = "¡Recoge tus 5 tickets!";
+			rewardTimer.gameObject.SetActive (false);
+		}
+		else {
+			rewardLabel.text = "Recibirás 5 tickets en:";
+			UpdateTicketTimer ();
+		}
+	}
+
+	public void UpdateTicketTimer() {
+		if (!rewardTimer.gameObject.activeInHierarchy)
+			rewardTimer.gameObject.SetActive (true);
+		TimeSpan t = GlobalData.Instance.nextRefill.Subtract (DateTime.Now);
+		rewardTimer.text = t.ToString ().Remove (8);
 	}
 }

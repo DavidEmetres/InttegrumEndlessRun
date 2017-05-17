@@ -13,9 +13,12 @@ public class GlobalData : MonoBehaviourSingleton<GlobalData> {
 	public List<int[]> stampsUnlocked = new List<int[]> ();
 	public int[] provincesUnlocked;
 	public bool firstTime;
+	public DateTime nextRefill;
+	public bool justEnteredGame;
 
 	private void Awake() {
 		provincesUnlocked = new int[47];
+		justEnteredGame = true;
 
 		bool b = false;
 
@@ -28,6 +31,7 @@ public class GlobalData : MonoBehaviourSingleton<GlobalData> {
 			provincesUnlocked [27] = 1;
 
 			firstTime = true;
+			nextRefill = DateTime.Now.AddHours (1);
 
 			SaveGame ();
 		}
@@ -47,6 +51,7 @@ public class GlobalData : MonoBehaviourSingleton<GlobalData> {
 		data.stampsUnlocked = stampsUnlocked;
 		data.provincesUnlocked = provincesUnlocked;
 		data.firstTime = firstTime;
+		data.nextRefill = nextRefill;
 
 		bf.Serialize (file, data);
 		file.Close ();
@@ -65,6 +70,7 @@ public class GlobalData : MonoBehaviourSingleton<GlobalData> {
 			stampsUnlocked = data.stampsUnlocked;
 			provincesUnlocked = data.provincesUnlocked;
 			firstTime = data.firstTime;
+			nextRefill = data.nextRefill;
 
 			return true;
 		}
@@ -92,4 +98,5 @@ public class GameData {
 	public List<int[]> stampsUnlocked;
 	public int[] provincesUnlocked;
 	public bool firstTime;
+	public DateTime nextRefill;
 }
