@@ -14,10 +14,14 @@ public class ResultsScreen : MonoBehaviour {
 	private List<Province> provincesRunned = new List<Province>();
 	private GameObject startLine;
 	private GameObject endLine;
+	private bool popUpVisible;
+	private bool rewardObtained;
 
 	public Text kmText;
 	public Text coinsText;
 	public LineRenderer line;
+	public GameObject coinAdPopUp;
+	public GameObject adButton;
 
 	public static ResultsScreen Instance;
 
@@ -33,6 +37,7 @@ public class ResultsScreen : MonoBehaviour {
 			}
 			if (kmShown >= totalKm || Input.GetMouseButtonDown(0)) {
 				kmText.text = totalKm.ToString ("F1") + " km";
+				showingKm = false;
 			}
 		}
 
@@ -43,7 +48,8 @@ public class ResultsScreen : MonoBehaviour {
 			}
 			if (coinsShown >= totalCoins || Input.GetMouseButtonDown(0)) {
 				coinsText.text = totalCoins.ToString ();
-				Invoke ("ShowRun", 1f);
+				showingCoins = false;
+				Invoke ("ShowRun", 0.5f);
 			}
 		}
 	}
@@ -66,10 +72,10 @@ public class ResultsScreen : MonoBehaviour {
 		for (int i = 0; i < provincesRunned.Count; i++) {
 			GameObject p = GameObject.Find (provincesRunned [i].name.ToLower ());
 			p.GetComponent<Image> ().enabled = true;
-			yield return new WaitForSeconds (1f);
+			yield return new WaitForSeconds (0.5f);
 		}
 
-		Invoke ("ShowKm", 1f);
+		Invoke ("ShowKm", 0);
 	}
 
 	public void ShowCoins() {
@@ -77,12 +83,33 @@ public class ResultsScreen : MonoBehaviour {
 		showingCoins = true;
 	}
 
+	public void ShowCoinAd(bool visible) {
+		popUpVisible = visible;
+		coinAdPopUp.SetActive (visible);
+	}
+
+	public void RunAd() {
+		UnityAds.Instance.ShowCoinAd ();
+	}
+
+	public void RewardObtained() {
+		rewardObtained = true;
+		adButton.GetComponent<Button> ().enabled = false;
+		adButton.GetComponent<Image> ().color = new Color (1f, 1f, 1f, 0.2f);
+		adButton.transform.GetChild(0).GetComponent<Image> ().color = new Color (1f, 1f, 1f, 0.2f);
+		adButton.transform.GetChild(1).GetComponent<Image> ().color = new Color (1f, 1f, 1f, 0.2f);
+		coinsText.text = "" + (SceneManager.Instance.coins + SceneManager.Instance.coins);
+	}
+
 	public void BackToMainMenu() {
-		UnityEngine.SceneManagement.SceneManager.LoadScene ("MainMenu");
+		if(!popUpVisible)
+			UnityEngine.SceneManagement.SceneManager.LoadScene ("MainMenu");
 	}
 
 	public void RestartGame() {
-		SoundManager.Instance.ChangeMusic ("mainMenu");
-		UnityEngine.SceneManagement.SceneManager.LoadScene ("LoadingScreen");
+		if (!popUpVisible) {
+			SoundManager.Instance.ChangeMusic ("mainMenu");
+			UnityEngine.SceneManagement.SceneManager.LoadScene ("LoadingScreen");
+		}
 	}
 }

@@ -36,7 +36,7 @@ public class SceneLoader : MonoBehaviour {
 	private IEnumerator LoadScene() {
 		yield return new WaitForSeconds (5f);
 
-		AsyncOperation async = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync (2);
+		AsyncOperation async = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync ("GameplayTest");
 
 		while (!async.isDone)
 			yield return null;
