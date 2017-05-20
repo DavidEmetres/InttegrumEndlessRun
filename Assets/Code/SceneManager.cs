@@ -368,10 +368,10 @@ public class SceneManager : MonoBehaviour {
 
 	private void Update () {
 		if (!gameOver) {
-			provinceKm += (GenerationManager.Instance.displacementSpeed / 50f) * Time.deltaTime;
+			provinceKm += (GenerationManager.Instance.displacementSpeed / 25f) * Time.deltaTime;
 
 			if (neighbourChoosed) {
-				if (/*provinceKm >= (neighbour.distanceBetweenProvinces)*/provinceKm >= 20f && !changingProvince) {
+				if (provinceKm >= (neighbour.distanceBetweenProvinces) && !changingProvince) {
 					changingProvince = true;
 					GenerationManager.Instance.CreateProvinceChange ();
 				}

@@ -119,9 +119,8 @@ public class StampCollectionScreen : MonoBehaviour {
 						}
 					}
 					if (count == 5) {
-						audio.WaitPlayFX (4);
 						GlobalData.Instance.provincesUnlocked [page] = 1;
-						if (currentPage != 33) {	//MADRID IS ALREADY UNLOCKED;
+						if (currentPage != 27) {	//MADRID IS ALREADY UNLOCKED;
 							unlockProvinceAnim.gameObject.transform.GetChild (1).GetComponent<Image> ().sprite = provincesShapes [currentPage];
 							unlockProvinceAnim.gameObject.transform.GetChild (1).GetComponent<RectTransform> ().sizeDelta = new Vector2 (provincesShapes [currentPage].rect.width, provincesShapes [currentPage].rect.height);
 							string txt = "¡" + pages [currentPage].transform.GetChild (0).GetComponent<Text> ().text + "\n" + "disponible!";
@@ -132,7 +131,10 @@ public class StampCollectionScreen : MonoBehaviour {
 						GlobalData.Instance.SaveGame ();
 					}
 
-					audio.PlayFX (3);
+					if (animPlaying)
+						audio.PlayFX (4);
+					else
+						audio.PlayFX (3);
 
 					CheckPrices (currentPage);
 				}
@@ -154,12 +156,10 @@ public class StampCollectionScreen : MonoBehaviour {
 		for (int i = 0; i < 5; i++) {
 			if (GlobalData.Instance.coins < stampPrices [i] && GlobalData.Instance.stampsUnlocked[page][i] == 0) {
 				GameObject obj = transform.GetChild (page).GetChild (i + 1).gameObject;
-				obj.transform.GetChild (0).GetComponent<Text> ().text = stampPrices [i].ToString ();
 				obj.transform.GetChild (0).GetComponent<Text> ().color = Color.red;
 			}
 			else {
 				GameObject obj = transform.GetChild (page).GetChild (i + 1).gameObject;
-				obj.transform.GetChild (0).GetComponent<Text> ().text = stampPrices [i].ToString ();
 				obj.transform.GetChild (0).GetComponent<Text> ().color = Color.black;
 			}
 		}

@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour {
 	private float groundPos;
 	private float startJumpHeight;
 	private PlayerAnimationManager animManager;
+	private MultiAudioPlayer audio;
 
 	public float minSwipeDistanceX;
 	public float minSwipeDistanceY;
@@ -36,6 +37,8 @@ public class PlayerMovement : MonoBehaviour {
 
 		rb = GetComponent<Rigidbody> ();
 		animManager = transform.GetChild (0).GetComponent<PlayerAnimationManager> ();
+
+		audio = GetComponent<MultiAudioPlayer> ();
 
 		CapsuleCollider[] col = transform.GetChild(0).GetComponents<CapsuleCollider> ();
 		foreach (CapsuleCollider c in col) {
@@ -252,8 +255,10 @@ public class PlayerMovement : MonoBehaviour {
 				lane = 2;
 			else if (lane < 0)
 				lane = 0;
-			else if(currentState == State.running)
+			else if (currentState == State.running) {
 				animManager.ChangeLaneAnimation (right);
+				audio.PlayFX (0, 0);
+			}
 		}
 	}
 
@@ -270,6 +275,7 @@ public class PlayerMovement : MonoBehaviour {
 				rayToFloorEnabled = false;
 				isInGround = false;
 				animManager.JumpAnimation (anim);
+				audio.PlayFX (1, 1);
 			}
 		}
 	}
@@ -283,6 +289,7 @@ public class PlayerMovement : MonoBehaviour {
 				triggerCollider.center = new Vector3 (0, 1.2f, 0.7f);
 				triggerCollider.radius = 1;
 				animManager.RollAnimation ();
+				audio.PlayFX (2, 2);
 			}
 			else {
 				rollTimer = 0f;

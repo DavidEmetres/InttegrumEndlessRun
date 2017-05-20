@@ -5,6 +5,9 @@ using UnityEngine.UI;
 public class HUDManager : MonoBehaviour {
 
 	private bool showingRCHud;
+	private bool muted;
+	private float previousFXVol;
+	private float previousMusicVol;
 
 	public Text coinCounter;
 	public Text kmCounter;
@@ -19,11 +22,15 @@ public class HUDManager : MonoBehaviour {
 	public Animator startTitle;
 	public GameObject tutorial;
 	public GameObject[] lifes;
+	public GameObject muteButton;
 
 	public static HUDManager Instance;
 
 	private void Awake() {
 		Instance = this;
+
+		if ((SoundManager.Instance.GetCurrentMusicVolume () <= -80f) && (SoundManager.Instance.GetCurrentFXVolume () <= -80f))
+			MuteButton ();
 	}
 
 	private void Start() {
@@ -139,5 +146,24 @@ public class HUDManager : MonoBehaviour {
 
 	public void HideTutorial() {
 		tutorial.SetActive (false);
+	}
+
+	public void MuteButton() {
+		if (!muted) {
+			muted = true;
+			previousFXVol = SoundManager.Instance.GetCurrentFXVolume ();
+			previousMusicVol = SoundManager.Instance.GetCurrentMusicVolume ();
+			SoundManager.Instance.MuteFX ();
+			SoundManager.Instance.MuteMusic ();
+			muteButton.transform.GetChild (0).gameObject.SetActive (false);
+			muteButton.transform.GetChild (1).gameObject.SetActive (true);
+		}
+		else {
+			muted = false;
+			SoundManager.Instance.ChangeMusicVolume (previousMusicVol/SoundManager.Instance.maxAudioVolume);
+			SoundManager.Instance.ChangeFXVolume (previousFXVol/SoundManager.Instance.maxAudioVolume);
+			muteButton.transform.GetChild (0).gameObject.SetActive (true);
+			muteButton.transform.GetChild (1).gameObject.SetActive (false);
+		}
 	}
 }

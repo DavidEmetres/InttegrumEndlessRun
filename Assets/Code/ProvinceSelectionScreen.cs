@@ -14,6 +14,7 @@ public class ProvinceSelectionScreen : MonoBehaviour {
 	[SerializeField] private GameObject rewardButton;
 	[SerializeField] private Text rewardLabel;
 	[SerializeField] private Text rewardTimer;
+	[SerializeField] private GameObject helpPopUp;
 	private AudioPlayer audio;
 	private bool ready;
 	private bool popUpVisible;
@@ -63,6 +64,7 @@ public class ProvinceSelectionScreen : MonoBehaviour {
 				ShowTicketAdPopUp (true);
 			}
 			else {
+				GlobalData.Instance.tickets--;
 				StartCoroutine (PlayButtonCoroutine ());
 				backButton.enabled = false;
 				ready = true;
@@ -101,5 +103,11 @@ public class ProvinceSelectionScreen : MonoBehaviour {
 			rewardTimer.gameObject.SetActive (true);
 		TimeSpan t = GlobalData.Instance.nextRefill.Subtract (DateTime.Now);
 		rewardTimer.text = t.ToString ().Remove (8);
+	}
+
+	public void ShowHelpPopUp(bool visible) {
+		popUpVisible = visible;
+		backButton.enabled = !visible;
+		helpPopUp.SetActive (visible);
 	}
 }

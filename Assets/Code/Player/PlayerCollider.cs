@@ -7,6 +7,7 @@ public class PlayerCollider : MonoBehaviour {
 	private float invincibleTimer;
 	private PlayerAnimationManager animManager;
 	private GameObject model;
+	private MultiAudioPlayer audio;
 
 	public float invincibleDuration;
 	public float timeBetweenFlashes;
@@ -16,6 +17,7 @@ public class PlayerCollider : MonoBehaviour {
 		invincible = false;
 		animManager = GetComponent<PlayerAnimationManager> ();
 		model = transform.GetChild (0).gameObject;
+		audio = transform.parent.GetComponent<MultiAudioPlayer> ();
 	}
 
 	private void Update() {
@@ -44,6 +46,7 @@ public class PlayerCollider : MonoBehaviour {
 			Vector3 pos = PlayerMovement.Instance.transform.position;
 			PlayerMovement.Instance.transform.position = new Vector3 (pos.x, pos.y, pos.z - 0.5f);
 			animManager.DyingObstacle4Animation ();
+			audio.PlayFX (4, 3);
 			SceneManager.Instance.GameOver ();
 		}
 		else if (other.tag == "Obstacle") {
@@ -61,9 +64,12 @@ public class PlayerCollider : MonoBehaviour {
 		HUDManager.Instance.LooseLife ();
 		if (SceneManager.Instance.life <= 0) {
 			animManager.DyingAnimation ();
+			audio.PlayFX (5, 3);
 		}
-		else
+		else {
 			animManager.GetHurtAnimation ();
+			audio.PlayFX (3, 3);
+		}
 
 		invincible = true;
 		invincibleTimer = 0f;
@@ -72,6 +78,7 @@ public class PlayerCollider : MonoBehaviour {
 
 	private void GetCoin() {
 		SceneManager.Instance.coins++;
+		audio.PlayFX (6, 4);
 	}
 
 	public void RestoreTriggerCollider() {

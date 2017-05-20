@@ -16,6 +16,7 @@ public class ResultsScreen : MonoBehaviour {
 	private GameObject endLine;
 	private bool popUpVisible;
 	private bool rewardObtained;
+	private AudioPlayer audio;
 
 	public Text kmText;
 	public Text coinsText;
@@ -27,6 +28,8 @@ public class ResultsScreen : MonoBehaviour {
 
 	private void Awake() {
 		Instance = this;
+
+		audio = GetComponent<AudioPlayer> ();
 	}
 
 	private void Update() {
@@ -55,10 +58,12 @@ public class ResultsScreen : MonoBehaviour {
 	}
 
 	public void ShowScreen() {
+		SoundManager.Instance.music.volume /= 2f;
 		GetComponent<Animator> ().SetTrigger ("appear");
 	}
 
 	public void ShowKm() {
+		audio.PlayFX (1);
 		totalKm = SceneManager.Instance.totalKm + SceneManager.Instance.provinceKm;
 		showingKm = true;
 	}
@@ -72,6 +77,7 @@ public class ResultsScreen : MonoBehaviour {
 		for (int i = 0; i < provincesRunned.Count; i++) {
 			GameObject p = GameObject.Find (provincesRunned [i].name.ToLower ());
 			p.GetComponent<Image> ().enabled = true;
+			audio.PlayFX (2);
 			yield return new WaitForSeconds (0.5f);
 		}
 
@@ -79,11 +85,13 @@ public class ResultsScreen : MonoBehaviour {
 	}
 
 	public void ShowCoins() {
+		audio.PlayFX (0);
 		totalCoins = SceneManager.Instance.coins;
 		showingCoins = true;
 	}
 
 	public void ShowCoinAd(bool visible) {
+		audio.PlayFX (3);
 		popUpVisible = visible;
 		coinAdPopUp.SetActive (visible);
 	}
@@ -102,12 +110,17 @@ public class ResultsScreen : MonoBehaviour {
 	}
 
 	public void BackToMainMenu() {
-		if(!popUpVisible)
+		if (!popUpVisible) {
+			SoundManager.Instance.music.volume *= 2f;
+			audio.PlayFX (3);
 			UnityEngine.SceneManagement.SceneManager.LoadScene ("MainMenu");
+		}
 	}
 
 	public void RestartGame() {
 		if (!popUpVisible) {
+			SoundManager.Instance.music.volume *= 2f;
+			audio.PlayFX (3);
 			SoundManager.Instance.ChangeMusic ("mainMenu");
 			UnityEngine.SceneManagement.SceneManager.LoadScene ("LoadingScreen");
 		}

@@ -72,4 +72,8 @@ public class PlayerAnimationManager : MonoBehaviour {
 	public void EndEndingRolling() {
 		anim.SetBool ("endingRolling", false);
 	}
+
+	public void PlayFootstep() {
+		transform.parent.GetComponent<MultiAudioPlayer> ().PlayFX (7, 5);
+	}
 }

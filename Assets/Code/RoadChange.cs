@@ -23,9 +23,9 @@ public class RoadChange {
 
 		for (int i = 0; i < neighbours.Count; i++) {
 			if (neighbours [i].nullNeighbour)
-				roadChangePrefab.transform.GetChild (2 + i).gameObject.SetActive (true);
-			else if(roadChangePrefab.transform.GetChild(2 + i).gameObject.activeInHierarchy)
-				roadChangePrefab.transform.GetChild (2 + i).gameObject.SetActive (false);
+				roadChangePrefab.transform.GetChild (4 - i).gameObject.SetActive (true);
+			else if(roadChangePrefab.transform.GetChild(4 - i).gameObject.activeInHierarchy)
+				roadChangePrefab.transform.GetChild (4 - i).gameObject.SetActive (false);
 		}
 
 		roadChangePrefab.AddComponent<RoadChangeBehaviour> ();

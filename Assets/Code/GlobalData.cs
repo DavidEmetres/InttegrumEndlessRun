@@ -20,18 +20,20 @@ public class GlobalData : MonoBehaviourSingleton<GlobalData> {
 		provincesUnlocked = new int[47];
 		justEnteredGame = true;
 
-		bool b = false;
+		bool b = LoadGame();
 
 		if (!b) {
 			for (int i = 0; i < 47; i++) {
 				stampsUnlocked.Add (new int[5] { 0, 0, 0, 0, 0 });
-				provincesUnlocked [i] = 1;
+				provincesUnlocked [i] = 0;
 			}
 
 			provincesUnlocked [27] = 1;
 
 			firstTime = true;
 			nextRefill = DateTime.Now.AddHours (1);
+			tickets = 5;
+			coins = 0;
 
 			SaveGame ();
 		}
